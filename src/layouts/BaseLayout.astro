@@ -1,0 +1,79 @@
+---
+/**
+ * BaseLayout — the root layout every page extends.
+ *
+ * Owns:
+ *  - HTML shell, global CSS, fonts
+ *  - SEO / Open Graph / Twitter meta tags (via <Seo />)
+ *  - Sticky header, footer, cookie banner, analytics
+ */
+import '@styles/global.css';
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import Seo from '@components/Seo.astro';
+import CookieConsent from '@components/CookieConsent.astro';
+import Analytics from '@components/Analytics.astro';
+import { PUBLIC_GA_MEASUREMENT_ID } from 'astro:env/client';
+
+interface Props {
+  /** Page-specific title — the site name is appended automatically. */
+  title: string;
+  /** Meta description. Required for every page. */
+  description: string;
+  /** Absolute URL of this page. */
+  url: string;
+  /** Optional share image path (defaults to /og-default.png). */
+  image?: string;
+  /** Open Graph content type. */
+  type?: 'website' | 'article';
+  /** ISO timestamp — article pages only. */
+  publishedTime?: string;
+  /** ISO timestamp — article pages only. */
+  modifiedTime?: string;
+  /** Adds <meta name="robots" content="noindex, nofollow">. */
+  noindex?: boolean;
+}
+
+const { noindex = false, ...seo } = Astro.props;
+const gaId = PUBLIC_GA_MEASUREMENT_ID ?? '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#5B1F2A" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Ember &amp; Ink"
+      href="/rss.xml"
+    />
+
+    <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    {/* Consent Mode v2 reads this meta tag before loading GA4. */}
+    {gaId && <meta name="ga-measurement-id" content={gaId} />}
+
+    <Seo {...seo} />
+  </head>
+  <body class="min-h-screen flex flex-col bg-cream text-ink">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <Header />
+
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <CookieConsent />
+    <Analytics />
+  </body>
+</html>

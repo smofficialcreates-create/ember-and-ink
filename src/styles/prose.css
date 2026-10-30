@@ -1,0 +1,89 @@
+/*
+ * Reading typography for Markdown-rendered blog posts.
+ * Scoped via the `.prose-ember` class on the article wrapper.
+ */
+.prose-ember {
+  color: var(--ink);
+  font-family: var(--font-body-stack);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  max-width: 44rem;
+}
+
+.prose-ember > * + * { margin-top: 1.25em; }
+
+.prose-ember h2 {
+  font-family: var(--font-display-stack);
+  color: var(--burgundy);
+  font-size: 1.75rem;
+  line-height: 1.25;
+  margin-top: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.prose-ember h3 {
+  font-family: var(--font-display-stack);
+  color: var(--burgundy);
+  font-size: 1.35rem;
+  line-height: 1.3;
+  margin-top: 2rem;
+  font-weight: 600;
+}
+
+.prose-ember p { color: var(--ink); }
+.prose-ember strong { color: var(--burgundy); font-weight: 600; }
+
+.prose-ember a {
+  color: var(--burgundy);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.18em;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+.prose-ember a:hover { color: var(--burgundy-dark); }
+
+.prose-ember ul,
+.prose-ember ol { padding-left: 1.5rem; }
+.prose-ember ul { list-style: disc; }
+.prose-ember ol { list-style: decimal; }
+.prose-ember li + li { margin-top: 0.5rem; }
+
+.prose-ember blockquote {
+  border-left: 4px solid var(--gold);
+  padding: 0.5rem 1.25rem;
+  color: var(--muted);
+  font-style: italic;
+  background: color-mix(in srgb, var(--gold-soft) 30%, transparent);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.prose-ember code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--line);
+  padding: 0.15em 0.4em;
+  border-radius: 0.3em;
+}
+
+.prose-ember pre {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+
+.prose-ember pre code { background: transparent; color: inherit; padding: 0; }
+
+.prose-ember hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin-block: 2rem;
+}
+
+.prose-ember img {
+  border-radius: 0.75rem;
+  margin-inline: auto;
+}

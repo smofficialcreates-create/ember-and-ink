@@ -1,0 +1,21 @@
+---
+/**
+ * Analytics — loads the two small, global browser scripts.
+ *
+ *  • consent.js — sets up Consent Mode v2 defaults and, only after the
+ *                 visitor accepts, loads GA4. Skipped entirely if no GA
+ *                 measurement ID is configured.
+ *  • forms.js   — attaches honeypot protection to any form marked with
+ *                 `data-protected-form`.
+ *
+ * Both files live in `public/scripts/` and are loaded with `is:inline`
+ * so Astro does not try to bundle them. This keeps the CSP surface
+ * predictable and avoids extra chunk requests.
+ */
+import { PUBLIC_GA_MEASUREMENT_ID } from 'astro:env/client';
+
+const hasGa = Boolean(PUBLIC_GA_MEASUREMENT_ID);
+---
+
+{hasGa && <script is:inline src="/scripts/consent.js" defer></script>}
+<script is:inline src="/scripts/forms.js" defer></script>

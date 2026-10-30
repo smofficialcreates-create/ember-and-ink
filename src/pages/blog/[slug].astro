@@ -1,0 +1,37 @@
+---
+/**
+ * Individual blog post route.
+ * Glob-loaded entry IDs already include the file basename without `.md`
+ * (e.g. "self-help-deep-work"), so `post.id` works directly as the slug.
+ */
+import type { GetStaticPaths } from 'astro';
+import BlogPostLayout from '@layouts/BlogPostLayout.astro';
+import {
+  getPublishedPosts,
+  getRelatedPosts,
+  type BlogPost,
+} from '@lib/posts';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getPublishedPosts();
+
+  return Promise.all(
+    posts.map(async (post) => ({
+      params: { slug: post.id },
+      props: {
+        post,
+        related: await getRelatedPosts(post, 3),
+      },
+    })),
+  );
+};
+
+interface Props {
+  post: BlogPost;
+  related: BlogPost[];
+}
+
+const { post, related } = Astro.props;
+---
+
+<BlogPostLayout post={post} related={related} />

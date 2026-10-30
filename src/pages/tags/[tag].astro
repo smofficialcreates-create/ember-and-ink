@@ -1,0 +1,54 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import PostCard from '@components/PostCard.astro';
+import { getAllTags, getPostsByTag } from '@lib/posts';
+import { SITE } from '@lib/site';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const tags = await getAllTags();
+
+  return Promise.all(
+    tags.map(async (t) => ({
+      params: { tag: t.slug },
+      props: {
+        tagName: t.tag,
+        posts: await getPostsByTag(t.tag),
+      },
+    })),
+  );
+};
+
+interface Props {
+  tagName: string;
+  posts: Awaited<ReturnType<typeof getPostsByTag>>;
+}
+
+const { tagName, posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`#${tagName}`}
+  description={`Posts tagged "${tagName}" on Ember & Ink.`}
+  url={`${SITE.url}/tags/${tagName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`}
+>
+  <section class="container-ember py-16 md:py-24">
+    <header class="max-w-2xl">
+      <p class="text-sm uppercase tracking-[0.2em] text-muted">Tag</p>
+      <h1 class="mt-3 text-4xl md:text-5xl text-burgundy">#{tagName}</h1>
+      <p class="mt-2 text-sm text-muted">
+        {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+      </p>
+    </header>
+
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {posts.map((post, i) => <PostCard post={post} eager={i < 3} />)}
+    </div>
+
+    <div class="mt-14">
+      <a href="/tags/" class="text-sm font-medium text-burgundy hover:underline">
+        ← All tags
+      </a>
+    </div>
+  </section>
+</BaseLayout>

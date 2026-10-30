@@ -1,0 +1,36 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B5654A"/>
+      <stop offset="1" stop-color="#6B2E28"/>
+    </linearGradient>
+    <radialGradient id="warm" cx="0.5" cy="0.65" r="0.5">
+      <stop offset="0" stop-color="#E8D9A8" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#E8D9A8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/>
+  <ellipse cx="600" cy="480" rx="450" ry="280" fill="url(#warm)"/>
+  <g transform="translate(600, 480)">
+    <rect x="-140" y="30" width="280" height="40" rx="4" fill="#2B2118"/>
+    <rect x="-130" y="40" width="260" height="20" rx="2" fill="#5B1F2A"/>
+    <rect x="-110" y="-10" width="240" height="38" rx="4" fill="#5B1F2A"/>
+    <rect x="-100" y="0" width="220" height="18" rx="2" fill="#7C8B6F"/>
+    <rect x="-90" y="-48" width="200" height="36" rx="4" fill="#2E3A2B"/>
+    <rect x="-80" y="-38" width="180" height="16" rx="2" fill="#C9A227"/>
+  </g>
+  <g transform="translate(600, 300)">
+    <path d="M -50 60 L -50 10 Q -50 -10 -30 -10 L 30 -10 Q 50 -10 50 10 L 50 60 Q 50 80 30 80 L -30 80 Q -50 80 -50 60 Z" fill="#FBF6EE"/>
+    <path d="M 50 20 Q 80 20 80 45 Q 80 65 50 60" stroke="#FBF6EE" stroke-width="8" fill="none"/>
+    <ellipse cx="0" cy="-10" rx="30" ry="6" fill="#5B1F2A"/>
+    <g stroke="#E8D9A8" stroke-width="2.5" fill="none" opacity="0.7" stroke-linecap="round">
+      <path d="M -15 -25 Q -25 -50 -15 -75 Q -5 -95 -15 -115"/>
+      <path d="M 10 -25 Q 20 -50 10 -75 Q 0 -100 10 -120"/>
+      <path d="M 30 -20 Q 40 -40 30 -60 Q 20 -80 30 -95"/>
+    </g>
+  </g>
+  <text x="600" y="620" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="58" fill="#FBF6EE" font-weight="400" letter-spacing="3">COZY &amp; GROUNDED</text>
+  <text x="600" y="660" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" fill="#E8D9A8" font-style="italic" letter-spacing="2">fantasy comfort meets self-help</text>
+  <line x1="545" y1="700" x2="655" y2="700" stroke="#C9A227" stroke-width="1.5" opacity="0.7"/>
+  <circle cx="600" cy="700" r="3" fill="#C9A227"/>
+</svg>

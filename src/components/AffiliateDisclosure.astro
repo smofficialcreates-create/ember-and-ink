@@ -1,0 +1,29 @@
+---
+/**
+ * AffiliateDisclosure — the small, inline "this is an affiliate link"
+ * notice shown near Buy buttons on review pages.
+ *
+ * The full legal statement lives on /affiliate-disclosure/, which this
+ * links to.
+ */
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<p
+  class:list={[
+    'text-xs text-muted leading-relaxed',
+    compact ? '' : 'border-l-2 border-gold pl-3',
+  ]}
+>
+  <strong class="text-ink">Affiliate notice:</strong>
+  As an Amazon Associate, Ember &amp; Ink earns from qualifying purchases.
+  Your price is unchanged.
+  <a href="/affiliate-disclosure/" class="underline hover:text-burgundy">
+    Learn more
+  </a>
+  .
+</p>

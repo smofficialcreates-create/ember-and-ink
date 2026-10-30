@@ -1,0 +1,77 @@
+---
+/**
+ * ReviewsSection — reader testimonials, rendered ONLY when real reviews
+ * exist. Never invented, never seeded with fake quotes.
+ *
+ * To add a real review:
+ *   1. Collect written permission from the reviewer.
+ *   2. Add an entry to the `reviews` array below with name, role
+ *      (optional), quote, and date.
+ *   3. If you have fewer than three genuine reviews, leave the section
+ *      as-is — an honest empty state is better than a manufactured one.
+ *
+ * The component renders an honest "no reviews yet" state until you add
+ * your first real entry.
+ */
+interface Review {
+  /** Reviewer's display name. Required. */
+  name: string;
+  /** Optional role, e.g. "Substack reader" or "Beta reader". */
+  role?: string;
+  /** The review text. Must be verbatim from the reviewer. */
+  quote: string;
+  /** ISO date of when the review was given. */
+  date: string;
+}
+
+// ---------------------------------------------------------------------------
+// REAL REVIEWS ONLY — leave empty until you have genuine ones.
+// ---------------------------------------------------------------------------
+const reviews: Review[] = [];
+---
+
+<section class="rounded-card bg-paper border border-line p-6 md:p-10">
+  {reviews.length === 0 ? (
+    <div class="text-center">
+      <p class="text-sm uppercase tracking-[0.18em] text-muted">
+        Reader reviews
+      </p>
+      <h2 class="mt-3 font-display text-2xl md:text-3xl text-burgundy">
+        No reviews yet — and we won't fake any.
+      </h2>
+      <p class="mt-4 max-w-xl mx-auto text-muted">
+        Ember &amp; Ink is a young site. We'd rather show an honest blank
+        page than invent testimonials. If you've read along and want to
+        share a few words, we'd be honoured to feature them —
+        <a href="/contact/" class="underline hover:text-burgundy">send us a note</a>.
+      </p>
+    </div>
+  ) : (
+    <>
+      <p class="text-sm uppercase tracking-[0.18em] text-muted">
+        Reader reviews
+      </p>
+      <h2 class="mt-3 font-display text-2xl md:text-3xl text-burgundy">
+        What readers say
+      </h2>
+
+      <div class="mt-8 grid md:grid-cols-2 gap-6">
+        {reviews.map((review) => (
+          <blockquote class="rounded-card border border-line bg-cream p-5">
+            <p class="text-ink leading-relaxed">"{review.quote}"</p>
+            <footer class="mt-4 text-sm text-muted">
+              <span class="font-medium text-ink">{review.name}</span>
+              {review.role && <>, {review.role}</>}
+              <time datetime={review.date} class="block mt-1 text-xs">
+                {new Date(review.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                })}
+              </time>
+            </footer>
+          </blockquote>
+        ))}
+      </div>
+    </>
+  )}
+</section>

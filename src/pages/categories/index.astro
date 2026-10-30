@@ -1,0 +1,69 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { CATEGORIES } from '@lib/categories';
+import { getPublishedPosts } from '@lib/posts';
+import { SITE } from '@lib/site';
+
+const posts = await getPublishedPosts();
+
+// Add a live post count to each category so readers know what's there.
+const counts = new Map<string, number>();
+for (const post of posts) {
+  counts.set(post.data.category, (counts.get(post.data.category) ?? 0) + 1);
+}
+---
+
+<BaseLayout
+  title="All Categories"
+  description="Browse every shelf on Ember & Ink — self-help, fantasy romance, and every niche in between."
+  url={`${SITE.url}/categories/`}
+>
+  <section class="container-ember py-16 md:py-24">
+    <header class="max-w-2xl">
+      <p class="text-sm uppercase tracking-[0.2em] text-muted">Browse</p>
+      <h1 class="mt-3 text-4xl md:text-5xl text-burgundy">Every shelf</h1>
+      <p class="mt-4 text-lg text-muted">
+        From grounded self-help to sweeping fantasy romance — pick a corner
+        of the shop and start wandering.
+      </p>
+    </header>
+
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {CATEGORIES.map((cat) => {
+        const count = counts.get(cat.label) ?? 0;
+        return (
+          <a
+            href={`/categories/${cat.slug}/`}
+            class:list={[
+              'rounded-card border p-5 transition-colors',
+              cat.featured
+                ? 'bg-burgundy text-paper border-burgundy hover:bg-burgundy-dark'
+                : 'bg-paper border-line hover:border-gold',
+            ]}
+          >
+            <p class:list={[
+              'font-display text-lg',
+              cat.featured ? 'text-gold' : 'text-burgundy',
+            ]}>
+              {cat.label}
+            </p>
+            <p class:list={[
+              'mt-1 text-sm leading-snug',
+              cat.featured ? 'text-cream/80' : 'text-muted',
+            ]}>
+              {cat.description}
+            </p>
+            <p class:list={[
+              'mt-3 text-xs',
+              cat.featured ? 'text-cream/60' : 'text-muted',
+            ]}>
+              {count === 0
+                ? 'No posts yet'
+                : `${count} ${count === 1 ? 'post' : 'posts'}`}
+            </p>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>

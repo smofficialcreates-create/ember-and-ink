@@ -1,0 +1,29 @@
+---
+/**
+ * RelatedPosts — "You may also like" section shown at the bottom of posts.
+ * Reuses PostCard for visual consistency.
+ */
+import PostCard from './PostCard.astro';
+import type { BlogPost } from '@lib/posts';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+<section class="bg-paper border-t border-line mt-20">
+  <div class="container-ember py-14 md:py-20">
+    <div class="flex items-end justify-between gap-4 mb-8">
+      <h2 class="text-3xl md:text-4xl">You may also like</h2>
+      <a href="/blog/" class="text-sm font-medium text-burgundy hover:underline shrink-0">
+        All posts →
+      </a>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</section>

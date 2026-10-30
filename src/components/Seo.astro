@@ -1,0 +1,61 @@
+---
+/**
+ * Seo — the single place that renders <title>, description, canonical,
+ * Open Graph, and Twitter Card metadata.
+ *
+ * Called once per page from `BaseLayout.astro`. Any future SEO additions
+ * (JSON-LD, hreflang, preloads) should live here, not in BaseLayout.
+ */
+import { SITE } from '@lib/site';
+import { buildTitle, absoluteImage } from '@lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  url: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+}
+
+const {
+  title,
+  description,
+  url,
+  image,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+
+const fullTitle = buildTitle(title);
+const imageUrl = absoluteImage(image);
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={url} />
+
+{/* Open Graph — used by Facebook, LinkedIn, Slack, WhatsApp, iMessage, … */}
+<meta property="og:type" content={type} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={description} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content={SITE.locale} />
+
+{type === 'article' && publishedTime && (
+  <meta property="article:published_time" content={publishedTime} />
+)}
+{type === 'article' && modifiedTime && (
+  <meta property="article:modified_time" content={modifiedTime} />
+)}
+
+{/* Twitter / X card — uses the same image as OG for consistency */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />

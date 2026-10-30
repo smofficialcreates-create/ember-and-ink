@@ -1,0 +1,109 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { SITE } from '@lib/site';
+---
+
+<BaseLayout
+  title="About"
+  description="Ember & Ink is a warm, literary book blog for self-help and fantasy romance readers — honest reviews, thoughtful essays, and curated reading lists."
+  url={`${SITE.url}/about/`}
+>
+  <article class="container-ember py-16 md:py-24 max-w-3xl">
+    <header>
+      <p class="text-sm uppercase tracking-[0.2em] text-muted">About</p>
+      <h1 class="mt-3 text-4xl md:text-5xl text-burgundy">
+        A quiet corner for readers who read slowly.
+      </h1>
+      <p class="mt-6 text-lg text-muted">
+        Ember &amp; Ink is a book blog for people who like to sit with a
+        book. We write honest reviews, thoughtful essays, and carefully
+        curated reading lists — with a soft spot for self-help that
+        actually helps, and fantasy romance that actually sweeps you off
+        your feet.
+      </p>
+    </header>
+
+    <div class="prose-ember mt-10">
+      <h2>What you'll find here</h2>
+      <p>
+        Two shelves anchor this site:
+      </p>
+      <ul>
+        <li>
+          <strong>Self-Help</strong> — books on habits, focus, mood, and
+          attention. We favour work that is grounded, honest, and possible
+          to actually do in a busy life.
+        </li>
+        <li>
+          <strong>Fantasy Romance</strong> — from sweeping courts to
+          cozy standalones. We look for chemistry that grows, worlds that
+          feel lived-in, and endings that feel earned.
+        </li>
+      </ul>
+      <p>
+        Around those two anchors, we also review Romance, Fantasy, Mystery
+        &amp; Thriller, Contemporary Fiction, Young Adult, Historical
+        Fiction, Science Fiction, Horror, Nonfiction, Poetry &amp; Essays,
+        Seasonal &amp; Mood Reads, and the occasional "Books Like…" list.
+      </p>
+
+      <h2>How we choose books</h2>
+      <p>
+        Every review is written by a human who read the whole book. We do
+        not publish reviews we don't believe, and we do not take payment
+        for a positive review. When a link is an affiliate link — most often
+        an Amazon link — we disclose it clearly in the post and again on the
+        <a href="/affiliate-disclosure/">Affiliate Disclosure page</a>.
+        The small commission we earn from those links keeps the site
+        running, and never changes what we say about a book.
+      </p>
+
+      <h2>How we rate books</h2>
+      <p>
+        Reviews are always honest and always specific. We care less about
+        star ratings than about helping you decide: <em>is this book for
+        me, right now?</em> If that means saying "wait until you are in a
+        different mood", we say it.
+      </p>
+
+      <h2>Say hello</h2>
+      <p>
+        Found a book we should read? A review you disagree with? A genre
+        we've under-covered? The door is open — write to us via the
+        <a href="/contact/">contact page</a> or at
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We read every
+        message.
+      </p>
+    </div>
+
+    <div class="mt-14 rounded-card bg-paper border border-line p-6 md:p-8">
+      <h2 class="text-2xl">Ember &amp; Ink in short</h2>
+      <p class="mt-3 text-muted">
+        Warm reviews, honest opinions, and reading lists for self-help and
+        fantasy romance readers. No hype. No spoilers without warning.
+        No paid positive reviews. Just a person, a mug of tea, and a
+        steadily growing stack of books.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          href="/blog/"
+          class="rounded-pill bg-burgundy text-paper px-5 py-2.5 text-sm font-medium hover:bg-burgundy-dark transition-colors"
+        >
+          Read the blog
+        </a>
+        <a
+          href="/faq/"
+          class="rounded-pill bg-gold-soft text-burgundy px-5 py-2.5 text-sm font-medium hover:bg-gold/40 transition-colors"
+        >
+          Read the FAQ
+        </a>
+        <a
+          href="/contact/"
+          class="rounded-pill border border-line px-5 py-2.5 text-sm font-medium hover:border-gold transition-colors"
+        >
+          Contact
+        </a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

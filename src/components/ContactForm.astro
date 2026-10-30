@@ -1,0 +1,98 @@
+---
+/**
+ * ContactForm — accessible contact form with honeypot spam protection.
+ *
+ * Behaviour:
+ *  • If `CONTACT_ENDPOINT` is configured, posts to it and redirects to
+ *    /thank-you/ on success (see public/scripts/forms.js for honeypot).
+ *  • Otherwise, renders a mailto fallback so the site is useful before
+ *    any backend is wired up.
+ *
+ * Field layout is driven by CONTACT_FIELDS so adding a field is a
+ * one-line change in src/lib/forms.ts.
+ */
+import {
+  CONTACT_ENDPOINT,
+  CONTACT_FIELDS,
+} from '@lib/forms';
+import { SITE } from '@lib/site';
+
+const hasEndpoint = Boolean(CONTACT_ENDPOINT);
+---
+
+{hasEndpoint ? (
+  <form
+    action={CONTACT_ENDPOINT!}
+    method="POST"
+    class="space-y-5"
+    data-protected-form
+  >
+    {CONTACT_FIELDS.map((field) => (
+      <div>
+        <label for={`contact-${field.name}`} class="block text-sm font-medium text-ink">
+          {field.label}
+          {field.required && <span class="text-gold" aria-hidden="true"> *</span>}
+        </label>
+
+        {field.type === 'textarea' ? (
+          <textarea
+            id={`contact-${field.name}`}
+            name={field.name}
+            required={field.required}
+            placeholder={field.placeholder}
+            rows="6"
+            class="mt-2 w-full rounded-card border border-line bg-paper px-4 py-3 text-ink placeholder:text-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
+          />
+        ) : (
+          <input
+            id={`contact-${field.name}`}
+            type={field.type}
+            name={field.name}
+            required={field.required}
+            autocomplete={field.autocomplete}
+            placeholder={field.placeholder}
+            class="mt-2 w-full rounded-card border border-line bg-paper px-4 py-3 text-ink placeholder:text-muted focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
+          />
+        )}
+      </div>
+    ))}
+
+    {/* Honeypot — hidden from humans, filled by bots. forms.js redirects silently. */}
+    <input
+      type="text"
+      name="_gotcha"
+      tabindex="-1"
+      autocomplete="off"
+      class="hidden"
+      aria-hidden="true"
+    />
+    <input type="hidden" name="_next" value="/thank-you/" />
+
+    <button
+      type="submit"
+      class="rounded-pill bg-burgundy text-paper px-6 py-3 font-medium hover:bg-burgundy-dark transition-colors"
+    >
+      Send message
+    </button>
+
+    <p class="text-xs text-muted">
+      By sending a message you agree to our
+      <a href="/privacy/" class="underline hover:text-burgundy">privacy policy</a>.
+    </p>
+  </form>
+) : (
+  <div class="rounded-card bg-paper border border-line p-6">
+    <p class="text-muted">
+      We're not accepting form submissions yet, but you can always email us
+      directly:
+    </p>
+    <p class="mt-4">
+      <a
+        href={`mailto:${SITE.email}?subject=Hello%20Ember%20%26%20Ink`}
+        class="inline-flex items-center rounded-pill bg-burgundy text-paper px-6 py-3 font-medium hover:bg-burgundy-dark transition-colors"
+      >
+        Email {SITE.email}
+      </a>
+    </p>
+  </div>
+)}

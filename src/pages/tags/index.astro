@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getAllTags } from '@lib/posts';
+import { SITE } from '@lib/site';
+
+const tags = await getAllTags();
+---
+
+<BaseLayout
+  title="Tags"
+  description="Every tag used on Ember & Ink — tropes, themes, and mood markers across all reviews."
+  url={`${SITE.url}/tags/`}
+>
+  <section class="container-ember py-16 md:py-24">
+    <header class="max-w-2xl">
+      <p class="text-sm uppercase tracking-[0.2em] text-muted">Browse</p>
+      <h1 class="mt-3 text-4xl md:text-5xl text-burgundy">Tags</h1>
+      <p class="mt-4 text-lg text-muted">
+        Tropes, themes, and mood markers across every review.
+      </p>
+    </header>
+
+    {tags.length === 0 ? (
+      <p class="mt-10 text-muted">No tags yet.</p>
+    ) : (
+      <ul class="mt-10 flex flex-wrap gap-3">
+        {tags.map((tag) => (
+          <li>
+            <a
+              href={`/tags/${tag.slug}/`}
+              class="inline-flex items-center gap-2 rounded-pill bg-paper border border-line px-4 py-2 text-sm hover:border-gold hover:text-burgundy transition-colors"
+            >
+              <span>#{tag.tag}</span>
+              <span class="text-xs text-muted">{tag.count}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</BaseLayout>

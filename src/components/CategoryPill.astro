@@ -1,0 +1,25 @@
+---
+/**
+ * CategoryPill — a small link to a category's archive page.
+ * Used on post cards, post headers, and category pages.
+ */
+interface Props {
+  label: string;
+  slug: string;
+  muted?: boolean;
+}
+
+const { label, slug, muted = false } = Astro.props;
+---
+
+<a
+  href={`/categories/${slug}/`}
+  class:list={[
+    'inline-flex items-center rounded-pill px-3 py-0.5 text-xs font-medium transition-colors',
+    muted
+      ? 'bg-cream text-muted border border-line hover:border-gold'
+      : 'bg-gold-soft/60 text-burgundy hover:bg-gold-soft',
+  ]}
+>
+  {label}
+</a>

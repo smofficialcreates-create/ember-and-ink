@@ -1,0 +1,49 @@
+---
+/**
+ * Breadcrumbs — accessible breadcrumb navigation with Schema.org markup.
+ * The final crumb (with no `href`) is rendered as plain text and marked
+ * as the current page.
+ */
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Crumb[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb">
+  <ol
+    class="flex flex-wrap items-center gap-1 text-sm text-muted"
+    itemscope
+    itemtype="https://schema.org/BreadcrumbList"
+  >
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      return (
+        <li
+          class="flex items-center gap-1"
+          itemprop="itemListElement"
+          itemscope
+          itemtype="https://schema.org/ListItem"
+        >
+          {item.href && !isLast ? (
+            <a href={item.href} class="hover:text-burgundy transition-colors" itemprop="item">
+              <span itemprop="name">{item.label}</span>
+            </a>
+          ) : (
+            <span class="text-ink/80 truncate max-w-[20ch] sm:max-w-none" itemprop="name" aria-current="page">
+              {item.label}
+            </span>
+          )}
+          <meta itemprop="position" content={String(index + 1)} />
+          {!isLast && <span aria-hidden="true" class="text-muted/60">/</span>}
+        </li>
+      );
+    })}
+  </ol>
+</nav>

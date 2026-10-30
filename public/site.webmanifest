@@ -1,0 +1,17 @@
+{
+  "name": "Ember & Ink",
+  "short_name": "Ember & Ink",
+  "description": "A warm, literary book blog for self-help and fantasy romance readers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBF6EE",
+  "theme_color": "#5B1F2A",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

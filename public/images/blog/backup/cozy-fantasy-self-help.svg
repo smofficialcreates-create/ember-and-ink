@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#B5654A"/>
+      <stop offset="1" stop-color="#5B1F2A"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/>
+  <g stroke="#FBF6EE" stroke-width="3" opacity="0.16" fill="none">
+    <path d="M100 200 q200 -100 400 0 t400 0 t200 -50"/>
+    <path d="M100 260 q200 -100 400 0 t400 0 t200 -50"/>
+  </g>
+  <text x="600" y="390" text-anchor="middle" font-family="Georgia, serif" font-size="62" fill="#FBF6EE" font-weight="600">COZY &amp; GROUNDED</text>
+  <text x="600" y="445" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#E8D9A8" font-style="italic">fantasy comfort meets self-help</text>
+  <text x="600" y="660" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" fill="#FBF6EE" letter-spacing="6">EMBER &amp; INK</text>
+</svg>

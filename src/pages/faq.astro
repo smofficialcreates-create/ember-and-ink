@@ -1,0 +1,115 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { SITE } from '@lib/site';
+
+/**
+ * FAQ page. The questions are kept here (rather than in a separate
+ * data file) so editors can update both the visible copy and the
+ * FAQPage structured data in a single place.
+ *
+ * The JSON-LD below uses the FAQPage schema, which helps Google show
+ * expandable rich results for this page.
+ */
+const faqs = [
+  {
+    question: 'What kinds of books do you review on Ember & Ink?',
+    answer:
+      'We focus on self-help and fantasy romance, and also review romance, fantasy, mystery & thriller, contemporary fiction, young adult, historical fiction, science fiction, horror, nonfiction, and poetry & essays. If a book fits a reader who likes to read slowly and think about what they read, it probably belongs here.',
+  },
+  {
+    question: 'How do you choose which books to review?',
+    answer:
+      'Every book we review is read by a human from start to finish. We choose based on reader interest, season, and shelf balance — not on whether a book has affiliate links. We do not accept payment for a review or for a positive review.',
+  },
+  {
+    question: 'Do you accept review requests or ARCs?',
+    answer:
+      'Yes, selectively. If you are an author, publisher, or publicist, please use the contact page with the book title, genre, and a short synopsis. We cannot promise to review every submission, and we never guarantee a positive review.',
+  },
+  {
+    question: 'Are the Amazon links on this site affiliate links?',
+    answer:
+      'Most Amazon links on this site are affiliate links. As an Amazon Associate, Ember & Ink earns from qualifying purchases — at no extra cost to you. You can read the full details on the Affiliate Disclosure page.',
+  },
+  {
+    question: 'How do you handle spoilers?',
+    answer:
+      'We avoid spoilers in the first half of a review and give a clear warning before any plot reveals. If a book has a polarising ending, we usually say so without describing it.',
+  },
+  {
+    question: 'Do you have a newsletter?',
+    answer:
+      'Yes — a slow, monthly letter with new reviews, quiet recommendations, and the occasional reading list. No spam, ever, and you can unsubscribe with one click.',
+  },
+  {
+    question: 'Can I use your reviews or images on my site?',
+    answer:
+      'Please contact us first. Short quotations with a link back to the original post are usually fine. Republishing a full review, or reusing cover images without permission, is not.',
+  },
+  {
+    question: 'How can I contact you?',
+    answer: `Email ${SITE.email} or use the contact page. We read every message and reply to most within a few days.`,
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title="FAQ"
+  description="Frequently asked questions about Ember & Ink — how we review, how we choose books, affiliate links, spoilers, and how to get in touch."
+  url={`${SITE.url}/faq/`}
+>
+  <section class="container-ember py-16 md:py-24 max-w-3xl">
+    <header>
+      <p class="text-sm uppercase tracking-[0.2em] text-muted">FAQ</p>
+      <h1 class="mt-3 text-4xl md:text-5xl text-burgundy">
+        Questions, answered.
+      </h1>
+      <p class="mt-4 text-lg text-muted">
+        Everything you might want to know about how Ember &amp; Ink works,
+        what we review, and how to get in touch.
+      </p>
+    </header>
+
+    <div class="mt-10 divide-y divide-line border-y border-line">
+      {faqs.map((faq) => (
+        <details class="group py-5">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4">
+            <h2 class="font-display text-lg md:text-xl text-burgundy group-open:text-burgundy-dark">
+              {faq.question}
+            </h2>
+            <span
+              class="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-full border border-line text-burgundy transition-transform group-open:rotate-45"
+              aria-hidden="true"
+            >
+              +
+            </span>
+          </summary>
+          <p class="mt-3 text-muted leading-relaxed">{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+
+    <div class="mt-14 rounded-card bg-paper border border-line p-6 md:p-8">
+      <h2 class="text-2xl">Still curious?</h2>
+      <p class="mt-3 text-muted">
+        If your question isn't answered above, email
+        <a href={`mailto:${SITE.email}`} class="underline hover:text-burgundy">
+          {SITE.email}
+        </a>
+        or use the <a href="/contact/" class="underline hover:text-burgundy">contact form</a>.
+      </p>
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</BaseLayout>

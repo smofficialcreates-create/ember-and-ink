@@ -1,0 +1,166 @@
+---
+/**
+ * BlogPostLayout — the reading layout for individual posts.
+ *
+ * Uses Astro 5's Content Layer API: `render(post)` returns the compiled
+ * `<Content />` component. Do not use the legacy `post.render()` API —
+ * it does not exist for glob-loaded collections.
+ *
+ * `coverImage` is a path string (e.g. "/images/blog/x.png"), so we render
+ * it with a plain <img> rather than astro:assets <Image>. That keeps the
+ * frontmatter simple for authors and AI generators.
+ */
+import { render } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import CategoryPill from '@components/CategoryPill.astro';
+import RelatedPosts from '@components/RelatedPosts.astro';
+import AffiliateDisclosure from '@components/AffiliateDisclosure.astro';
+import type { BlogPost } from '@lib/posts';
+import { SITE } from '@lib/site';
+import { withAmazonTag } from '@lib/amazon';
+import { formatDate, readingTime } from '@lib/format';
+import { slugify } from '@lib/categories';
+
+interface Props {
+  post: BlogPost;
+  related: BlogPost[];
+}
+
+const { post, related } = Astro.props;
+const { Content } = await render(post);
+
+const amazonUrl = withAmazonTag(post.data.amazonLink);
+const categorySlug = slugify(post.data.category);
+const publishedIso = post.data.pubDate.toISOString();
+const updatedIso = post.data.updatedDate?.toISOString();
+const readTime = readingTime(post.body);
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: publishedIso,
+  dateModified: updatedIso ?? publishedIso,
+  author: { '@type': 'Organization', name: SITE.name },
+  publisher: { '@type': 'Organization', name: SITE.name },
+  mainEntityOfPage: `${SITE.url}/blog/${post.id}/`,
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  publishedTime={publishedIso}
+  modifiedTime={updatedIso}
+  image={post.data.coverImage}
+  url={`${SITE.url}/blog/${post.id}/`}
+>
+  <article class="pb-20">
+    <header class="bg-paper border-b border-line">
+      <div class="container-ember py-10 md:py-16">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Blog', href: '/blog/' },
+            { label: post.data.category, href: `/categories/${categorySlug}/` },
+            { label: post.data.title },
+          ]}
+        />
+
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <CategoryPill label={post.data.category} slug={categorySlug} />
+          <time datetime={publishedIso} class="text-sm text-muted">
+            {formatDate(post.data.pubDate)}
+          </time>
+          <span class="text-sm text-muted" aria-hidden="true">•</span>
+          <span class="text-sm text-muted">{readTime}</span>
+        </div>
+
+        <h1 class="mt-4 text-3xl md:text-5xl leading-tight max-w-3xl">
+          {post.data.title}
+        </h1>
+        <p class="mt-4 text-lg text-muted max-w-2xl">{post.data.description}</p>
+      </div>
+    </header>
+
+    {post.data.coverImage && (
+      <div class="container-ember -mt-8 md:-mt-12">
+        <div class="rounded-card overflow-hidden shadow-lift bg-paper">
+          <img
+            src={post.data.coverImage}
+            alt={post.data.coverAlt ?? `Cover for ${post.data.title}`}
+            class="w-full h-auto"
+            loading="eager"
+            decoding="async"
+            width="1200"
+            height="750"
+          />
+        </div>
+      </div>
+    )}
+
+    <div class="container-ember mt-12">
+      <div class="grid md:grid-cols-[minmax(0,1fr)_18rem] gap-12">
+        <div class="prose-ember">
+          {amazonUrl && (
+            <div class="not-prose mb-8">
+              <AffiliateDisclosure />
+              <a
+                href={amazonUrl}
+                class="mt-4 inline-flex items-center gap-2 rounded-pill bg-burgundy text-paper px-6 py-3 font-medium shadow-soft hover:bg-burgundy-dark transition-colors"
+                rel="sponsored nofollow noopener noreferrer"
+                target="_blank"
+              >
+                Buy on Amazon →
+              </a>
+            </div>
+          )}
+
+          <Content />
+        </div>
+
+        <aside class="space-y-6 md:sticky md:top-24 self-start">
+          <section class="rounded-card bg-paper border border-line p-5 shadow-soft">
+            <h2 class="text-lg font-display text-burgundy">Tags</h2>
+            {post.data.tags.length > 0 ? (
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {post.data.tags.map((tag) => (
+                  <li>
+                    <a
+                      href={`/tags/${slugify(tag)}/`}
+                      class="inline-block rounded-pill border border-line px-3 py-1 text-sm text-muted hover:text-burgundy hover:border-gold transition-colors"
+                    >
+                      #{tag}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="mt-3 text-sm text-muted">No tags yet.</p>
+            )}
+          </section>
+
+          <section class="rounded-card bg-paper border border-line p-5 shadow-soft">
+            <h2 class="text-lg font-display text-burgundy">The shelf</h2>
+            <p class="mt-2 text-sm text-muted">
+              Warm reviews for readers who like to take their time.
+            </p>
+            <a
+              href="/blog/"
+              class="mt-3 inline-block text-sm font-medium text-burgundy hover:underline"
+            >
+              Browse all posts →
+            </a>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    {related.length > 0 && <RelatedPosts posts={related} />}
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+</BaseLayout>

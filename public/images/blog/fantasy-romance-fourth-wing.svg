@@ -1,0 +1,43 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+  <defs>
+    <radialGradient id="bg" cx="0.5" cy="0.4" r="0.8">
+      <stop offset="0" stop-color="#7A2936"/>
+      <stop offset="1" stop-color="#2B1015"/>
+    </radialGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8D9A8"/>
+      <stop offset="1" stop-color="#C9A227"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FBF6EE"/>
+      <stop offset="1" stop-color="#E8D9A8"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/>
+  <g fill="#E8D9A8" opacity="0.6">
+    <circle cx="150" cy="120" r="1.5"/>
+    <circle cx="320" cy="80" r="1"/>
+    <circle cx="950" cy="150" r="2"/>
+    <circle cx="1080" cy="100" r="1.5"/>
+    <circle cx="250" cy="250" r="1"/>
+    <circle cx="1000" cy="280" r="1.5"/>
+    <circle cx="1050" cy="400" r="1"/>
+    <circle cx="180" cy="380" r="1"/>
+  </g>
+  <circle cx="600" cy="300" r="90" fill="url(#moon)" opacity="0.95"/>
+  <circle cx="640" cy="280" r="90" fill="url(#bg)" opacity="0.9"/>
+  <g fill="url(#wing)" opacity="0.9">
+    <path d="M 600 320 Q 500 240 400 260 Q 420 300 380 340 Q 440 340 420 400 Q 490 370 540 420 Q 550 360 600 380 Z"/>
+    <path d="M 500 280 Q 470 300 450 340" stroke="#5B1F2A" stroke-width="1.5" fill="none" opacity="0.4"/>
+    <path d="M 540 300 Q 510 330 490 370" stroke="#5B1F2A" stroke-width="1.5" fill="none" opacity="0.4"/>
+  </g>
+  <g fill="url(#wing)" opacity="0.9">
+    <path d="M 600 320 Q 700 240 800 260 Q 780 300 820 340 Q 760 340 780 400 Q 710 370 660 420 Q 650 360 600 380 Z"/>
+    <path d="M 700 280 Q 730 300 750 340" stroke="#5B1F2A" stroke-width="1.5" fill="none" opacity="0.4"/>
+    <path d="M 660 300 Q 690 330 710 370" stroke="#5B1F2A" stroke-width="1.5" fill="none" opacity="0.4"/>
+  </g>
+  <text x="600" y="560" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="68" fill="#FBF6EE" font-weight="400" letter-spacing="4">FOURTH WING</text>
+  <text x="600" y="605" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" fill="#E8D9A8" font-style="italic" letter-spacing="2">dragons, slow-burn, and war college</text>
+  <line x1="540" y1="650" x2="660" y2="650" stroke="#C9A227" stroke-width="1.5" opacity="0.7"/>
+  <path d="M 590 645 L 600 655 L 610 645 L 600 640 Z" fill="#C9A227"/>
+</svg>

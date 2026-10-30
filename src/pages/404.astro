@@ -1,0 +1,57 @@
+---
+/**
+ * 404 page.
+ *
+ * On Cloudflare Pages, `dist/404.html` is served automatically for any
+ * not-found path, with a real HTTP 404 status — no extra configuration.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { SITE } from '@lib/site';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The page you were looking for isn't here — but the shelf is. Head back to Ember & Ink to find your next read."
+  url={`${SITE.url}/404`}
+  noindex
+>
+  <section class="container-ember py-20 md:py-32 text-center">
+    <p class="font-display text-[7rem] md:text-[9rem] leading-none text-gold/60 select-none">
+      404
+    </p>
+
+    <h1 class="mt-4 text-3xl md:text-5xl">
+      This page slipped off the shelf.
+    </h1>
+
+    <p class="mt-4 text-lg text-muted max-w-xl mx-auto">
+      The link you followed may be broken, or the page may have moved.
+      Let's get you back to something worth reading.
+    </p>
+
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <a
+        href="/"
+        class="rounded-pill bg-burgundy text-paper px-6 py-3 font-medium hover:bg-burgundy-dark transition-colors"
+      >
+        Back to home
+      </a>
+      <a
+        href="/blog/"
+        class="rounded-pill bg-gold-soft text-burgundy px-6 py-3 font-medium hover:bg-gold/40 transition-colors"
+      >
+        Browse posts
+      </a>
+      <a
+        href="/categories/"
+        class="rounded-pill border border-line text-ink px-6 py-3 font-medium hover:border-gold transition-colors"
+      >
+        All categories
+      </a>
+    </div>
+
+    <p class="mt-12 text-sm text-muted">
+      Still stuck? <a href="/contact/" class="underline hover:text-burgundy">Contact us</a> and we'll help.
+    </p>
+  </section>
+</BaseLayout>

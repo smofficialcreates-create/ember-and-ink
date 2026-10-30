@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7C8B6F"/>
+      <stop offset="1" stop-color="#3E4A38"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/>
+  <g fill="#FBF6EE" opacity="0.10">
+    <circle cx="200" cy="150" r="160"/>
+    <circle cx="1000" cy="600" r="220"/>
+  </g>
+  <rect x="180" y="280" width="840" height="5" fill="#E8D9A8"/>
+  <text x="600" y="390" text-anchor="middle" font-family="Georgia, serif" font-size="68" fill="#FBF6EE" font-weight="600">DEEP WORK</text>
+  <text x="600" y="445" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#E8D9A8" font-style="italic">a focused self-help reading list</text>
+  <text x="600" y="650" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" fill="#FBF6EE" letter-spacing="6">EMBER &amp; INK</text>
+</svg>

@@ -1,0 +1,64 @@
+---
+/**
+ * CookieConsent — the EU/UK/Swiss-friendly analytics consent banner.
+ *
+ * Rendered only when a GA4 measurement ID is configured. The actual
+ * accept/reject handling lives in `public/scripts/consent.js`, which:
+ *   1. sets Consent Mode v2 defaults to `denied` before any tag loads,
+ *   2. reads/writes `localStorage["ember-consent-v1"]`,
+ *   3. loads GA4 only after the visitor explicitly accepts.
+ *
+ * Any element with the `data-consent-open` attribute (e.g. the
+ * "Cookie settings" link in the footer) re-opens this banner.
+ */
+import { PUBLIC_GA_MEASUREMENT_ID } from 'astro:env/client';
+
+const hasGa = Boolean(PUBLIC_GA_MEASUREMENT_ID);
+---
+
+{hasGa && (
+  <aside
+    data-consent-banner
+    hidden
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="consent-title"
+    aria-describedby="consent-desc"
+    class="consent-banner fixed inset-x-0 bottom-0 z-50 p-4 md:p-6"
+  >
+    <div class="container-ember">
+      <div class="rounded-card bg-paper border border-line shadow-lift p-5 md:p-6">
+        <div class="flex flex-col md:flex-row md:items-center gap-4">
+          <div class="flex-1">
+            <h2 id="consent-title" class="font-display text-lg text-burgundy">
+              A quiet cookie note.
+            </h2>
+            <p id="consent-desc" class="mt-1 text-sm text-muted leading-relaxed">
+              We use privacy-friendly analytics only if you say yes. Nothing
+              is loaded before you choose. Read the
+              <a href="/privacy/" class="underline hover:text-burgundy">
+                privacy policy
+              </a>.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0">
+            <button
+              type="button"
+              data-consent-reject
+              class="rounded-pill border border-line px-5 py-2.5 text-sm font-medium hover:border-gold transition-colors"
+            >
+              Essential only
+            </button>
+            <button
+              type="button"
+              data-consent-accept
+              class="rounded-pill bg-burgundy text-paper px-5 py-2.5 text-sm font-medium hover:bg-burgundy-dark transition-colors"
+            >
+              Accept all
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+)}
