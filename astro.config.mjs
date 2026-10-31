@@ -1,10 +1,10 @@
-import { defineConfig, envField } from 'astro/config';
+﻿import { defineConfig, envField } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://emberandink.com',
+ site: 'https://ember-and-ink.sm-officialcreates.workers.dev',
   output: 'static',
 
   integrations: [
@@ -24,7 +24,7 @@ export default defineConfig({
   },
 
   // Typed environment variables. Access them via `astro:env/client`
-  // in components — never read `process.env` directly in client code.
+  // in components â€” never read `process.env` directly in client code.
   env: {
     schema: {
       PUBLIC_AMAZON_ASSOCIATE_TAG: envField.string({
