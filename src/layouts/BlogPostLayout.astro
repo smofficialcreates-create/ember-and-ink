@@ -1,9 +1,9 @@
----
+﻿---
 /**
- * BlogPostLayout — the reading layout for individual posts.
+ * BlogPostLayout â€” the reading layout for individual posts.
  *
  * Uses Astro 5's Content Layer API: `render(post)` returns the compiled
- * `<Content />` component. Do not use the legacy `post.render()` API —
+ * `<Content />` component. Do not use the legacy `post.render()` API â€”
  * it does not exist for glob-loaded collections.
  *
  * `coverImage` is a path string (e.g. "/images/blog/x.png"), so we render
@@ -75,7 +75,7 @@ const articleSchema = {
           <time datetime={publishedIso} class="text-sm text-muted">
             {formatDate(post.data.pubDate)}
           </time>
-          <span class="text-sm text-muted" aria-hidden="true">•</span>
+          <span class="text-sm text-muted" aria-hidden="true">â€¢</span>
           <span class="text-sm text-muted">{readTime}</span>
         </div>
 
@@ -110,11 +110,11 @@ const articleSchema = {
               <AffiliateDisclosure />
               <a
                 href={amazonUrl}
-                class="mt-4 inline-flex items-center gap-2 rounded-pill bg-burgundy text-paper px-6 py-3 font-medium shadow-soft hover:bg-burgundy-dark transition-colors"
+                class="mt-4 inline-flex items-center gap-2 rounded-pill bg-burgundy text-paper! px-6 py-3 font-medium shadow-soft hover:bg-burgundy-dark transition-colors"
                 rel="sponsored nofollow noopener noreferrer"
                 target="_blank"
               >
-                Buy on Amazon →
+                Buy on Amazon â†’
               </a>
             </div>
           )}
@@ -152,7 +152,7 @@ const articleSchema = {
               href="/blog/"
               class="mt-3 inline-block text-sm font-medium text-burgundy hover:underline"
             >
-              Browse all posts →
+              Browse all posts â†’
             </a>
           </section>
         </aside>
