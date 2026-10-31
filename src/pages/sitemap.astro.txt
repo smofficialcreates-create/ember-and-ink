@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedPosts } from '@lib/posts';
+import { CATEGORIES } from '@lib/categories';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout title="Sitemap" description="A complete list of all pages on Ember & Ink." url={`${Astro.url}`}>
+  <section class="container-ember py-16 max-w-3xl">
+    <h1 class="text-4xl text-burgundy">Sitemap</h1>
+    <h2 class="mt-8 text-2xl text-burgundy">Blog Posts</h2>
+    <ul class="mt-4 space-y-2">
+      {posts.map((post) => (
+        <li>
+          <a href={`/blog/${post.id}/`} class="text-burgundy underline">
+            {post.data.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <h2 class="mt-8 text-2xl text-burgundy">Categories</h2>
+    <ul class="mt-4 space-y-2">
+      {CATEGORIES.map((cat) => (
+        <li>
+          <a href={`/categories/${cat.slug}/`} class="text-burgundy underline">
+            {cat.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
