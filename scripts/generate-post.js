@@ -38,22 +38,32 @@ async function generate() {
   const bookToProcess = books[0];
   console.log(`Processing: ${bookToProcess}`);
 
-  // 1. Fetch REAL book cover from Google Books API
+  const cleanBookName = bookToProcess.split(' by ')[0].trim();
+  const slug = cleanBookName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  // 1. Bulletproof Cover Fetching (Ignoring fake Summary covers)
   let coverImageUrl = null;
   try {
-    const searchUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(bookToProcess)}&maxResults=1`;
-    const res = await fetch(searchUrl);
+    const query = encodeURIComponent(`intitle:"${cleanBookName}"`);
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=10`);
     const data = await res.json();
-    if (data.items && data.items[0].volumeInfo.imageLinks) {
-      coverImageUrl = data.items[0].volumeInfo.imageLinks.thumbnail.replace('http://', 'https://');
-      // Get higher resolution if available
-      coverImageUrl = coverImageUrl.replace('&zoom=1', '&zoom=0').replace('&edge=curl', '');
+    
+    if (data.items) {
+      // Find the first cover that is NOT a summary/workbook
+      const validBook = data.items.find(item => {
+        const title = item.volumeInfo.title.toLowerCase();
+        return !title.includes('summary') && !title.includes('workbook') && !title.includes('study guide') && item.volumeInfo.imageLinks;
+      });
+
+      if (validBook) {
+        coverImageUrl = validBook.volumeInfo.imageLinks.thumbnail.replace('http://', 'https://').replace('&zoom=1', '&zoom=0');
+      }
     }
   } catch (e) {
-    console.log('Could not fetch Google Books cover.');
+    console.log('Google Books API failed.');
   }
 
-  // 2. The AI Prompt
+  // 2. AI Prompt (Strict instructions for short, punchy text)
   const prompt = `
     You are an expert book blogger and Pinterest strategist. Research the book "${bookToProcess}".
     Return a JSON object with this exact structure:
@@ -65,7 +75,7 @@ async function generate() {
       "blogDescription": "150 character meta description",
       "blogContent": "Write 4-5 paragraphs (Markdown). Intro, summary, who it's for, CTA.",
       "rating": "4.5",
-      "summaryPoints": ["Point 1", "Point 2", "Point 3"],
+      "summaryPoints": ["Short sentence 1", "Short sentence 2", "Short sentence 3"],
       "keywords": ["Keyword 1", "Keyword 2", "Keyword 3"],
       "pinTitle": "Clickable Pinterest title",
       "pinDescription": "Pinterest SEO description",
@@ -75,26 +85,43 @@ async function generate() {
   `;
 
   try {
-    // 3. Generate Content
     const rawText = await generateWithGemini(PRIMARY_MODEL, prompt);
     const data = JSON.parse(rawText);
-    const cleanBookName = bookToProcess.split(' by ')[0];
-    const slug = cleanBookName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     
-    // 4. Create Markdown File & Save Blog Cover
-    const localCoverPath = `/images/blog/${slug}.jpg`;
+    // 3. Generate Beautiful Fallback Cover for Blog (If API fails)
+    let localCoverPath = `/images/blog/${slug}.jpg`;
+    const absoluteBlogImgPath = path.join(process.cwd(), 'public', localCoverPath);
+
     if (coverImageUrl) {
       const imgBuffer = await (await fetch(coverImageUrl)).arrayBuffer();
-      fs.writeFileSync(path.join(process.cwd(), 'public', localCoverPath), Buffer.from(imgBuffer));
+      fs.writeFileSync(absoluteBlogImgPath, Buffer.from(imgBuffer));
+    } else {
+      // Create an aesthetic gradient SVG cover matching Ember & Ink brand
+      const svgCover = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+          <defs>
+            <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#5B1F2A"/>
+              <stop offset="1" stop-color="#2B2118"/>
+            </linearGradient>
+          </defs>
+          <rect width="1200" height="750" fill="url(#grad)"/>
+          <text x="600" y="350" text-anchor="middle" font-family="Georgia, serif" font-size="72" fill="#FBF6EE">${cleanBookName}</text>
+          <text x="600" y="420" text-anchor="middle" font-family="Georgia, serif" font-size="36" fill="#C9A227" font-style="italic">by ${data.author}</text>
+          <line x1="450" y1="480" x2="750" y2="480" stroke="#C9A227" stroke-width="2"/>
+        </svg>`;
+      fs.writeFileSync(absoluteBlogImgPath.replace('.jpg', '.svg'), svgCover);
+      localCoverPath = `/images/blog/${slug}.svg`;
     }
 
+    // 4. Create Markdown File
     const frontmatter = `---
 title: "${data.blogTitle.replace(/"/g, '\\"')}"
 description: "${data.blogDescription.replace(/"/g, '\\"')}"
 pubDate: ${new Date().toISOString().split('T')[0]}
 category: "${data.category}"
 tags: ${JSON.stringify(data.tags)}
-coverImage: "${coverImageUrl ? localCoverPath : ''}"
+coverImage: "${localCoverPath}"
 amazonLink: "https://www.amazon.com/s?k=${encodeURIComponent(cleanBookName)}&tag=shubhstor0de4-21"
 draft: false
 featured: false
@@ -103,75 +130,120 @@ ${data.blogContent}
 `;
     fs.writeFileSync(path.join(process.cwd(), 'src', 'content', 'blog', `${slug}.md`), frontmatter);
 
-    // 5. Create Pinterest Folder & Text
+    // 5. Create Pinterest Text
     const pinDir = path.join(process.cwd(), 'pinterest', `${slug}`);
     if (!fs.existsSync(pinDir)) fs.mkdirSync(pinDir, { recursive: true });
     fs.writeFileSync(path.join(pinDir, 'pin-text.txt'), `TITLE:\n${data.pinTitle}\n\nDESCRIPTION:\n${data.pinDescription}\n\nHASHTAGS:\n${data.pinHashtags}\n\nLINK:\nhttps://ember-and-ink.sm-officialcreates.workers.dev/blog/${slug}/`);
 
-    // 6. Render Pinterest Image using Puppeteer (HTML -> PNG)
+    // 6. Render Pinterest Image via Puppeteer
     console.log('Rendering Pinterest image...');
-    const stars = '★'.repeat(Math.floor(parseFloat(data.rating))) + '☆'.repeat(5 - Math.floor(parseFloat(data.rating)));
     
+    // Convert local cover to base64
+    let bookBase64 = '';
+    if (fs.existsSync(absoluteBlogImgPath)) {
+       const ext = path.extname(absoluteBlogImgPath).replace('.', '');
+       const mime = ext === 'png' ? 'image/png' : (ext === 'svg' ? 'image/svg+xml' : 'image/jpeg');
+       bookBase64 = `data:${mime};base64,${fs.readFileSync(absoluteBlogImgPath).toString('base64')}`;
+    }
+
+    // Generate Hand-drawn Stars SVG
+    const starsSvg = data.summaryPoints.length > 0 ? `
+      <svg width="200" height="50" viewBox="0 0 200 50">
+        <path d="M 20 10 Q 25 20 35 20 Q 25 25 25 35 Q 30 25 40 25 Q 30 20 30 10 Q 25 20 20 10 Z" fill="none" stroke="#111" stroke-width="2"/>
+        <path d="M 60 10 Q 65 20 75 20 Q 65 25 65 35 Q 70 25 80 25 Q 70 20 70 10 Q 65 20 60 10 Z" fill="none" stroke="#111" stroke-width="2"/>
+        <path d="M 100 10 Q 105 20 115 20 Q 105 25 105 35 Q 110 25 120 25 Q 110 20 110 10 Q 105 20 100 10 Z" fill="none" stroke="#111" stroke-width="2"/>
+        <path d="M 140 10 Q 145 20 155 20 Q 145 25 145 35 Q 150 25 160 25 Q 150 20 150 10 Q 145 20 140 10 Z" fill="none" stroke="#111" stroke-width="2"/>
+        <path d="M 180 10 Q 185 20 195 20 Q 185 25 185 35 Q 190 25 200 25 Q 190 20 190 10 Q 185 20 180 10 Z" fill="none" stroke="#111" stroke-width="2"/>
+      </svg>
+    ` : '';
+
     const html = `
       <!DOCTYPE html>
       <html>
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Shadows+Into+Light&display=swap" rel="stylesheet">
         <style>
-          body { margin: 0; padding: 0; width: 1000px; height: 1500px; background-color: #F7F5F0; font-family: 'Caveat', cursive; overflow: hidden; }
-          .container { position: relative; width: 100%; height: 100%; padding: 50px; box-sizing: border-box; }
+          body { 
+            margin: 0; padding: 0; width: 1000px; height: 1500px; 
+            background-color: #F8F6F0; 
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            font-family: 'Shadows Into Light', cursive; 
+            overflow: hidden; position: relative; 
+          }
           
-          .stars { font-size: 60px; color: #1A1A1A; letter-spacing: 5px; position: absolute; top: 60px; left: 60px; }
-          .rating { font-size: 55px; position: absolute; top: 150px; left: 80px; font-weight: bold; }
+          /* Hand-drawn stars */
+          .stars-container { position: absolute; top: 70px; left: 50px; }
+          .rating { font-family: 'Caveat', cursive; font-size: 65px; position: absolute; top: 120px; left: 80px; font-weight: bold; color: #111; transform: rotate(-5deg); }
           
-          .title { font-size: 60px; line-height: 1.1; position: absolute; top: 70px; right: 60px; width: 450px; text-align: left; color: #1A1A1A; }
-          .author { font-size: 36px; position: absolute; top: 210px; right: 60px; color: #333; }
+          /* Title and Author */
+          .title { font-family: 'Caveat', cursive; font-size: 65px; line-height: 1.1; position: absolute; top: 80px; right: 50px; width: 480px; color: #111; }
+          .author { font-family: 'Caveat', cursive; font-size: 40px; position: absolute; top: 220px; right: 50px; color: #333; }
           
-          .points { position: absolute; top: 300px; right: 60px; width: 420px; font-size: 32px; line-height: 1.4; }
-          .points div { margin-bottom: 15px; }
+          /* Bullet points */
+          .points { position: absolute; top: 300px; right: 40px; width: 460px; font-size: 36px; line-height: 1.3; color: #111; }
+          .points div { margin-bottom: 20px; }
           
-          .book-wrapper { position: absolute; top: 550px; left: 200px; width: 400px; height: 600px; box-shadow: 15px 25px 30px rgba(0,0,0,0.25); transform: rotate(-3deg); background: #fff; }
-          .book-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+          /* Book Cover with 3D Shadow */
+          .book-wrapper { 
+            position: absolute; top: 550px; left: 150px; width: 420px; height: 630px; 
+            box-shadow: 15px 25px 40px rgba(0,0,0,0.4); 
+            transform: rotate(-4deg); 
+            background: #fff; 
+            border-radius: 4px 8px 8px 4px; 
+            border-left: 12px solid #e0e0e0; /* Fake spine/pages */
+          }
+          .book-wrapper img, .book-wrapper svg { width: 100%; height: 100%; object-fit: cover; border-radius: 0 4px 4px 0; }
           
-          .keywords { position: absolute; bottom: 250px; right: 60px; width: 350px; font-size: 32px; text-align: right; line-height: 1.8; }
+          /* Keywords */
+          .keywords { position: absolute; bottom: 150px; right: 50px; width: 400px; font-size: 36px; text-align: right; line-height: 1.6; color: #111; }
           
-          .cta-sticker { position: absolute; bottom: 120px; left: 200px; border: 2px solid #1A1A1A; padding: 15px 40px; font-size: 36px; background: #F7F5F0; }
+          /* Hand-drawn Arrows */
+          .arrow-1 { position: absolute; top: 850px; left: 80px; }
+          .arrow-2 { position: absolute; top: 880px; right: 80px; transform: scaleX(-1); }
           
-          .footer { position: absolute; bottom: 40px; width: 100%; text-align: center; font-family: sans-serif; font-size: 16px; letter-spacing: 4px; color: #888; }
+          /* Sticker */
+          .cta-sticker { 
+            position: absolute; bottom: 80px; left: 150px; 
+            border: 3px dashed #111; padding: 15px 40px; 
+            font-size: 40px; background: #fff; transform: rotate(-2deg); 
+            font-family: 'Caveat', cursive; font-weight: bold;
+            box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
+          }
           
-          /* Hand-drawn arrows (SVG background) */
-          .arrow { position: absolute; }
-          .arrow-1 { top: 850px; left: 100px; }
-          .arrow-2 { top: 850px; right: 100px; transform: scaleX(-1); }
+          .footer { position: absolute; bottom: 30px; width: 100%; text-align: center; font-family: sans-serif; font-size: 16px; letter-spacing: 5px; color: #999; }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="stars">${stars}</div>
-          <div class="rating">${data.rating}/5</div>
-          
-          <div class="title">${cleanBookName}</div>
-          <div class="author">by ${data.author}</div>
-          
-          <div class="points">
-            ${data.summaryPoints.map(p => `<div>- ${p}</div>`).join('')}
-          </div>
-
-          <div class="book-wrapper">
-            ${coverImageUrl ? `<img src="${coverImageUrl}" />` : `<div style="display:flex; align-items:center; justify-content:center; height:100%; font-size:40px; text-align:center; padding:20px;">${cleanBookName}</div>`}
-          </div>
-
-          <div class="keywords">
-            ${data.keywords.map(k => `<div>${k}</div>`).join('')}
-          </div>
-
-          <!-- Curved arrows pointing to keywords -->
-          <svg class="arrow arrow-1" width="100" height="100" viewBox="0 0 100 100" fill="none"><path d="M10,80 Q40,80 60,40" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round"/><polygon points="60,40 50,45 65,30" fill="#1A1A1A"/></svg>
-          <svg class="arrow arrow-2" width="100" height="100" viewBox="0 0 100 100" fill="none"><path d="M10,80 Q40,80 60,40" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round"/><polygon points="60,40 50,45 65,30" fill="#1A1A1A"/></svg>
-
-          <div class="cta-sticker">${data.pinBottomCTA}</div>
-          <div class="footer">EMBERANDINK.COM</div>
+        <div class="stars-container">${starsSvg}</div>
+        <div class="rating">${data.rating}/5</div>
+        
+        <div class="title">${cleanBookName}</div>
+        <div class="author">by ${data.author}</div>
+        
+        <div class="points">
+          ${data.summaryPoints.map(p => `<div>- ${p}</div>`).join('')}
         </div>
+
+        <div class="book-wrapper">
+          ${bookBase64 ? `<img src="${bookBase64}" />` : `<div style="padding:20px; text-align:center; font-size:40px; margin-top:200px;">${cleanBookName}</div>`}
+        </div>
+
+        <!-- Hand-drawn Arrows -->
+        <svg class="arrow-1" width="100" height="100" viewBox="0 0 100 100" fill="none">
+          <path d="M10,90 Q40,90 60,40" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+          <polygon points="60,40 50,45 65,30" fill="#111"/>
+        </svg>
+        <svg class="arrow-2" width="100" height="100" viewBox="0 0 100 100" fill="none">
+          <path d="M10,90 Q40,90 60,40" stroke="#111" stroke-width="4" stroke-linecap="round"/>
+          <polygon points="60,40 50,45 65,30" fill="#111"/>
+        </svg>
+
+        <div class="keywords">
+          ${data.keywords.map(k => `<div>${k}</div>`).join('')}
+        </div>
+
+        <div class="cta-sticker">${data.pinBottomCTA}</div>
+        <div class="footer">EMBERANDINK.COM</div>
       </body>
       </html>
     `;
@@ -180,10 +252,11 @@ ${data.blogContent}
     const page = await browser.newPage();
     await page.setViewport({ width: 1000, height: 1500, deviceScaleFactor: 2 });
     await page.setContent(html, { waitUntil: 'networkidle0' });
+    await page.evaluate(() => document.fonts.ready); // Force font load
     await page.screenshot({ path: path.join(pinDir, 'pin-image.png') });
     await browser.close();
 
-    // 7. Cleanup queue
+    // 7. Cleanup
     fs.writeFileSync(BOOKS_FILE, books.slice(1).join('\n'));
     console.log(`Success! Generated beautiful assets for: ${cleanBookName}`);
 
