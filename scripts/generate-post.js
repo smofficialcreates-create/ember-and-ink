@@ -1,45 +1,63 @@
-﻿import { GoogleGenerativeAI } from '@google/generative-ai';
+﻿import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize the new Gemini SDK
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// Primary and fallback models
-const PRIMARY_MODEL = 'gemini-3.8-flash';
-const FALLBACK_MODEL = 'gemini-3.6-flash'; // Stable alternative
+const PRIMARY_MODEL = 'gemini-3.5-flash-lite'; // 500 RPD free tier
+const FALLBACK_MODEL = 'gemini-3.8-flash';     // High-reasoning fallback
+const OPENROUTER_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 
 const BOOKS_FILE = path.join(process.cwd(), 'scripts', 'books.txt');
-
-// A helper function to wait (for retries)
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function generateContentWithRetry(modelName, prompt) {
-  const model = genAI.getGenerativeModel({
-    model: modelName,
-    generationConfig: { responseMimeType: "application/json" }
-  });
-
-  const maxRetries = 3;
+// Helper for Gemini with retries
+async function generateWithGemini(modelName, prompt, maxRetries = 3) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       console.log(`Attempting with ${modelName} (Attempt ${attempt}/${maxRetries})...`);
-      const result = await model.generateContent(prompt);
-      return result; // Success!
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents: prompt,
+        config: { responseMimeType: "application/json" }
+      });
+      return response.text;
     } catch (error) {
-      // Check if it's a 503 or 429 (temporary) error
-      const isRetryable = error.status === 503 || error.status === 429;
-
+      const isRetryable = error.message.includes('503') || error.message.includes('429');
       if (isRetryable && attempt < maxRetries) {
-        const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 2s, 4s
-        console.log(`Temporary error: ${error.message}. Retrying in ${delay / 1000}s...`);
+        const delay = Math.pow(2, attempt) * 2000; // 4s, 8s
+        console.log(`Temporary error. Retrying in ${delay / 1000}s...`);
         await sleep(delay);
       } else {
-        // If it's the last attempt, or a non-retryable error, throw it
         throw error;
       }
     }
   }
+}
+
+// Helper for OpenRouter fallback
+async function generateWithOpenRouter(prompt) {
+  if (!process.env.OPENROUTER_API_KEY) throw new Error("No OpenRouter API key found.");
+  console.log(`Falling back to OpenRouter: ${OPENROUTER_MODEL}...`);
+  
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" }
+    })
+  });
+
+  if (!response.ok) throw new Error(`OpenRouter error: ${response.statusText}`);
+  const data = await response.json();
+  return data.choices[0].message.content;
 }
 
 async function generate() {
@@ -54,14 +72,13 @@ async function generate() {
   let coverImageUrl = null;
   try {
     const searchUrl = `https://openlibrary.org/search.json?q=${encodeURIComponent(bookToProcess)}&limit=1`;
-    const response = await fetch(searchUrl);
-    const data = await response.json();
+    const res = await fetch(searchUrl);
+    const data = await res.json();
     if (data.docs && data.docs[0] && data.docs[0].cover_i) {
       coverImageUrl = `https://covers.openlibrary.org/b/id/${data.docs[0].cover_i}-L.jpg`;
-      console.log(`Found cover image: ${coverImageUrl}`);
     }
   } catch (e) {
-    console.log('Could not fetch real cover, using fallback.');
+    console.log('Could not fetch real cover.');
   }
 
   const prompt = `
@@ -75,11 +92,7 @@ async function generate() {
       "blogDescription": "150 character meta description for Google",
       "blogContent": "Write 4-5 paragraphs (Markdown). Intro, spoiler-free summary, who it's for, call to action.",
       "rating": "4.5",
-      "summaryPoints": [
-        "Short bullet point 1 (max 5 words)",
-        "Short bullet point 2 (max 5 words)",
-        "Short bullet point 3 (max 5 words)"
-      ],
+      "summaryPoints": ["Short bullet 1", "Short bullet 2", "Short bullet 3"],
       "keywords": ["Keyword 1", "Keyword 2", "Keyword 3"],
       "pinTitle": "Clickable Pinterest title",
       "pinDescription": "Pinterest SEO description with keywords and call to action.",
@@ -88,33 +101,26 @@ async function generate() {
     }
   `;
 
-  let result;
+  let rawText = "";
   try {
-    // Try primary model first
-    result = await generateContentWithRetry(PRIMARY_MODEL, prompt);
-  } catch (primaryError) {
-    console.log(`Primary model failed. Falling back to ${FALLBACK_MODEL}...`);
     try {
-      // If primary fails completely, try the fallback model
-      result = await generateContentWithRetry(FALLBACK_MODEL, prompt);
-    } catch (fallbackError) {
-      console.error('All models failed. Please try again later.');
-      console.error(fallbackError);
-      process.exit(1); // Exit with an error code
+      rawText = await generateWithGemini(PRIMARY_MODEL, prompt);
+    } catch (e1) {
+      console.log(`Primary model failed. Trying fallback model ${FALLBACK_MODEL}...`);
+      try {
+        rawText = await generateWithGemini(FALLBACK_MODEL, prompt);
+      } catch (e2) {
+        console.log(`Gemini completely failed. Using OpenRouter fallback...`);
+        rawText = await generateWithOpenRouter(prompt);
+      }
     }
-  }
 
-  try {
-    const data = JSON.parse(result.response.text());
-
+    const data = JSON.parse(rawText);
     const cleanBookName = bookToProcess.split(' by ')[0];
     const slug = cleanBookName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
     const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(cleanBookName)}&tag=shubhstor0de4-21`;
 
-    const coverSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#5B1F2A"/><text x="600" y="375" text-anchor="middle" font-family="Georgia, serif" font-size="72" fill="#FBF6EE">${cleanBookName}</text><text x="600" y="450" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#E8D9A8">by ${data.author}</text></svg>`;
-    fs.writeFileSync(path.join(process.cwd(), 'public', 'images', 'blog', `${slug}.svg`), coverSvg);
-
+    // 1. Create Blog Post
     const frontmatter = `---
 title: "${data.blogTitle.replace(/"/g, '\\"')}"
 description: "${data.blogDescription.replace(/"/g, '\\"')}"
@@ -131,11 +137,11 @@ ${data.blogContent}
 `;
     fs.writeFileSync(path.join(process.cwd(), 'src', 'content', 'blog', `${slug}.md`), frontmatter);
 
+    // 2. Create Pinterest Assets
     const pinDir = path.join(process.cwd(), 'pinterest', `${slug}`);
     if (!fs.existsSync(pinDir)) fs.mkdirSync(pinDir, { recursive: true });
 
-    const pinText = `TITLE:\n${data.pinTitle}\n\nDESCRIPTION:\n${data.pinDescription}\n\nHASHTAGS:\n${data.pinHashtags}\n\nLINK:\nhttps://ember-and-ink.sm-officialcreates.workers.dev/blog/${slug}/`;
-    fs.writeFileSync(path.join(pinDir, 'pin-text.txt'), pinText);
+    fs.writeFileSync(path.join(pinDir, 'pin-text.txt'), `TITLE:\n${data.pinTitle}\n\nDESCRIPTION:\n${data.pinDescription}\n\nHASHTAGS:\n${data.pinHashtags}\n\nLINK:\nhttps://ember-and-ink.sm-officialcreates.workers.dev/blog/${slug}/`);
 
     const stars = [];
     const rating = parseFloat(data.rating) || 5;
@@ -145,10 +151,10 @@ ${data.blogContent}
       stars.push(`<polygon points="${x},100 ${x+15},140 ${x+55},140 ${x+25},165 ${x+35},205 ${x},180 ${x-35},205 ${x-25},165 ${x-55},140 ${x-15},140" fill="${fill}" stroke="#111" stroke-width="4" stroke-linejoin="round"/>`);
     }
 
-    const summaryText = data.summaryPoints.map((p, i) => `<text x="550" y="${350 + (i * 80)}" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="32" fill="#111">- ${p}</text>`).join('');
-    const keywordText = data.keywords.map((k, i) => `<text x="700" y="${900 + (i * 90)}" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="28" fill="#111">${k}</text>`).join('');
+    const summaryText = data.summaryPoints.map((p, i) => `<text x="550" y="${350 + (i * 80)}" font-family="'Comic Sans MS', cursive" font-size="32" fill="#111">- ${p}</text>`).join('');
+    const keywordText = data.keywords.map((k, i) => `<text x="700" y="${900 + (i * 90)}" font-family="'Comic Sans MS', cursive" font-size="28" fill="#111">${k}</text>`).join('');
 
-    const bookImage = coverImageUrl
+    const bookImage = coverImageUrl 
       ? `<image href="${coverImageUrl}" x="250" y="450" width="400" height="600" preserveAspectRatio="xMidYMid slice" />`
       : `<rect x="250" y="450" width="400" height="600" fill="#5B1F2A" /><text x="450" y="750" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#FBF6EE">${cleanBookName}</text>`;
 
@@ -156,39 +162,29 @@ ${data.blogContent}
     <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1500" viewBox="0 0 1000 1500">
       <rect width="1000" height="1500" fill="#F3EBE1"/>
       ${stars.join('')}
-      <text x="180" y="280" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="48" fill="#111">${rating}/5</text>
-      <text x="550" y="120" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="42" fill="#111">${cleanBookName}</text>
-      <text x="550" y="170" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="32" fill="#111">by ${data.author}</text>
+      <text x="180" y="280" font-family="'Comic Sans MS', cursive" font-size="48" fill="#111">${rating}/5</text>
+      <text x="550" y="120" font-family="'Comic Sans MS', cursive" font-size="42" fill="#111">${cleanBookName}</text>
+      <text x="550" y="170" font-family="'Comic Sans MS', cursive" font-size="32" fill="#111">by ${data.author}</text>
       ${summaryText}
-      <filter id="shadow">
-        <feDropShadow dx="10" dy="15" stdDeviation="10" flood-opacity="0.3"/>
-      </filter>
-      <g filter="url(#shadow)" transform="rotate(-3 450 750)">
-        ${bookImage}
-      </g>
+      <filter id="shadow"><feDropShadow dx="10" dy="15" stdDeviation="10" flood-opacity="0.3"/></filter>
+      <g filter="url(#shadow)" transform="rotate(-3 450 750)">${bookImage}</g>
       <path d="M 200 850 Q 250 850 280 800" stroke="#111" stroke-width="4" fill="none" marker-end="url(#arrowhead)"/>
       <path d="M 750 820 Q 700 820 680 780" stroke="#111" stroke-width="4" fill="none" marker-end="url(#arrowhead)"/>
-      <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-          <polygon points="0 0, 10 3.5, 0 7" fill="#111" />
-        </marker>
-      </defs>
+      <defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#111" /></marker></defs>
       ${keywordText}
       <g transform="translate(250, 1300)">
         <rect width="500" height="80" fill="#F3EBE1" stroke="#111" stroke-width="2" rx="5"/>
-        <text x="250" y="50" text-anchor="middle" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="32" fill="#111">${data.pinBottomCTA}</text>
+        <text x="250" y="50" text-anchor="middle" font-family="'Comic Sans MS', cursive" font-size="32" fill="#111">${data.pinBottomCTA}</text>
       </g>
       <text x="500" y="1450" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" fill="#666" letter-spacing="2">EMBERANDINK.COM</text>
     </svg>`;
-
     await sharp(Buffer.from(pinSvg)).png().toFile(path.join(pinDir, 'pin-image.png'));
 
     fs.writeFileSync(BOOKS_FILE, books.slice(1).join('\n'));
-    console.log(`Success! Generated blog and Pinterest assets for: ${cleanBookName}`);
+    console.log(`Success! Generated assets for: ${cleanBookName}`);
   } catch (error) {
-    console.error('Failed to process the generated data:', error);
+    console.error('Failed to process book:', error);
     process.exit(1);
   }
 }
-
 generate();

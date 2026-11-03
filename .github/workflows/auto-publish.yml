@@ -17,6 +17,7 @@ jobs:
       - run: node scripts/generate-post.js
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       
       - name: Commit and Push
         run: |
