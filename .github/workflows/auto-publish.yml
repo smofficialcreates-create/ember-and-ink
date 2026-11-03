@@ -1,0 +1,27 @@
+﻿name: Auto-Publish Book Reviews
+
+on:
+  schedule:
+    - cron: '30 12 * * *' 
+  workflow_dispatch: 
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: node scripts/generate-post.js
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add .
+          git commit -m "Auto-published review and Pinterest assets" || exit 0
+          git push
