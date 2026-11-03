@@ -3,15 +3,44 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
-// NOTE: The @google/generative-ai SDK is deprecated, but we are using it with the latest model.
-// The newer @google/genai SDK is recommended for long-term projects.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ 
-  model: 'gemini-3.8-flash', // <--- UPDATED MODEL HERE
-  generationConfig: { responseMimeType: "application/json" }
-});
+
+// Primary and fallback models
+const PRIMARY_MODEL = 'gemini-3.8-flash';
+const FALLBACK_MODEL = 'gemini-3.6-flash'; // Stable alternative
 
 const BOOKS_FILE = path.join(process.cwd(), 'scripts', 'books.txt');
+
+// A helper function to wait (for retries)
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function generateContentWithRetry(modelName, prompt) {
+  const model = genAI.getGenerativeModel({
+    model: modelName,
+    generationConfig: { responseMimeType: "application/json" }
+  });
+
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Attempting with ${modelName} (Attempt ${attempt}/${maxRetries})...`);
+      const result = await model.generateContent(prompt);
+      return result; // Success!
+    } catch (error) {
+      // Check if it's a 503 or 429 (temporary) error
+      const isRetryable = error.status === 503 || error.status === 429;
+
+      if (isRetryable && attempt < maxRetries) {
+        const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 2s, 4s
+        console.log(`Temporary error: ${error.message}. Retrying in ${delay / 1000}s...`);
+        await sleep(delay);
+      } else {
+        // If it's the last attempt, or a non-retryable error, throw it
+        throw error;
+      }
+    }
+  }
+}
 
 async function generate() {
   if (!fs.existsSync(BOOKS_FILE)) return console.log('No books.txt found.');
@@ -59,15 +88,30 @@ async function generate() {
     }
   `;
 
+  let result;
   try {
-    const result = await model.generateContent(prompt);
+    // Try primary model first
+    result = await generateContentWithRetry(PRIMARY_MODEL, prompt);
+  } catch (primaryError) {
+    console.log(`Primary model failed. Falling back to ${FALLBACK_MODEL}...`);
+    try {
+      // If primary fails completely, try the fallback model
+      result = await generateContentWithRetry(FALLBACK_MODEL, prompt);
+    } catch (fallbackError) {
+      console.error('All models failed. Please try again later.');
+      console.error(fallbackError);
+      process.exit(1); // Exit with an error code
+    }
+  }
+
+  try {
     const data = JSON.parse(result.response.text());
 
     const cleanBookName = bookToProcess.split(' by ')[0];
     const slug = cleanBookName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    
+
     const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(cleanBookName)}&tag=shubhstor0de4-21`;
-    
+
     const coverSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#5B1F2A"/><text x="600" y="375" text-anchor="middle" font-family="Georgia, serif" font-size="72" fill="#FBF6EE">${cleanBookName}</text><text x="600" y="450" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#E8D9A8">by ${data.author}</text></svg>`;
     fs.writeFileSync(path.join(process.cwd(), 'public', 'images', 'blog', `${slug}.svg`), coverSvg);
 
@@ -104,7 +148,7 @@ ${data.blogContent}
     const summaryText = data.summaryPoints.map((p, i) => `<text x="550" y="${350 + (i * 80)}" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="32" fill="#111">- ${p}</text>`).join('');
     const keywordText = data.keywords.map((k, i) => `<text x="700" y="${900 + (i * 90)}" font-family="'Comic Sans MS', 'Chalkboard SE', cursive" font-size="28" fill="#111">${k}</text>`).join('');
 
-    const bookImage = coverImageUrl 
+    const bookImage = coverImageUrl
       ? `<image href="${coverImageUrl}" x="250" y="450" width="400" height="600" preserveAspectRatio="xMidYMid slice" />`
       : `<rect x="250" y="450" width="400" height="600" fill="#5B1F2A" /><text x="450" y="750" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#FBF6EE">${cleanBookName}</text>`;
 
@@ -142,8 +186,8 @@ ${data.blogContent}
     fs.writeFileSync(BOOKS_FILE, books.slice(1).join('\n'));
     console.log(`Success! Generated blog and Pinterest assets for: ${cleanBookName}`);
   } catch (error) {
-    console.error('Failed:', error);
-    process.exit(1); 
+    console.error('Failed to process the generated data:', error);
+    process.exit(1);
   }
 }
 
