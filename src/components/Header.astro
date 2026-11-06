@@ -20,11 +20,12 @@ const isActive = (href: string) =>
       class="flex items-center gap-2 font-display text-xl md:text-2xl font-semibold text-burgundy hover:text-burgundy-dark transition-colors shrink-0"
     >
       <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-burgundy text-gold">
-        <svg viewBox="0 0 64 64" class="h-5 w-5" aria-hidden="true">
-          <path
-            d="M32 12c5 9 12 13 12 22a12 12 0 0 1-24 0c0-6 3-10 6-14 1 4 3 6 6 8-1-6 0-11 0-16Z"
-            fill="currentColor"></path>
-        </svg>
+       <svg viewBox="0 0 64 64" class="h-5 w-5" aria-hidden="true">
+  <!-- Outer Diamond (The Book) -->
+  <path d="M32 6 L56 32 L32 58 L8 32 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Inner Flame (The Ember) -->
+  <path d="M32 20 c4 6 8 8 8 14 a8 8 0 0 1 -16 0 c0 -4 2 -6 4 -8 c1 2 2 4 4 6 c-1 -5 0 -8 0 -12 Z" fill="currentColor"/>
+</svg> 
       </span>
       <span>Ember <span class="text-gold">&amp;</span> Ink</span>
     </a>
