@@ -27,7 +27,6 @@ const updatedIso = post.data.updatedDate?.toISOString();
 const readTime = readingTime(post.body);
 const pageUrl = `${SITE.url}/blog/${post.id}/`;
 
-// Extract headings for Table of Contents
 const headings = (post.body || '').match(/^##\s+(.+)$/gm) || [];
 const toc = headings.map(h => {
   const text = h.replace(/^##\s+/, '');
@@ -75,36 +74,45 @@ const articleSchema = {
       <div class="grid md:grid-cols-[minmax(0,1fr)_18rem] gap-12">
         <div class="prose-ember">
           
-          {/* BUTTONS */}
           <div class="not-prose mb-8">
             <AffiliateDisclosure />
+            
+            {/* BUTTONS */}
             <div class="mt-4 flex flex-wrap gap-3">
               {amazonUrl && (
-                <a href={amazonUrl} class="inline-flex items-center gap-2 rounded-pill bg-burgundy text-paper px-6 py-3 font-medium shadow-soft hover:bg-burgundy-dark transition-colors" rel="sponsored nofollow noopener noreferrer" target="_blank">
+                <a href={amazonUrl} class="inline-flex items-center gap-2 rounded-pill bg-burgundy !text-[#FBF6EE] !no-underline px-6 py-3 font-medium shadow-soft hover:bg-burgundy-dark transition-colors" rel="sponsored nofollow noopener noreferrer" target="_blank">
                   Check Price on Amazon →
                 </a>
               )}
-              <a href={goodreadsUrl} class="inline-flex items-center gap-2 rounded-pill bg-gold-soft text-burgundy px-6 py-3 font-medium hover:bg-gold/40 transition-colors" rel="noopener noreferrer" target="_blank">
+              <a href={goodreadsUrl} class="inline-flex items-center gap-2 rounded-pill bg-gold-soft !text-[#5B1F2A] !no-underline px-6 py-3 font-medium hover:bg-gold/40 transition-colors" rel="noopener noreferrer" target="_blank">
                 View on Goodreads →
               </a>
+            </div>
+
+            {/* TOP SOCIAL SHARING */}
+            <div class="mt-6 flex flex-wrap items-center gap-4 text-sm">
+              <span class="font-medium text-muted uppercase tracking-wider text-xs">Share:</span>
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">X (Twitter)</a>
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">Facebook</a>
+              <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(post.data.title)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">Pinterest</a>
+              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.data.title + ' ' + pageUrl)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">WhatsApp</a>
             </div>
           </div>
 
           <Content />
 
-          {/* SOCIAL SHARING */}
+          {/* BOTTOM SOCIAL SHARING */}
           <div class="not-prose mt-12 pt-8 border-t border-line">
             <h3 class="font-display text-lg text-burgundy mb-4">Share this review</h3>
             <div class="flex flex-wrap gap-2">
-              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm hover:border-gold transition-colors">X (Twitter)</a>
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm hover:border-gold transition-colors">Facebook</a>
-              <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(post.data.title)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm hover:border-gold transition-colors">Pinterest</a>
-              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.data.title + ' ' + pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm hover:border-gold transition-colors">WhatsApp</a>
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">X (Twitter)</a>
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">Facebook</a>
+              <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(post.data.title)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">Pinterest</a>
+              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.data.title + ' ' + pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">WhatsApp</a>
             </div>
           </div>
         </div>
 
-        {/* SIDEBAR */}
         <aside class="space-y-6 md:sticky md:top-24 self-start">
           {toc.length > 0 && (
             <section class="rounded-card bg-paper border border-line p-5 shadow-soft">
