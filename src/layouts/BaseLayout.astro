@@ -1,12 +1,4 @@
----
-/**
- * BaseLayout — the root layout every page extends.
- *
- * Owns:
- *  - HTML shell, global CSS, fonts
- *  - SEO / Open Graph / Twitter meta tags (via <Seo />)
- *  - Sticky header, footer, cookie banner, analytics
- */
+﻿---
 import '@styles/global.css';
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
@@ -16,63 +8,45 @@ import Analytics from '@components/Analytics.astro';
 import { PUBLIC_GA_MEASUREMENT_ID } from 'astro:env/client';
 
 interface Props {
-  /** Page-specific title — the site name is appended automatically. */
   title: string;
-  /** Meta description. Required for every page. */
   description: string;
-  /** Absolute URL of this page. */
   url: string;
-  /** Optional share image path (defaults to /og-default.png). */
   image?: string;
-  /** Open Graph content type. */
   type?: 'website' | 'article';
-  /** ISO timestamp — article pages only. */
   publishedTime?: string;
-  /** ISO timestamp — article pages only. */
   modifiedTime?: string;
-  /** Adds <meta name="robots" content="noindex, nofollow">. */
   noindex?: boolean;
 }
 
 const { noindex = false, ...seo } = Astro.props;
 const gaId = PUBLIC_GA_MEASUREMENT_ID ?? '';
+const isHomepage = Astro.url.pathname === '/';
 ---
 
 <!doctype html>
-<html lang="en"> 
+<html lang="en">
   <head>
-    <meta charset="UTF-8" />                                                             <meta name="p:domain_verify" content="c7a547fba10a687c0b69ad26a23899a1"/>                                                <meta name="msvalidate.01" content="C7076EA581329110343C389E523150FD" />                                                                                                                                                                                                                                                                                                                                                                       <meta name="google-site-verification" content="4kbzM5lqNOfenqqNLdpSG1veB_MkW_oVBzX4RYclHc4" />                                                                                                             
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#5B1F2A" />
-
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="Ember &amp; Ink"
-      href="/rss.xml"
-    />
-
+    <link rel="alternate" type="application/rss+xml" title="Ember &amp; Ink" href="/rss.xml" />
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-
-    {/* Consent Mode v2 reads this meta tag before loading GA4. */}
     {gaId && <meta name="ga-measurement-id" content={gaId} />}
-
     <Seo {...seo} />
   </head>
   <body class="min-h-screen flex flex-col bg-cream text-ink">
     <a class="skip-link" href="#main-content">Skip to content</a>
 
-    <Header />
+    {!isHomepage && <Header />}
 
     <main id="main-content" class="flex-1">
       <slot />
     </main>
 
     <Footer />
-
     <CookieConsent />
     <Analytics />
   </body>

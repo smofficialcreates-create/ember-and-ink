@@ -1,44 +1,74 @@
 ﻿---
-// Ember & Ink — Cinematic 2.5D Anime Hero
+// Ember & Ink — Exact Cinematic 3D Anime Hero
 ---
 
-<section id="hero" class="relative w-full h-screen overflow-hidden bg-[#1a1c23]">
+<section id="hero" class="relative w-full h-screen overflow-hidden bg-[#0a0b10]">
   
-  <!-- 1. Cinematic Background with Parallax -->
-  <div id="bg-parallax" class="absolute inset-0 z-0 w-[110%] h-[110%] -left-[5%] -top-[5%] will-change-transform">
-    <!-- High-res Anime Landscape -->
+  <!-- 1. The Background Image with 3D Parallax -->
+  <div id="bg-layer" class="absolute inset-0 z-0 w-[105%] h-[105%] -left-[2.5%] -top-[2.5%] will-change-transform">
     <img 
-      src="https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=2500&auto=format&fit=crop" 
-      alt="Cinematic Japanese Countryside"
+      src="/hero-bg.jpg" 
+      alt="Japanese Countryside"
       class="w-full h-full object-cover"
     />
-    
-    <!-- Soft Cinematic Overlay (Just enough to read the text) -->
-    <div class="absolute inset-0 bg-gradient-to-r from-[#0a0b10]/90 via-[#0a0b10]/40 to-transparent"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-[#fbf6ee] via-transparent to-transparent opacity-30"></div>
+    <!-- Cinematic Overlay for left-side text readability (matches reference) -->
+    <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-black/10 to-transparent"></div>
   </div>
 
-  <!-- 2. Falling Petals Canvas -->
-  <canvas id="petal-canvas" class="absolute inset-0 z-10 pointer-events-none"></canvas>
+  <!-- 2. Three.js Canvas for 3D Petals, Sunbeams, and Fireflies -->
+  <canvas id="webgl-hero" class="absolute inset-0 z-10 pointer-events-none"></canvas>
 
-  <!-- 3. Text & Content Overlay -->
-  <div class="relative z-20 container-ember h-full flex flex-col justify-center pt-20">
-    <div class="max-w-2xl text-[#FBF6EE] drop-shadow-2xl">
-      <p class="text-sm uppercase tracking-[0.3em] text-[#E8D9A8] font-semibold mb-6 opacity-0 translate-y-8" id="hero-subtitle">
-        An immersive literary experience
-      </p>
-      <h1 class="font-display text-6xl md:text-8xl leading-[1.05] opacity-0 translate-y-8" id="hero-title">
+  <!-- 3. Exact Custom Header Overlay -->
+  <header class="absolute top-0 w-full z-30 px-6 md:px-12 py-6 flex justify-between items-center text-white/90">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 hover:text-white transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+      </svg>
+      <span class="font-display text-xl tracking-wide font-medium">Ember &amp; Ink</span>
+    </a>
+    
+    <!-- Navigation -->
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+      <a href="/categories/self-help/" class="hover:text-[#ffb7c5] transition-colors">Self-Help</a>
+      <a href="/categories/fantasy-romance/" class="hover:text-[#ffb7c5] transition-colors">Fantasy Romance</a>
+      <a href="/reviews/" class="hover:text-[#ffb7c5] transition-colors">Reviews</a>
+      <a href="/blog/" class="hover:text-[#ffb7c5] transition-colors">Blog</a>
+      <a href="/faq/" class="hover:text-[#ffb7c5] transition-colors">FAQ</a>
+      <a href="/about/" class="hover:text-[#ffb7c5] transition-colors">About</a>
+      
+      <!-- Search & Theme Icons -->
+      <div class="flex items-center gap-4 ml-4 pl-4 border-l border-white/20">
+        <button aria-label="Search" class="hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button aria-label="Dark Mode" class="hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- 4. Exact Text & Buttons Layout -->
+  <div class="relative z-20 container-ember h-full flex flex-col justify-center">
+    <div class="max-w-2xl text-white drop-shadow-xl pl-2 md:pl-8">
+      
+      <h1 class="font-display text-6xl md:text-8xl leading-[1.1] opacity-0 translate-y-8" id="hero-title">
         Where stories <br/>
-        <span class="italic text-[#ffb7c5] drop-shadow-[0_0_15px_rgba(255,183,197,0.5)]">bloom.</span>
+        <span class="italic text-[#ffb7c5]">bloom</span>
       </h1>
-      <p class="mt-6 text-lg text-[#FBF6EE]/90 font-medium max-w-lg opacity-0 translate-y-8" id="hero-desc">
-        Step into our Japanese countryside library. Honest reviews for self-help and fantasy romance readers.
+      
+      <p class="mt-6 text-lg md:text-xl text-white/95 font-medium max-w-lg opacity-0 translate-y-8 leading-relaxed" id="hero-desc">
+        Step into our Japanese countryside library.<br/>
+        Honest reviews for self-help and fantasy romance readers.
       </p>
-      <div class="mt-10 flex gap-4 opacity-0 translate-y-8" id="hero-buttons">
-        <a href="/blog/" class="rounded-full bg-[#FBF6EE] text-[#2b1b12] px-8 py-4 font-semibold shadow-[0_10px_20px_rgba(0,0,0,0.5)] hover:bg-white hover:-translate-y-1 transition-all duration-300">
+      
+      <div class="mt-10 flex flex-wrap gap-4 opacity-0 translate-y-8" id="hero-buttons">
+        <a href="/blog/" class="group flex items-center gap-2 rounded-full bg-[#fbf6ee] text-[#2b1b12] px-8 py-3.5 font-semibold shadow-lg hover:bg-white hover:scale-105 transition-all duration-300">
           Explore the Library
+          <span class="group-hover:translate-x-1 transition-transform">→</span>
         </a>
-        <a href="/categories/" class="rounded-full bg-[#5B1F2A]/60 backdrop-blur-md border border-[#C9A227]/50 text-[#FBF6EE] px-8 py-4 font-semibold hover:bg-[#5B1F2A] hover:-translate-y-1 transition-all duration-300">
+        <a href="/categories/" class="rounded-full bg-transparent border border-white/60 text-white px-8 py-3.5 font-semibold hover:bg-white/10 hover:border-white hover:scale-105 transition-all duration-300">
           Discover Books
         </a>
       </div>
@@ -48,83 +78,152 @@
 
 <script>
   import gsap from 'gsap';
+  import * as THREE from 'three';
 
   document.addEventListener('DOMContentLoaded', () => {
-    // 1. Cinematic Entrance Animation
+    // 1. Text Entrance Animation
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-    
-    tl.to('#hero-subtitle', { opacity: 1, y: 0, duration: 1.2, delay: 0.5 })
-      .to('#hero-title', { opacity: 1, y: 0, duration: 1.2 }, '-=0.9')
-      .to('#hero-desc', { opacity: 1, y: 0, duration: 1.2 }, '-=0.9')
-      .to('#hero-buttons', { opacity: 1, y: 0, duration: 1.2 }, '-=0.9');
+    tl.to('#hero-title', { opacity: 1, y: 0, duration: 1.5, delay: 0.3 })
+      .to('#hero-desc', { opacity: 1, y: 0, duration: 1.5 }, '-=1.1')
+      .to('#hero-buttons', { opacity: 1, y: 0, duration: 1.5 }, '-=1.1');
 
-    // 2. Background Parallax (Mouse Movement)
-    const bg = document.getElementById('bg-parallax');
+    // 2. 3D Mouse Parallax for Background
+    const bg = document.getElementById('bg-layer');
+    const title = document.getElementById('hero-title');
+    
     document.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
       
-      gsap.to(bg, {
-        x: x * -30,
-        y: y * -30,
-        duration: 1.5,
-        ease: 'power2.out',
-        overwrite: 'auto'
-      });
+      gsap.to(bg, { x: x * -25, y: y * -15, duration: 1.5, ease: 'power2.out', overwrite: 'auto' });
+      gsap.to(title, { x: x * 10, y: y * 5, duration: 1.5, ease: 'power2.out', overwrite: 'auto' });
     });
 
-    // 3. Canvas Petal System
-    const petalCanvas = document.getElementById('petal-canvas');
-    const petalCtx = petalCanvas.getContext('2d');
-    let width, height;
+    // 3. Three.js Environment (Sunbeams, Petals, Fireflies)
+    const canvas = document.getElementById('webgl-hero');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 10;
+    
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    function resize() {
-      width = petalCanvas.width = window.innerWidth;
-      height = petalCanvas.height = window.innerHeight;
+    // --- Sunbeams (Volumetric Light Effect) ---
+    const sunGeo = new THREE.PlaneGeometry(20, 100);
+    const sunMat = new THREE.MeshBasicMaterial({ 
+      color: 0xffedd5, 
+      transparent: true, 
+      opacity: 0.15, 
+      blending: THREE.AdditiveBlending, 
+      depthWrite: false 
+    });
+    const sunbeam = new THREE.Mesh(sunGeo, sunMat);
+    sunbeam.rotation.z = -0.4;
+    sunbeam.position.set(-15, 20, -10);
+    scene.add(sunbeam);
+
+    // --- 3D Cherry Blossoms ---
+    // Create a canvas texture for the petal
+    const petalCanvas = document.createElement('canvas');
+    petalCanvas.width = 64; petalCanvas.height = 64;
+    const pCtx = petalCanvas.getContext('2d');
+    pCtx.beginPath();
+    pCtx.ellipse(32, 32, 20, 12, 0, 0, Math.PI * 2);
+    pCtx.fillStyle = '#ffb7c5';
+    pCtx.fill();
+    const petalTexture = new THREE.CanvasTexture(petalCanvas);
+
+    const petalGeo = new THREE.BufferGeometry();
+    const petalCount = 150;
+    const posArray = new Float32Array(petalCount * 3);
+    const speedArray = new Float32Array(petalCount);
+    const offsetArray = new Float32Array(petalCount);
+
+    for (let i = 0; i < petalCount; i++) {
+      posArray[i * 3] = (Math.random() - 0.5) * 40; // X
+      posArray[i * 3 + 1] = Math.random() * 30 - 10; // Y
+      posArray[i * 3 + 2] = (Math.random() - 0.5) * 20; // Z
+      speedArray[i] = Math.random() * 0.02 + 0.01;
+      offsetArray[i] = Math.random() * Math.PI * 2;
     }
-    window.addEventListener('resize', resize);
-    resize();
 
-    const petals = [];
-    for (let i = 0; i < 60; i++) {
-      petals.push({
-        x: Math.random() * width,
-        y: Math.random() * -height,
-        size: Math.random() * 8 + 4,
-        speedY: Math.random() * 1.5 + 0.5,
-        speedX: Math.random() * 1 - 0.5,
-        rotation: Math.random() * 360,
-        rotSpeed: Math.random() * 2 - 1,
-        opacity: Math.random() * 0.6 + 0.2,
-        swing: Math.random() * 2,
-        swingSpeed: Math.random() * 0.02
-      });
+    petalGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    
+    const petalMat = new THREE.PointsMaterial({
+      size: 0.6,
+      map: petalTexture,
+      transparent: true,
+      opacity: 0.9,
+      blending: THREE.NormalBlending,
+      depthWrite: false
+    });
+
+    const particles = new THREE.Points(petalGeo, petalMat);
+    scene.add(particles);
+
+    // --- Fireflies around the lantern ---
+    const fireflyGeo = new THREE.BufferGeometry();
+    const fireflyCount = 30;
+    const fPosArray = new Float32Array(fireflyCount * 3);
+    for (let i = 0; i < fireflyCount; i++) {
+      fPosArray[i * 3] = 2 + (Math.random() - 0.5) * 4; // X (near bottom left)
+      fPosArray[i * 3 + 1] = -4 + (Math.random() - 0.5) * 4; // Y
+      fPosArray[i * 3 + 2] = 2 + (Math.random() - 0.5) * 2; // Z
     }
+    fireflyGeo.setAttribute('position', new THREE.BufferAttribute(fPosArray, 3));
+    
+    const fireflyMat = new THREE.PointsMaterial({
+      size: 0.15,
+      color: 0xfbd38d,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+    const fireflies = new THREE.Points(fireflyGeo, fireflyMat);
+    scene.add(fireflies);
 
-    function drawPetals() {
-      petalCtx.clearRect(0, 0, width, height);
-      petals.forEach(p => {
-        p.y += p.speedY;
-        p.swing += p.swingSpeed;
-        p.x += p.speedX + Math.sin(p.swing) * 1;
-        p.rotation += p.rotSpeed;
+    // --- Animation Loop ---
+    const clock = new THREE.Clock();
+    const posAttribute = petalGeo.attributes.position;
 
-        if (p.y > height + 20) {
-          p.y = -20;
-          p.x = Math.random() * width;
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // Animate Petals
+      for (let i = 0; i < petalCount; i++) {
+        let x = posAttribute.getX(i);
+        let y = posAttribute.getY(i);
+        
+        y -= speedArray[i]; // Fall down
+        x += Math.sin(time + offsetArray[i]) * 0.01; // Swaying
+
+        if (y < -15) {
+          y = 20; // Reset to top
+          x = (Math.random() - 0.5) * 40;
         }
 
-        petalCtx.save();
-        petalCtx.translate(p.x, p.y);
-        petalCtx.rotate(p.rotation * Math.PI / 180);
-        petalCtx.beginPath();
-        petalCtx.ellipse(0, 0, p.size, p.size / 2, 0, 0, Math.PI * 2);
-        petalCtx.fillStyle = `rgba(255, 183, 197, ${p.difficulty || p.opacity})`;
-        petalCtx.fill();
-        petalCtx.restore();
-      });
-      requestAnimationFrame(drawPetals);
+        posAttribute.setX(i, x);
+        posAttribute.setY(i, y);
+      }
+      posAttribute.needsUpdate = true;
+
+      // Animate Fireflies (Pulsing glow and bobbing)
+      fireflies.position.y = Math.sin(time * 2) * 0.2;
+      fireflyMat.opacity = 0.5 + Math.sin(time * 3) * 0.3;
+      
+      // Animate Sunbeam
+      sunMat.opacity = 0.1 + Math.sin(time * 0.5) * 0.05;
+
+      renderer.render(scene, camera);
     }
-    drawPetals();
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   });
 </script>
