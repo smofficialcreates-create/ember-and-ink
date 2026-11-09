@@ -1,21 +1,113 @@
-﻿@layer base {
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-  body { background-color: var(--cream); color: var(--ink); font-family: var(--font-body-stack); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-  h1, h2, h3, h4, h5, h6 { font-family: var(--font-display-stack); font-weight: 600; letter-spacing: -0.02em; color: var(--burgundy); }
-  a { color: inherit; text-decoration-thickness: 0.08em; text-underline-offset: 0.16em; }
-  :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
-  ::selection { background: color-mix(in srgb, var(--gold) 35%, transparent); color: var(--ink); }
-  img, picture, svg { display: block; max-width: 100%; }
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces/index.css';
+@import '@fontsource-variable/inter/index.css';
+@import './tokens.css';
+@import './prose.css';
+
+/*
+ * Expose design tokens as Tailwind utilities (bg-cream, text-burgundy,
+ * font-display, shadow-soft, …). `inline` makes the utilities resolve
+ * to the token value directly, keeping CSS output small.
+ */
+@theme inline {
+  --color-cream: var(--cream);
+  --color-paper: var(--paper);
+  --color-burgundy: var(--burgundy);
+  --color-burgundy-dark: var(--burgundy-dark);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+
+  --font-display: var(--font-display-stack);
+  --font-body: var(--font-body-stack);
+
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 10px 30px -12px rgb(43 33 24 / 0.18);
+  --shadow-lift: 0 20px 50px -20px rgb(43 33 24 / 0.28);
+}
+
+/* Base element styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-body-stack);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display-stack);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--burgundy);
+  }
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.16em;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--gold) 35%, transparent);
+    color: var(--ink);
+  }
+
+  img, picture, svg {
+    display: block;
+    max-width: 100%;
+  }
+
   [hidden] { display: none !important; }
 }
 
+/* Reusable project primitives */
 @layer components {
-  .container-ember { width: 100%; max-width: 72rem; margin-inline: auto; padding-inline: 1.25rem; }
-  .skip-link { position: absolute; top: -100%; left: 1rem; z-index: 100; padding: 0.75rem 1rem; background: var(--burgundy); color: var(--paper); border-radius: 0 0 0.75rem 0.75rem; }
+  .container-ember {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--burgundy);
+    color: var(--paper);
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
   .skip-link:focus { top: 0; }
 }
 
+/* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
