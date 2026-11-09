@@ -1,18 +1,9 @@
----
-/**
- * PostCard — soft card preview used on the home page, blog index,
- * category/tag pages, and related-posts sections.
- *
- * Uses a plain <img> because `coverImage` is a string path in
- * frontmatter; if the path is missing, a branded gradient fallback
- * is shown instead.
- */
+﻿---
 import type { BlogPost } from '@lib/posts';
 import { formatDate } from '@lib/format';
 
 interface Props {
   post: BlogPost;
-  /** Load the image eagerly (use for the first 1–3 above-the-fold cards). */
   eager?: boolean;
 }
 
@@ -22,13 +13,13 @@ const href = `/blog/${post.id}/`;
 const pubIso = post.data.pubDate.toISOString();
 ---
 
-<article class="group relative flex flex-col rounded-card bg-paper border border-line shadow-soft overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-lift">
+<article class="group relative flex flex-col rounded-2xl bg-paper border border-line shadow-sm overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:border-gold/50">
   {cover ? (
     <div class="aspect-[16/10] overflow-hidden bg-cream">
       <img
         src={cover}
         alt={post.data.coverAlt ?? `Cover for ${post.data.title}`}
-        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
         width="800"
@@ -37,29 +28,30 @@ const pubIso = post.data.pubDate.toISOString();
     </div>
   ) : (
     <div class="aspect-[16/10] bg-gradient-to-br from-burgundy to-ink flex items-center justify-center">
-      <span class="font-display text-3xl text-gold/80 select-none">
-        Ember &amp; Ink
-      </span>
+      <span class="font-display text-3xl text-gold/80 select-none">Ember &amp; Ink</span>
     </div>
   )}
 
-  <div class="p-5 flex flex-col flex-1">
-    <div class="flex items-center gap-3 text-xs text-muted mb-2">
-      <span class="rounded-pill bg-gold-soft/60 text-burgundy px-2.5 py-0.5 font-medium">
+  <div class="p-6 flex flex-col flex-1 relative">
+    <div class="flex items-center gap-3 text-xs text-muted mb-3 uppercase tracking-wider font-medium">
+      <span class="rounded-full bg-gold-soft/40 text-burgundy px-3 py-1">
         {post.data.category}
       </span>
       <time datetime={pubIso}>{formatDate(post.data.pubDate)}</time>
     </div>
 
-    <h3 class="font-display text-lg md:text-xl leading-snug text-burgundy group-hover:text-burgundy-dark">
-      {/* The `after:` pseudo-element makes the whole card clickable without nesting interactive elements. */}
+    <h3 class="font-display text-xl md:text-2xl leading-snug text-burgundy group-hover:text-burgundy-dark transition-colors">
       <a href={href} class="focus:outline-none after:absolute after:inset-0 after:content-['']">
         {post.data.title}
       </a>
     </h3>
 
-    <p class="mt-2 text-sm text-muted line-clamp-3 flex-1">
+    <p class="mt-3 text-sm text-muted/80 line-clamp-3 flex-1 leading-relaxed">
       {post.data.description}
     </p>
+    
+    <div class="mt-4 pt-4 border-t border-line/50 flex items-center text-xs font-semibold text-burgundy uppercase tracking-widest">
+      Read Review <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+    </div>
   </div>
 </article>
