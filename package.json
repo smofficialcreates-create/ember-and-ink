@@ -40,6 +40,7 @@
     "esbuild@0.27.7": true,
     "sharp@0.34.5": true,
     "@google/genai@2.32.0": true,
-    "protobufjs@7.6.6": true
+    "protobufjs@7.6.6": true,
+    "puppeteer@25.16.0": true
   }
 }
