@@ -1,230 +1,335 @@
 ﻿---
-// Ember & Ink — Immersive Anime Dreamscape Hero
+// Ember & Ink — Cinematic Japanese Dreamscape Hero
 ---
 
-<section id="hero" class="relative w-full h-screen overflow-hidden bg-[#E5F0F5]">
-  <!-- 1. Parallax Background Layers -->
-  <div class="absolute inset-0 z-0 pointer-events-none" id="parallax-container">
-    <!-- Sky/Gradient -->
-    <div class="absolute inset-0 bg-gradient-to-b from-[#B8D8E6] to-[#FDF5E6]"></div>
+<section id="hero" class="relative w-full h-screen overflow-hidden bg-[#1a1c23]">
+  <!-- 1. Cinematic Parallax Landscape (SVG) -->
+  <div class="absolute inset-0 z-0 pointer-events-none" id="parallax-scene">
     
-    <!-- Distant Mountains -->
-    <svg class="absolute bottom-[20%] w-full h-[50vh] text-[#7C9A92] opacity-60" layer-speed="0.1" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path fill="currentColor" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <!-- Sky & Sun -->
+    <svg class="absolute inset-0 w-full h-full object-cover" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" layer-speed="0.05">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2b344a"/>
+          <stop offset="40%" stop-color="#5e6e7e"/>
+          <stop offset="70%" stop-color="#d49a89"/>
+          <stop offset="100%" stop-color="#f3cbb5"/>
+        </linearGradient>
+        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffedd5" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#ffedd5" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1440" height="900" fill="url(#skyGrad)"/>
+      <circle cx="1100" cy="450" r="250" fill="url(#sunGlow)" filter="blur(20px)"/>
     </svg>
 
-    <!-- Rolling Hills -->
-    <svg class="absolute bottom-0 w-full h-[40vh] text-[#5A7A52]" layer-speed="0.3" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path fill="currentColor" d="M0,224L60,213.3C120,203,240,181,360,192C480,203,600,245,720,245.3C840,245,960,203,1080,181.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+    <!-- Distant Misty Mountains -->
+    <svg class="absolute bottom-0 w-full h-[60vh]" viewBox="0 0 1440 600" preserveAspectRatio="none" layer-speed="0.1">
+      <path d="M0,400 Q150,200 350,350 T700,300 T1100,400 T1440,250 L1440,600 L0,600 Z" fill="#3a4b54" opacity="0.6" filter="blur(4px)"/>
+      <path d="M0,500 Q250,300 500,450 T900,400 T1440,500 L1440,600 L0,600 Z" fill="#2d3b42" opacity="0.8" filter="blur(2px)"/>
     </svg>
 
-    <!-- Foreground Grass -->
-    <svg class="absolute bottom-0 w-full h-[20vh] text-[#425A3B]" layer-speed="0.6" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path fill="currentColor" d="M0,288L48,272C96,256,192,224,288,218.7C384,213,480,235,576,250.7C672,267,768,277,864,266.7C960,256,1056,224,1152,218.7C1248,213,1344,235,1392,245.3L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    <!-- Midground Hills, River, and Train -->
+    <svg class="absolute bottom-0 w-full h-[50vh]" viewBox="0 0 1440 500" preserveAspectRatio="none" layer-speed="0.3">
+      <defs>
+        <linearGradient id="riverGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7b9cae"/>
+          <stop offset="100%" stop-color="#2b404c"/>
+        </linearGradient>
+        <linearGradient id="hillGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4e6b50"/>
+          <stop offset="100%" stop-color="#1e331f"/>
+        </linearGradient>
+      </defs>
+      
+      <!-- Train Tracks -->
+      <path d="M0,300 L1440,320" stroke="#1a1c23" stroke-width="4" stroke-dasharray="10 5"/>
+      
+      <!-- Animated Train -->
+      <g id="moving-train">
+        <rect x="0" y="270" width="80" height="25" fill="#3d3f4a" rx="4"/>
+        <rect x="5" y="275" width="15" height="10" fill="#f3cbb5" opacity="0.6"/>
+        <rect x="25" y="275" width="15" height="10" fill="#f3cbb5" opacity="0.6"/>
+        <rect x="45" y="275" width="15" height="10" fill="#f3cbb5" opacity="0.6"/>
+        <rect x="65" y="275" width="10" height="10" fill="#f3cbb5" opacity="0.6"/>
+      </g>
+
+      <!-- River -->
+      <path id="river" d="M600,300 Q700,400 650,500 L850,500 Q800,400 900,300 Z" fill="url(#riverGrad)"/>
+      
+      <!-- Wooden Bridge -->
+      <path d="M680,380 Q750,360 820,380 L820,390 Q750,370 680,390 Z" fill="#4a2e1b"/>
+      <path d="M690,380 L690,360" stroke="#4a2e1b" stroke-width="4"/>
+      <path d="M810,380 L810,360" stroke="#4a2e1b" stroke-width="4"/>
+
+      <!-- Midground Hills -->
+      <path d="M0,450 Q200,350 500,450 T1000,380 T1440,450 L1440,500 L0,500 Z" fill="url(#hillGrad)"/>
+    </svg>
+
+    <!-- Foreground Hill and Cherry Blossom Tree -->
+    <svg class="absolute bottom-0 w-full h-[45vh]" viewBox="0 0 1440 450" preserveAspectRatio="none" layer-speed="0.6">
+      <defs>
+        <linearGradient id="fgGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2b4230"/>
+          <stop offset="100%" stop-color="#0f1a12"/>
+        </linearGradient>
+        <radialGradient id="blossomGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffb7c5"/>
+          <stop offset="100%" stop-color="#d48b9e" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      
+      <!-- Foreground Grass -->
+      <path d="M0,350 Q200,300 400,350 T800,300 T1440,350 L1440,450 L0,450 Z" fill="url(#fgGrad)"/>
+
+      <!-- Tree Trunk & Branches -->
+      <path d="M150,450 Q200,250 250,150 Q270,120 300,100 Q260,180 250,450 Z" fill="#1a100c"/>
+      <path d="M250,200 Q350,150 450,180" stroke="#1a100c" stroke-width="8" fill="none"/>
+      <path d="M230,280 Q150,220 100,250" stroke="#1a100c" stroke-width="6" fill="none"/>
+
+      <!-- Cherry Blossom Clusters -->
+      <g filter="blur(2px)">
+        <circle cx="450" cy="180" r="80" fill="url(#blossomGlow)"/>
+        <circle cx="100" cy="250" r="60" fill="url(#blossomGlow)"/>
+        <circle cx="300" cy="100" r="90" fill="url(#blossomGlow)"/>
+      </g>
+      <g fill="#ffb7c5" opacity="0.8">
+        <circle cx="430" cy="160" r="20"/>
+        <circle cx="480" cy="200" r="25"/>
+        <circle cx="120" cy="230" r="15"/>
+        <circle cx="80" cy="270" r="20"/>
+        <circle cx="280" cy="80" r="22"/>
+        <circle cx="330" cy="120" r="18"/>
+      </g>
+
+      <!-- Cozy Reading Corner (Chair, Table, Book, Lantern) -->
+      <g transform="translate(700, 320)">
+        <!-- Wooden Chair -->
+        <rect x="0" y="40" width="80" height="10" fill="#3b2212" rx="2"/>
+        <rect x="0" y="0" width="10" height="40" fill="#3b2212"/>
+        <rect x="70" y="0" width="10" height="40" fill="#3b2212"/>
+        <rect x="0" y="0" width="80" height="10" fill="#3b2212" rx="2"/>
+        
+        <!-- Table -->
+        <rect x="100" y="30" width="60" height="5" fill="#3b2212"/>
+        <rect x="110" y="35" width="5" height="30" fill="#3b2212"/>
+        <rect x="145" y="35" width="5" height="30" fill="#3b2212"/>
+        
+        <!-- Open Book on Table -->
+        <path d="M110,25 L130,20 L150,25 L130,30 Z" fill="#FBF6EE"/>
+        
+        <!-- Antique Lantern -->
+        <rect x="180" y="10" width="20" height="30" fill="#2b1b12"/>
+        <rect x="185" y="15" width="10" height="20" fill="#fbd38d"/>
+        <circle cx="190" cy="25" r="40" fill="#fbd38d" opacity="0.2" filter="blur(10px)"/>
+        <rect x="175" y="40" width="30" height="5" fill="#2b1b12"/>
+      </g>
     </svg>
   </div>
 
-  <!-- 2. Canvas for Cherry Blossom Petals -->
-  <canvas id="sakura-canvas" class="absolute inset-0 z-10 pointer-events-none"></canvas>
+  <!-- 2. Canvas for Falling Petals -->
+  <canvas id="petal-canvas" class="absolute inset-0 z-10 pointer-events-none"></canvas>
 
-  <!-- 3. Content and 3D Book -->
-  <div class="relative z-20 container-ember h-full flex items-center justify-between">
-    <!-- Text Content -->
-    <div class="max-w-xl text-[#2B2118]">
-      <p class="text-sm uppercase tracking-[0.3em] text-[#5B1F2A] font-semibold mb-4 opacity-0" id="hero-subtitle">
-        Enter a literary dreamscape
+  <!-- 3. Content & 3D Book -->
+  <div class="relative z-20 container-ember h-full flex flex-col md:flex-row items-center justify-between pt-20">
+    <!-- Text -->
+    <div class="max-w-xl text-[#FBF6EE] drop-shadow-md">
+      <p class="text-sm uppercase tracking-[0.3em] text-[#fbd38d] font-semibold mb-6 opacity-0 translate-y-4" id="hero-subtitle">
+        An immersive literary experience
       </p>
-      <h1 class="font-display text-5xl md:text-7xl leading-[1.1] text-[#3E4A38] opacity-0" id="hero-title">
+      <h1 class="font-display text-5xl md:text-7xl leading-[1.1] opacity-0 translate-y-4" id="hero-title">
         Where stories <br/>
-        <span class="italic text-[#B5654A]">bloom.</span>
+        <span class="italic text-[#ffb7c5]">bloom.</span>
       </h1>
-      <p class="mt-6 text-lg text-[#5A7A52] font-medium max-w-md opacity-0" id="hero-desc">
-        Honest reviews for self-help and fantasy romance readers. 
-        Find your next escape in our curated library.
+      <p class="mt-6 text-lg text-[#FBF6EE]/80 font-medium max-w-md opacity-0 translate-y-4" id="hero-desc">
+        Step into our Japanese countryside library. Honest reviews for self-help and fantasy romance readers.
       </p>
-      <div class="mt-10 flex gap-4 opacity-0" id="hero-buttons">
-        <a href="/blog/" class="rounded-full bg-[#5B1F2A] text-[#FBF6EE] px-8 py-4 font-semibold shadow-[0_10px_20px_rgba(91,31,42,0.3)] hover:bg-[#451722] hover:-translate-y-1 transition-all duration-300">
+      <div class="mt-10 flex gap-4 opacity-0 translate-y-4" id="hero-buttons">
+        <a href="/blog/" class="rounded-full bg-[#FBF6EE] text-[#2b1b12] px-8 py-4 font-semibold shadow-[0_10px_20px_rgba(0,0,0,0.4)] hover:bg-white hover:-translate-y-1 transition-all duration-300">
           Explore the Library
         </a>
-        <a href="/categories/" class="rounded-full bg-[#C9A227] text-[#2B2118] px-8 py-4 font-semibold shadow-[0_10px_20px_rgba(201,162,39,0.3)] hover:bg-[#E8D9A8] hover:-translate-y-1 transition-all duration-300">
+        <a href="/categories/" class="rounded-full bg-[#5B1F2A]/80 backdrop-blur-sm border border-[#C9A227]/50 text-[#FBF6EE] px-8 py-4 font-semibold hover:bg-[#5B1F2A] hover:-translate-y-1 transition-all duration-300">
           Discover Books
         </a>
       </div>
     </div>
 
-    <!-- 3D Floating Book -->
-    <div class="hidden lg:block relative w-[400px] h-[600px] perspective-[1500px]" id="book-container">
-      <div class="w-full h-full relative preserve-3d transition-transform duration-200 ease-out" id="3d-book">
-        <!-- Book Cover -->
-        <div class="absolute inset-0 bg-[#5B1F2A] rounded-r-xl rounded-l-sm shadow-[-20px_20px_40px_rgba(0,0,0,0.4)] border-l-[12px] border-[#451722] flex flex-col items-center justify-center p-8 overflow-hidden">
-          <!-- Book Art -->
-          <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]"></div>
-          <div class="w-24 h-1 bg-[#C9A227] mb-8"></div>
-          <h2 class="font-display text-4xl text-[#FBF6EE] text-center leading-tight relative z-10">Ember<br/>&amp;<br/>Ink</h2>
-          <p class="font-display text-[#C9A227] italic mt-6 relative z-10">The 2026 Collection</p>
-          <div class="w-16 h-1 bg-[#C9A227] mt-8"></div>
-        </div>
-        <!-- Book Spine depth effect -->
-        <div class="absolute top-0 bottom-0 left-0 w-[12px] bg-[#3d121b] transform rotateY(-90deg) origin-left"></div>
-      </div>
-      <!-- Glowing orb behind book -->
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#C9A227] rounded-full blur-[100px] opacity-40 -z-10 animate-pulse"></div>
+    <!-- Three.js 3D Book Container -->
+    <div class="relative w-[400px] h-[550px] opacity-0" id="book-container">
+      <canvas id="webgl-book"></canvas>
     </div>
   </div>
 </section>
 
-<style>
-  /* CSS for 3D Book */
-  .perspective-\[1500px\] { perspective: 1500px; }
-  .preserve-3d { transform-style: preserve-3d; }
-  
-  /* Floating animation for book */
-  @keyframes float {
-    0% { transform: translateY(0px) rotateY(-15deg) rotateX(10deg); }
-    50% { transform: translateY(-20px) rotateY(-10deg) rotateX(5deg); }
-    100% { transform: translateY(0px) rotateY(-15deg) rotateX(10deg); }
-  }
-  #3d-book {
-    animation: float 6s ease-in-out infinite;
-    transform-style: preserve-3d;
-  }
-</style>
-
 <script>
   import gsap from 'gsap';
+  import * as THREE from 'three';
 
   document.addEventListener('DOMContentLoaded', () => {
     // 1. Cinematic Entrance Animation
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
     
-    tl.to('#hero-subtitle', { opacity: 1, y: 0, duration: 1, delay: 0.5 })
-      .to('#hero-title', { opacity: 1, y: 0, duration: 1 }, '-=0.7')
-      .to('#hero-desc', { opacity: 1, y: 0, duration: 1 }, '-=0.7')
-      .to('#hero-buttons', { opacity: 1, y: 0, duration: 1 }, '-=0.7')
-      .from('#book-container', { opacity: 0, x: 100, rotationY: -30, duration: 1.5 }, '-=1');
-
-    // Initial states for entrance
-    gsap.set(['#hero-subtitle', '#hero-title', '#hero-desc', '#hero-buttons'], { y: 30 });
+    tl.to('#hero-subtitle', { opacity: 1, y: 0, duration: 1.2, delay: 0.2 })
+      .to('#hero-title', { opacity: 1, y: 0, duration: 1.2 }, '-=0.9')
+      .to('#hero-desc', { opacity: 1, y: 0, duration: 1.2 }, '-=0.9')
+      .to('#hero-buttons', { opacity: 1, y: 0, duration: 1.2 }, '-=0.9')
+      .to('#book-container', { opacity: 1, duration: 2 }, '-=1.2');
 
     // 2. Mouse Parallax for Landscape
-    const container = document.getElementById('parallax-container');
     const layers = document.querySelectorAll('[layer-speed]');
-
     document.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
-
       layers.forEach(layer => {
         const speed = parseFloat(layer.getAttribute('layer-speed'));
-        gsap.to(layer, {
-          x: x * speed * 50,
-          y: y * speed * 20,
-          duration: 1,
-          ease: 'power2.out'
-        });
+        gsap.to(layer, { x: x * speed * 40, y: y * speed * 20, duration: 1.5, ease: 'power2.out' });
       });
     });
 
-    // 3. 3D Book Tilt Interaction
-    const book = document.getElementById('3d-book');
-    const bookContainer = document.getElementById('book-container');
+    // 3. Animate Train (Continuous)
+    gsap.fromTo('#moving-train', 
+      { x: -150 }, 
+      { x: 1600, duration: 12, repeat: -1, ease: 'none', delay: 2 }
+    );
 
-    if (book && bookContainer) {
-      bookContainer.addEventListener('mousemove', (e) => {
-        const rect = bookContainer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = ((y - centerY) / centerY) * -20; 
-        const rotateY = ((x - centerX) / centerX) * 20;
+    // 4. Three.js 3D Book Setup
+    const canvas = document.getElementById('webgl-book');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 400 / 550, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(400, 550);
+    renderer.setPixelRatio(window.devicePixelRatio);
 
-        gsap.to(book, {
-          rotationX: rotateX,
-          rotationY: rotateY,
-          duration: 0.5,
-          ease: 'power2.out',
-          overwrite: 'auto'
-        });
-      });
+    // Book Cover Texture (Generated via Canvas)
+    const coverCanvas = document.createElement('canvas');
+    coverCanvas.width = 512;
+    coverCanvas.height = 768;
+    const ctx = coverCanvas.getContext('2d');
+    ctx.fillStyle = '#5B1F2A';
+    ctx.fillRect(0, 0, 512, 768);
+    ctx.strokeStyle = '#C9A227';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, 472, 728);
+    ctx.fillStyle = '#FBF6EE';
+    ctx.font = 'bold 55px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText('EMBER', 256, 300);
+    ctx.fillText('& INK', 256, 370);
+    ctx.fillStyle = '#ffb7c5';
+    ctx.font = 'italic 28px Georgia';
+    ctx.fillText('A Literary Dreamscape', 256, 480);
+    
+    const coverTexture = new THREE.CanvasTexture(coverCanvas);
 
-      bookContainer.addEventListener('mouseleave', () => {
-        gsap.to(book, {
-          rotationX: 10,
-          rotationY: -15,
-          duration: 1,
-          ease: 'power3.out'
-        });
-      });
+    // Book Geometry & Materials
+    const bookGeo = new THREE.BoxGeometry(3, 4.5, 0.4);
+    const coverMat = new THREE.MeshStandardMaterial({ map: coverTexture, roughness: 0.5, metalness: 0.1 });
+    const sideMat = new THREE.MeshStandardMaterial({ color: '#451722', roughness: 0.8 });
+    const pagesMat = new THREE.MeshStandardMaterial({ color: '#FBF6EE', roughness: 1 });
+
+    const materials = [sideMat, sideMat, sideMat, sideMat, coverMat, pagesMat];
+    const book = new THREE.Mesh(bookGeo, materials);
+    scene.add(book);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffedd5, 2);
+    dirLight.position.set(5, 5, 5);
+    scene.add(dirLight);
+
+    const pointLight = new THREE.PointLight(0xfbd38d, 1.5, 10);
+    pointLight.position.set(-2, 2, 3);
+    scene.add(pointLight);
+
+    camera.position.z = 7;
+
+    // Floating Animation & Tilt Interaction
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetRotationX = 0;
+    let targetRotationY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      targetRotationY = mouseX * 0.5;
+      targetRotationX = mouseY * 0.5;
+    });
+
+    let time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.01;
+
+      // Smooth floating
+      book.position.y = Math.sin(time) * 0.15;
+      
+      // Smooth mouse tilt (lerp)
+      book.rotation.y += (targetRotationY - book.rotation.y) * 0.05;
+      book.rotation.x += (targetRotationX - book.rotation.x) * 0.05;
+      
+      // Base rotation
+      book.rotation.y += 0.002;
+
+      renderer.render(scene, camera);
     }
+    animate();
 
-    // 4. Cherry Blossom Petals Canvas
-    const canvas = document.getElementById('sakura-canvas');
-    const ctx = canvas.getContext('2d');
+    // 5. Canvas Petal System
+    const petalCanvas = document.getElementById('petal-canvas');
+    const pCtx = petalCanvas.getContext('2d');
     let width, height;
 
     function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      width = petalCanvas.width = window.innerWidth;
+      height = petalCanvas.height = window.innerHeight;
     }
     window.addEventListener('resize', resize);
     resize();
 
     const petals = [];
-    const petalCount = 40;
-
-    class Petal {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * -height;
-        this.size = Math.random() * 8 + 5;
-        this.speedY = Math.random() * 1.5 + 0.5;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.rotation = Math.random() * 360;
-        this.rotationSpeed = Math.random() * 2 - 1;
-        this.opacity = Math.random() * 0.5 + 0.3;
-        this.swing = Math.random() * 2;
-        this.swingSpeed = Math.random() * 0.02;
-      }
-      update() {
-        this.y += this.speedY;
-        this.swing += this.swingSpeed;
-        this.x += this.speedX + Math.sin(this.swing) * 1;
-        this.rotation += this.rotationSpeed;
-        if (this.y > height + 20 || this.x > width + 20 || this.x < -20) {
-          this.reset();
-          this.y = -20; // start above screen
-        }
-      }
-      draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation * Math.PI / 180);
-        ctx.beginPath();
-        ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`;
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    for (let i = 0; i < petalCount; i++) {
-      petals.push(new Petal());
-    }
-
-    function animatePetals() {
-      ctx.clearRect(0, 0, width, height);
-      petals.forEach(petal => {
-        petal.update();
-        petal.draw();
+    for (let i = 0; i < 50; i++) {
+      petals.push({
+        x: Math.random() * width,
+        y: Math.random() * -height,
+        size: Math.random() * 6 + 4,
+        speedY: Math.random() * 1.5 + 0.5,
+        speedX: Math.random() * 1 - 0.5,
+        rotation: Math.random() * 360,
+        rotSpeed: Math.random() * 2 - 1,
+        opacity: Math.random() * 0.6 + 0.2,
+        swing: Math.random() * 2,
+        swingSpeed: Math.random() * 0.02
       });
-      requestAnimationFrame(animatePetals);
     }
-    animatePetals();
+
+    function drawPetals() {
+      pCtx.clearRect(0, 0, width, height);
+      petals.forEach(p => {
+        p.y += p.speedY;
+        p.swing += p.swingSpeed;
+        p.x += p.speedX + Math.sin(p.swing) * 1;
+        p.rotation += p.rotSpeed;
+
+        if (p.y > height + 20) {
+          p.y = -20;
+          p.x = Math.random() * width;
+        }
+
+        pCtx.save();
+        pCtx.translate(p.x, p.y);
+        pCtx.rotate(p.rotation * Math.PI / 180);
+        pCtx.beginPath();
+        pCtx.ellipse(0, 0, p.size, p.size / 2, 0, 0, Math.PI * 2);
+        pCtx.fillStyle = `rgba(255, 183, 197, ${p.opacity})`;
+        pCtx.fill();
+        pCtx.restore();
+      });
+      requestAnimationFrame(drawPetals);
+    }
+    drawPetals();
   });
 </script>
