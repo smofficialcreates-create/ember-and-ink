@@ -4,28 +4,22 @@
 
 <section id="hero" class="relative w-full h-screen overflow-hidden bg-[#0a0b10]">
   
-  <!-- 1. Cinematic Background with Parallax -->
   <div id="bg-parallax" class="absolute inset-0 z-0 w-[110%] h-[110%] -left-[5%] -top-[5%] will-change-transform">
-    <!-- High-res cinematic landscape -->
     <img 
       src="https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=2500&auto=format&fit=crop" 
       alt="Cinematic Japanese Countryside"
       class="w-full h-full object-cover"
       style="filter: saturate(1.1) contrast(1.05) brightness(0.8);"
     />
-    <!-- Cinematic Color Grading Overlays (Vignette & Fog) -->
     <div class="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10]/40 to-black/30"></div>
     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
     <div class="absolute inset-0 bg-[#5B1F2A] mix-blend-overlay opacity-20"></div>
   </div>
 
-  <!-- 2. Falling Petals Canvas -->
   <canvas id="petal-canvas" class="absolute inset-0 z-10 pointer-events-none"></canvas>
 
-  <!-- 3. Content Container -->
   <div class="relative z-20 container-ember h-full flex flex-col md:flex-row items-center justify-between pt-20">
     
-    <!-- Typography -->
     <div class="max-w-xl text-[#FBF6EE] drop-shadow-2xl">
       <p class="text-sm uppercase tracking-[0.3em] text-[#E8D9A8] font-semibold mb-6 opacity-0 translate-y-8" id="hero-subtitle">
         An immersive literary experience
@@ -47,7 +41,6 @@
       </div>
     </div>
 
-    <!-- True 3D Book Container -->
     <div class="relative w-[400px] h-[600px] opacity-0 scale-90" id="book-container">
       <canvas id="webgl-book" class="w-full h-full drop-shadow-[0_30px_50px_rgba(0,0,0,0.8)]"></canvas>
     </div>
@@ -59,9 +52,6 @@
   import * as THREE from 'three';
 
   document.addEventListener('DOMContentLoaded', () => {
-    // ---------------------------------------------------------
-    // 1. Cinematic Entrance Animation
-    // ---------------------------------------------------------
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
     
     tl.to('#hero-subtitle', { opacity: 1, y: 0, duration: 1.2, delay: 0.5 })
@@ -70,127 +60,91 @@
       .to('#hero-buttons', { opacity: 1, y: 0, duration: 1.2 }, '-=0.9')
       .to('#book-container', { opacity: 1, scale: 1, duration: 1.5 }, '-=1.2');
 
-    // ---------------------------------------------------------
-    // 2. Background Parallax (Mouse Movement)
-    // ---------------------------------------------------------
     const bg = document.getElementById('bg-parallax');
     document.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      
-      gsap.to(bg, {
-        x: x * -30,
-        y: y * -30,
-        duration: 1.5,
-        ease: 'power2.out',
-        overwrite: 'auto'
-      });
+      gsap.to(bg, { x: x * -30, y: y * -30, duration: 1.5, ease: 'power2.out', overwrite: 'auto' });
     });
 
-    // ---------------------------------------------------------
-    // 3. True 3D Book (Three.js)
-    // ---------------------------------------------------------
     const container = document.getElementById('book-container');
     const canvas = document.getElementById('webgl-book');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
     
-    // Enable Alpha for transparent background
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
 
-    // Create Book Cover Texture (Drawn via Canvas)
     const coverCanvas = document.createElement('canvas');
     coverCanvas.width = 512;
     coverCanvas.height = 768;
-    const ctx = coverCanvas.getContext('2d');
+    const coverCtx = coverCanvas.getContext('2d');
     
-    // Deep Burgundy Cover
-    ctx.fillStyle = '#5B1F2A';
-    ctx.fillRect(0, 0, 512, 768);
-    
-    // Gold Foil Details
-    ctx.strokeStyle = '#C9A227';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(30, 30, 452, 708);
-    
-    // Title
-    ctx.fillStyle = '#FBF6EE';
-    ctx.font = 'bold 65px Georgia, serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('EMBER', 256, 280);
-    ctx.fillText('& INK', 256, 360);
-    
-    // Subtitle
-    ctx.fillStyle = '#E8D9A8';
-    ctx.font = 'italic 28px Georgia, serif';
-    ctx.fillText('A Literary Dreamscape', 256, 460);
+    coverCtx.fillStyle = '#5B1F2A';
+    coverCtx.fillRect(0, 0, 512, 768);
+    coverCtx.strokeStyle = '#C9A227';
+    coverCtx.lineWidth = 3;
+    coverCtx.strokeRect(30, 30, 452, 708);
+    coverCtx.fillStyle = '#FBF6EE';
+    coverCtx.font = 'bold 65px Georgia, serif';
+    coverCtx.textAlign = 'center';
+    coverCtx.fillText('EMBER', 256, 280);
+    coverCtx.fillText('& INK', 256, 360);
+    coverCtx.fillStyle = '#E8D9A8';
+    coverCtx.font = 'italic 28px Georgia, serif';
+    coverCtx.fillText('A Literary Dreamscape', 256, 460);
     
     const coverTexture = new THREE.CanvasTexture(coverCanvas);
     
-    // Create Pages Texture (for the edges of the book)
     const pagesCanvas = document.createElement('canvas');
     pagesCanvas.width = 256;
     pagesCanvas.height = 256;
-    const pCtx = pagesCanvas.getContext('2d');
-    pCtx.fillStyle = '#FBF6EE';
-    pCtx.fillRect(0, 0, 256, 256);
-    pCtx.strokeStyle = '#D3C4B2';
-    pCtx.lineWidth = 1;
+    const pagesCtx = pagesCanvas.getContext('2d');
+    pagesCtx.fillStyle = '#FBF6EE';
+    pagesCtx.fillRect(0, 0, 256, 256);
+    pagesCtx.strokeStyle = '#D3C4B2';
+    pagesCtx.lineWidth = 1;
     for(let i=0; i<256; i+=4) {
-      pCtx.beginPath();
-      pCtx.moveTo(0, i);
-      pCtx.lineTo(256, i);
-      pCtx.stroke();
+      pagesCtx.beginPath();
+      pagesCtx.moveTo(0, i);
+      pagesCtx.lineTo(256, i);
+      pagesCtx.stroke();
     }
     const pagesTexture = new THREE.CanvasTexture(pagesCanvas);
 
-    // Materials
     const coverMat = new THREE.MeshStandardMaterial({ map: coverTexture, roughness: 0.4, metalness: 0.1 });
     const backMat = new THREE.MeshStandardMaterial({ color: '#451722', roughness: 0.7 });
     const spineMat = new THREE.MeshStandardMaterial({ color: '#3d121b', roughness: 0.6 });
     const pagesMat = new THREE.MeshStandardMaterial({ map: pagesTexture, roughness: 0.9 });
 
-    // Geometry (Width 3.5, Height 5.25, Depth 0.6)
     const bookGeo = new THREE.BoxGeometry(3.5, 5.25, 0.6);
-    
-    // Materials array: right(pages), left(spine), top(pages), bottom(pages), front(cover), back(cover)
     const materials = [ pagesMat, spineMat, pagesMat, pagesMat, coverMat, backMat ];
     
     const book = new THREE.Mesh(bookGeo, materials);
     scene.add(book);
 
-    // Lighting (Cinematic Studio Setup)
     const ambient = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambient);
-
-    const keyLight = new THREE.DirectionalLight(0xffedd5, 2.5); // Warm light
+    const keyLight = new THREE.DirectionalLight(0xffedd5, 2.5);
     keyLight.position.set(5, 5, 5);
     scene.add(keyLight);
-
-    const rimLight = new THREE.DirectionalLight(0x8ab4f8, 1.5); // Cool light
+    const rimLight = new THREE.DirectionalLight(0x8ab4f8, 1.5);
     rimLight.position.set(-5, 0, -5);
     scene.add(rimLight);
-
-    const pointLight = new THREE.PointLight(0xfbd38d, 2, 10); // Soft fill
+    const pointLight = new THREE.PointLight(0xfbd38d, 2, 10);
     pointLight.position.set(0, -2, 3);
     scene.add(pointLight);
 
     camera.position.z = 8.5;
 
-    // Interaction
-    let mouseX = 0;
-    let mouseY = 0;
     let targetRotX = 0;
     let targetRotY = 0;
 
     document.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-      
-      // Target tilt angles (max 25 degrees)
+      const mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      const mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
       targetRotY = mouseX * 0.5;
       targetRotX = mouseY * 0.5;
     });
@@ -201,14 +155,9 @@
       requestAnimationFrame(animateBook);
       const time = clock.getElapsedTime();
 
-      // Smooth floating (Y-axis)
       book.position.y = Math.sin(time * 1.5) * 0.15;
-      
-      // Smooth cursor tilt (lerp)
       book.rotation.y += (targetRotY - book.rotation.y) * 0.05;
       book.rotation.x += (targetRotX - book.rotation.x) * 0.05;
-      
-      // Base idle rotation
       book.rotation.y += 0.002;
 
       renderer.render(scene, camera);
@@ -223,11 +172,8 @@
       camera.updateProjectionMatrix();
     });
 
-    // ---------------------------------------------------------
-    // 4. Canvas Petal System
-    // ---------------------------------------------------------
     const petalCanvas = document.getElementById('petal-canvas');
-    const pCtx = petalCanvas.getContext('2d');
+    const petalCtx = petalCanvas.getContext('2d');
     let width, height;
 
     function resize() {
@@ -254,7 +200,7 @@
     }
 
     function drawPetals() {
-      pCtx.clearRect(0, 0, width, height);
+      petalCtx.clearRect(0, 0, width, height);
       petals.forEach(p => {
         p.y += p.speedY;
         p.swing += p.swingSpeed;
@@ -266,14 +212,14 @@
           p.x = Math.random() * width;
         }
 
-        pCtx.save();
-        pCtx.translate(p.x, p.y);
-        pCtx.rotate(p.rotation * Math.PI / 180);
-        pCtx.beginPath();
-        pCtx.ellipse(0, 0, p.size, p.size / 2, 0, 0, Math.PI * 2);
-        pCtx.fillStyle = `rgba(255, 183, 197, ${p.opacity})`;
-        pCtx.fill();
-        pCtx.restore();
+        petalCtx.save();
+        petalCtx.translate(p.x, p.y);
+        petalCtx.rotate(p.rotation * Math.PI / 180);
+        petalCtx.beginPath();
+        petalCtx.ellipse(0, 0, p.size, p.size / 2, 0, 0, Math.PI * 2);
+        petalCtx.fillStyle = `rgba(255, 183, 197, ${p.opacity})`;
+        petalCtx.fill();
+        petalCtx.restore();
       });
       requestAnimationFrame(drawPetals);
     }
