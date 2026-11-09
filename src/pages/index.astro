@@ -1,6 +1,7 @@
 ﻿---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import PostCard from '@components/PostCard.astro';
+import HeroDreamscape from '@components/HeroDreamscape.astro';
 import { getPublishedPosts, getFeaturedPosts } from '@lib/posts';
 import { CATEGORIES } from '@lib/categories';
 import { SITE } from '@lib/site';
@@ -14,42 +15,7 @@ const topCategories = CATEGORIES.slice(0, 8);
 
 <BaseLayout title="Home" description={SITE.description} url={`${SITE.url}/`}>
   {/* NEW HERO SECTION WITH IMAGE */}
-  <section class="relative overflow-hidden bg-cream">
-    <div class="container-ember py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        <p class="text-sm uppercase tracking-[0.2em] text-muted mb-4">
-          Self-Help &amp; Fantasy Romance
-        </p>
-        <h1 class="font-display text-4xl md:text-6xl leading-[1.05] text-burgundy">
-          Warm reviews for<br />
-          <span class="text-gold">books that stay</span><br />
-          with you.
-        </h1>
-        <p class="mt-6 text-lg text-muted max-w-xl">
-          Honest reviews, thoughtful essays, and carefully curated reading
-          lists — from grounded self-help to sweeping fantasy romance.
-        </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a href="/categories/self-help/" class="inline-flex items-center rounded-pill bg-burgundy text-paper px-6 py-3 font-medium shadow-soft hover:bg-burgundy-dark transition-colors">
-            Self-Help →
-          </a>
-          <a href="/categories/fantasy-romance/" class="inline-flex items-center rounded-pill bg-gold-soft text-burgundy px-6 py-3 font-medium hover:bg-gold/40 transition-colors">
-            Fantasy Romance →
-          </a>
-        </div>
-      </div>
-
-      <div class="relative">
-        <div class="absolute -inset-4 bg-gold/10 rounded-[2rem] blur-2xl" aria-hidden="true"></div>
-        <img 
-          src="/images/hero.jpg" 
-          alt="Cozy stack of books with a warm mug" 
-          class="relative rounded-card shadow-lift object-cover w-full h-[400px] md:h-[500px]"
-          loading="eager"
-        />
-      </div>
-    </div>
-  </section>
+  <HeroDreamscape />
 
   {/* CURRENTLY READING WIDGET */}
   <section class="bg-burgundy text-cream border-y border-burgundy-dark">
@@ -120,3 +86,4 @@ const topCategories = CATEGORIES.slice(0, 8);
     </div>
   </section>
 </BaseLayout>
+
