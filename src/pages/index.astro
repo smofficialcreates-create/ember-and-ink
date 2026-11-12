@@ -77,11 +77,17 @@ const others = all.filter((p) => p.id !== featured[0]?.id).slice(0, 3);
         <p class="mt-4 text-cream/80 text-lg">Every genre has a corner here. Choose your world.</p>
       </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal-up">
-        {CATEGORIES.slice(0, 8).map((cat) => (
-          <a href={`/categories/${cat.slug}/`} class="group rounded-2xl border border-cream/20 bg-cream/5 p-6 hover:bg-cream/10 hover:border-gold transition-all duration-300">
-            <p class="font-display text-xl text-gold group-hover:text-cream transition-colors">{cat.label}</p>
-            <p class="mt-2 text-xs text-cream/60 leading-relaxed">{cat.description}</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {CATEGORIES.slice(0, 8).map((cat, index) => (
+          <a href={`/categories/${cat.slug}/`} class="genre-card group relative isolate min-h-40 overflow-hidden rounded-2xl border border-cream/15 bg-[#f8efe0]/[0.045] p-6 transition duration-500 hover:-translate-y-1 hover:border-[#d7b56d]/65 hover:bg-[#f8efe0]/[0.09]">
+            <span class="pointer-events-none absolute -right-8 -top-10 -z-10 h-28 w-28 rounded-full border border-[#d7b56d]/10 transition duration-700 group-hover:scale-150 group-hover:border-[#d7b56d]/25"></span>
+            <span class="flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.24em] text-cream/35">
+              <span>Collection</span>
+              <span>0{index + 1}</span>
+            </span>
+            <p class="mt-8 font-display text-xl leading-tight text-[#e7c98b] transition-colors duration-300 group-hover:text-[#fff7e8]">{cat.label}</p>
+            <p class="mt-2 text-xs leading-relaxed text-cream/55">{cat.description}</p>
+            <span class="absolute bottom-5 right-5 translate-y-1 text-sm text-[#d7b56d]/60 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100" aria-hidden="true">↗</span>
           </a>
         ))}
       </div>
@@ -168,17 +174,24 @@ const others = all.filter((p) => p.id !== featured[0]?.id).slice(0, 3);
       });
     });
 
-    // Stagger cards in
-    gsap.from('.reveal-card', {
-      y: 80,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '.reveal-card',
-        start: 'top 85%',
-      }
+    // Reveal editorial cards individually so each row enters naturally.
+    gsap.utils.toArray<HTMLElement>('.reveal-card, .genre-card').forEach((card, index) => {
+      gsap.fromTo(card,
+        { y: 54, opacity: 0, rotateX: 2 },
+        {
+          y: 0,
+          opacity: 1,
+          rotateX: 0,
+          duration: 0.9,
+          delay: (index % 4) * 0.07,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 88%',
+            once: true,
+          },
+        },
+      );
     });
 
     // Text reveal
