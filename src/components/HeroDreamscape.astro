@@ -1,74 +1,56 @@
 ﻿---
-// Ember & Ink — Exact Cinematic 3D Anime Hero
+// Ember & Ink — Cinematic Parallax Hero
 ---
 
-<section id="hero" class="relative w-full h-screen overflow-hidden bg-[#0a0b10]">
+<section id="hero" class="relative w-full h-screen overflow-hidden bg-[#1a1c23]">
   
-  <!-- 1. The Background Image with 3D Parallax -->
-  <div id="bg-layer" class="absolute inset-0 z-0 w-[105%] h-[105%] -left-[2.5%] -top-[2.5%] will-change-transform">
+  <!-- 1. The Background Layer (Will scale on scroll) -->
+  <div id="hero-bg" class="absolute inset-0 z-0 w-full h-full will-change-transform">
+    <!-- Using a high-res anime image as fallback until you generate your video -->
     <img 
-      src="/hero-bg.jpg" 
+      src="https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=2500&auto=format&fit=crop" 
       alt="Japanese Countryside"
       class="w-full h-full object-cover"
     />
-    <!-- Cinematic Overlay for left-side text readability (matches reference) -->
-    <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-black/10 to-transparent"></div>
+    <!-- Color Grading Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent"></div>
+    <div class="absolute inset-0 bg-[#5B1F2A] mix-blend-overlay opacity-20"></div>
   </div>
 
-  <!-- 2. Three.js Canvas for 3D Petals, Sunbeams, and Fireflies -->
-  <canvas id="webgl-hero" class="absolute inset-0 z-10 pointer-events-none"></canvas>
-
-  <!-- 3. Exact Custom Header Overlay -->
-  <header class="absolute top-0 w-full z-30 px-6 md:px-12 py-6 flex justify-between items-center text-white/90">
-    <!-- Logo -->
-    <a href="/" class="flex items-center gap-2 hover:text-white transition-colors">
+  <!-- 2. Custom Header Overlay -->
+  <header class="absolute top-0 w-full z-30 px-6 md:px-12 py-6 flex justify-between items-center text-white">
+    <a href="/" class="flex items-center gap-2 hover:text-gray-200 transition-colors drop-shadow-md">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
       </svg>
       <span class="font-display text-xl tracking-wide font-medium">Ember &amp; Ink</span>
     </a>
-    
-    <!-- Navigation -->
-    <nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide">
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide drop-shadow-md">
       <a href="/categories/self-help/" class="hover:text-[#ffb7c5] transition-colors">Self-Help</a>
       <a href="/categories/fantasy-romance/" class="hover:text-[#ffb7c5] transition-colors">Fantasy Romance</a>
       <a href="/reviews/" class="hover:text-[#ffb7c5] transition-colors">Reviews</a>
       <a href="/blog/" class="hover:text-[#ffb7c5] transition-colors">Blog</a>
-      <a href="/faq/" class="hover:text-[#ffb7c5] transition-colors">FAQ</a>
       <a href="/about/" class="hover:text-[#ffb7c5] transition-colors">About</a>
-      
-      <!-- Search & Theme Icons -->
-      <div class="flex items-center gap-4 ml-4 pl-4 border-l border-white/20">
-        <button aria-label="Search" class="hover:text-white transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        </button>
-        <button aria-label="Dark Mode" class="hover:text-white transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        </button>
-      </div>
     </nav>
   </header>
 
-  <!-- 4. Exact Text & Buttons Layout -->
-  <div class="relative z-20 container-ember h-full flex flex-col justify-center">
-    <div class="max-w-2xl text-white drop-shadow-xl pl-2 md:pl-8">
-      
-      <h1 class="font-display text-6xl md:text-8xl leading-[1.1] opacity-0 translate-y-8" id="hero-title">
+  <!-- 3. Text Content (Will move faster on scroll) -->
+  <div id="hero-content" class="relative z-20 container-ember h-full flex flex-col justify-center">
+    <div class="max-w-2xl text-white pl-2 md:pl-8">
+      <h1 class="font-display text-6xl md:text-8xl leading-[1.1] drop-shadow-xl" id="hero-title">
         Where stories <br/>
         <span class="italic text-[#ffb7c5]">bloom</span>
       </h1>
-      
-      <p class="mt-6 text-lg md:text-xl text-white/95 font-medium max-w-lg opacity-0 translate-y-8 leading-relaxed" id="hero-desc">
+      <p class="mt-6 text-lg md:text-xl text-white/95 font-medium max-w-lg drop-shadow-lg leading-relaxed">
         Step into our Japanese countryside library.<br/>
         Honest reviews for self-help and fantasy romance readers.
       </p>
-      
-      <div class="mt-10 flex flex-wrap gap-4 opacity-0 translate-y-8" id="hero-buttons">
+      <div class="mt-10 flex flex-wrap gap-4">
         <a href="/blog/" class="group flex items-center gap-2 rounded-full bg-[#fbf6ee] text-[#2b1b12] px-8 py-3.5 font-semibold shadow-lg hover:bg-white hover:scale-105 transition-all duration-300">
           Explore the Library
           <span class="group-hover:translate-x-1 transition-transform">→</span>
         </a>
-        <a href="/categories/" class="rounded-full bg-transparent border border-white/60 text-white px-8 py-3.5 font-semibold hover:bg-white/10 hover:border-white hover:scale-105 transition-all duration-300">
+        <a href="/categories/" class="rounded-full bg-transparent border border-white/60 text-white px-8 py-3.5 font-semibold hover:bg-white/10 hover:border-white hover:scale-105 transition-all duration-300 backdrop-blur-sm">
           Discover Books
         </a>
       </div>
@@ -78,152 +60,41 @@
 
 <script>
   import gsap from 'gsap';
-  import * as THREE from 'three';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  // Register the plugin
+  gsap.registerPlugin(ScrollTrigger);
 
   document.addEventListener('DOMContentLoaded', () => {
-    // 1. Text Entrance Animation
-    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-    tl.to('#hero-title', { opacity: 1, y: 0, duration: 1.5, delay: 0.3 })
-      .to('#hero-desc', { opacity: 1, y: 0, duration: 1.5 }, '-=1.1')
-      .to('#hero-buttons', { opacity: 1, y: 0, duration: 1.5 }, '-=1.1');
-
-    // 2. 3D Mouse Parallax for Background
-    const bg = document.getElementById('bg-layer');
-    const title = document.getElementById('hero-title');
-    
-    document.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      
-      gsap.to(bg, { x: x * -25, y: y * -15, duration: 1.5, ease: 'power2.out', overwrite: 'auto' });
-      gsap.to(title, { x: x * 10, y: y * 5, duration: 1.5, ease: 'power2.out', overwrite: 'auto' });
+    // 1. Entrance Animation
+    gsap.from(['#hero-title', 'p', '.mt-10'], {
+      y: 30, opacity: 0, duration: 1.2, stagger: 0.2, ease: 'power3.out', delay: 0.2
     });
 
-    // 3. Three.js Environment (Sunbeams, Petals, Fireflies)
-    const canvas = document.getElementById('webgl-hero');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.z = 10;
-    
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // --- Sunbeams (Volumetric Light Effect) ---
-    const sunGeo = new THREE.PlaneGeometry(20, 100);
-    const sunMat = new THREE.MeshBasicMaterial({ 
-      color: 0xffedd5, 
-      transparent: true, 
-      opacity: 0.15, 
-      blending: THREE.AdditiveBlending, 
-      depthWrite: false 
-    });
-    const sunbeam = new THREE.Mesh(sunGeo, sunMat);
-    sunbeam.rotation.z = -0.4;
-    sunbeam.position.set(-15, 20, -10);
-    scene.add(sunbeam);
-
-    // --- 3D Cherry Blossoms ---
-    // Create a canvas texture for the petal
-    const petalCanvas = document.createElement('canvas');
-    petalCanvas.width = 64; petalCanvas.height = 64;
-    const pCtx = petalCanvas.getContext('2d');
-    pCtx.beginPath();
-    pCtx.ellipse(32, 32, 20, 12, 0, 0, Math.PI * 2);
-    pCtx.fillStyle = '#ffb7c5';
-    pCtx.fill();
-    const petalTexture = new THREE.CanvasTexture(petalCanvas);
-
-    const petalGeo = new THREE.BufferGeometry();
-    const petalCount = 150;
-    const posArray = new Float32Array(petalCount * 3);
-    const speedArray = new Float32Array(petalCount);
-    const offsetArray = new Float32Array(petalCount);
-
-    for (let i = 0; i < petalCount; i++) {
-      posArray[i * 3] = (Math.random() - 0.5) * 40; // X
-      posArray[i * 3 + 1] = Math.random() * 30 - 10; // Y
-      posArray[i * 3 + 2] = (Math.random() - 0.5) * 20; // Z
-      speedArray[i] = Math.random() * 0.02 + 0.01;
-      offsetArray[i] = Math.random() * Math.PI * 2;
-    }
-
-    petalGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    
-    const petalMat = new THREE.PointsMaterial({
-      size: 0.6,
-      map: petalTexture,
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.NormalBlending,
-      depthWrite: false
-    });
-
-    const particles = new THREE.Points(petalGeo, petalMat);
-    scene.add(particles);
-
-    // --- Fireflies around the lantern ---
-    const fireflyGeo = new THREE.BufferGeometry();
-    const fireflyCount = 30;
-    const fPosArray = new Float32Array(fireflyCount * 3);
-    for (let i = 0; i < fireflyCount; i++) {
-      fPosArray[i * 3] = 2 + (Math.random() - 0.5) * 4; // X (near bottom left)
-      fPosArray[i * 3 + 1] = -4 + (Math.random() - 0.5) * 4; // Y
-      fPosArray[i * 3 + 2] = 2 + (Math.random() - 0.5) * 2; // Z
-    }
-    fireflyGeo.setAttribute('position', new THREE.BufferAttribute(fPosArray, 3));
-    
-    const fireflyMat = new THREE.PointsMaterial({
-      size: 0.15,
-      color: 0xfbd38d,
-      transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending
-    });
-    const fireflies = new THREE.Points(fireflyGeo, fireflyMat);
-    scene.add(fireflies);
-
-    // --- Animation Loop ---
-    const clock = new THREE.Clock();
-    const posAttribute = petalGeo.attributes.position;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
-
-      // Animate Petals
-      for (let i = 0; i < petalCount; i++) {
-        let x = posAttribute.getX(i);
-        let y = posAttribute.getY(i);
-        
-        y -= speedArray[i]; // Fall down
-        x += Math.sin(time + offsetArray[i]) * 0.01; // Swaying
-
-        if (y < -15) {
-          y = 20; // Reset to top
-          x = (Math.random() - 0.5) * 40;
-        }
-
-        posAttribute.setX(i, x);
-        posAttribute.setY(i, y);
+    // 2. Scroll Parallax
+    // As we scroll down, the background zooms in slightly and the text fades up and out
+    gsap.to('#hero-bg', {
+      yPercent: 20,
+      scale: 1.1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true
       }
-      posAttribute.needsUpdate = true;
+    });
 
-      // Animate Fireflies (Pulsing glow and bobbing)
-      fireflies.position.y = Math.sin(time * 2) * 0.2;
-      fireflyMat.opacity = 0.5 + Math.sin(time * 3) * 0.3;
-      
-      // Animate Sunbeam
-      sunMat.opacity = 0.1 + Math.sin(time * 0.5) * 0.05;
-
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    gsap.to('#hero-content', {
+      yPercent: -50,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'center top',
+        scrub: true
+      }
     });
   });
 </script>
