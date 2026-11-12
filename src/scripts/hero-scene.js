@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const clamp = THREE.MathUtils.clamp;
 const lerp = THREE.MathUtils.lerp;
@@ -11,6 +12,53 @@ function makeRng(seed = 731) {
     state = (state * 1664525 + 1013904223) >>> 0;
     return state / 4294967296;
   };
+}
+
+
+/**
+ * Optional production-ready GLB assets.
+ * These lightweight models are used as real mesh assets, while the scene,
+ * terrain, lighting, water, petals and motion remain custom Three.js work.
+ * Both sources publish free-to-use models; keep these URLs in the asset notes.
+ */
+function loadExternalModel(url, onLoad) {
+  const loader = new GLTFLoader();
+  loader.load(
+    url,
+    (gltf) => {
+      gltf.scene.traverse((object) => {
+        if (!object.isMesh) return;
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if (object.material) {
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          for (const material of materials) {
+            material.needsUpdate = true;
+          }
+        }
+      });
+      onLoad(gltf.scene);
+    },
+    undefined,
+    (error) => {
+      console.warn("Ember & Ink: optional 3D asset could not be loaded; using the built-in scene model.", error);
+    },
+  );
+}
+
+function disposeObject3D(root) {
+  root.traverse((object) => {
+    if (object.geometry) object.geometry.dispose();
+    if (object.material) {
+      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      materials.forEach((material) => {
+        for (const value of Object.values(material)) {
+          if (value && value.isTexture) value.dispose();
+        }
+        material.dispose();
+      });
+    }
+  });
 }
 
 function makeSoftTexture() {
@@ -867,8 +915,46 @@ export function mountHeroScene(canvas) {
   const river = createRiver(scene);
   createBridge(scene, rng);
   const train = createTrain(scene);
+  const fallbackTrainEngine = train.children[0];
   const tree = createTree(scene, mobile, rng);
-  const chair = createBench(scene, 5.95, 3.6);
+  let importedTree = null;
+  let importedTrainEngine = null;
+
+  // Replace the two most visually recognisable hero silhouettes with actual
+  // GLB assets when the CDN is reachable. The handcrafted models remain as
+  // resilient fallbacks, so a CDN outage never blanks the environment.
+  loadExternalModel(
+    "https://polyfork.dev/cdn/cherry-tree-a710a9.glb",
+    (model) => {
+      if (disposed) {
+        disposeObject3D(model);
+        return;
+      }
+      model.scale.setScalar(1.22);
+      model.position.set(5.2, groundHeight(5.2, 0.8), 0.8);
+      model.rotation.y = -0.12;
+      tree.visible = false;
+      importedTree = model;
+      scene.add(model);
+    },
+  );
+
+  loadExternalModel(
+    "https://polyfork.dev/cdn/train-engine-180979.glb",
+    (model) => {
+      if (disposed) {
+        disposeObject3D(model);
+        return;
+      }
+      model.scale.setScalar(0.72);
+      model.position.set(0.4, 0, 0);
+      fallbackTrainEngine.visible = false;
+      importedTrainEngine = model;
+      train.add(model);
+    },
+  );
+
+  const readingCorner = createBench(scene, 5.95, 3.6);
   const lamp = createLamp(scene, 8.15, 3.9);
   const airPetals = createAirPetals(scene, mobile, rng);
 
@@ -923,6 +1009,7 @@ export function mountHeroScene(canvas) {
     if (!reducedMotion) {
       river.material.uniforms.uTime.value = t;
       tree.rotation.z = Math.sin(t * 0.42) * 0.012;
+      if (importedTree) importedTree.rotation.z = Math.sin(t * 0.42) * 0.009;
       terrain.grass.rotation.z = Math.sin(t * 0.62) * 0.006;
       pointer.x = lerp(pointer.x, pointer.tx, 0.025);
       pointer.y = lerp(pointer.y, pointer.ty, 0.025);
@@ -994,6 +1081,8 @@ export function mountHeroScene(canvas) {
         });
       }
     });
+    if (importedTree && importedTree.parent) importedTree.parent.remove(importedTree);
+    if (importedTrainEngine && importedTrainEngine.parent) importedTrainEngine.parent.remove(importedTrainEngine);
     renderer.dispose();
   };
 
