@@ -1,23 +1,30 @@
-/*
- * Design tokens — the single source of truth for colour and typography.
- * Change a value here and it updates every page of the site.
+﻿/*
+ * Design tokens — Literary + Soft Magical
+ * Ember & Ink
  */
 :root {
-  /* Colour */
-  --cream: #fbf6ee;
-  --paper: #fffdf8;
-  --burgundy: #5b1f2a;
-  --burgundy-dark: #451722;
-  --gold: #c9a227;
-  --gold-soft: #e8d9a8;
-  --ink: #2b2118;
-  --muted: #6f6257;
-  --line: #e6dccb;
+  /* Warm paper & ink */
+  --cream: #f9f4eb;
+  --paper: #fffdf7;
+  --ink: #2a2118;
+  --muted: #6e6155;
 
-  /*
-   * Font stacks. Named with a `-stack` suffix so the Tailwind theme
-   * (in global.css) can alias them without a circular reference.
-   */
+  /* Deep literary burgundy */
+  --burgundy: #5c1f2c;
+  --burgundy-dark: #42151f;
+
+  /* Soft candlelight gold */
+  --gold: #c9a14a;
+  --gold-soft: #e8d5a3;
+
+  /* Subtle lines */
+  --line: #e5d9c5;
+
+  /* Soft magical accents (optional use later) */
+  --rose: #c97b84;
+  --forest: #3d4f3f;
+
+  /* Font stacks */
   --font-display-stack: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --font-body-stack: 'Inter Variable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
