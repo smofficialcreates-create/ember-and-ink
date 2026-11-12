@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const clamp = THREE.MathUtils.clamp;
 const lerp = THREE.MathUtils.lerp;
@@ -21,29 +20,34 @@ function makeRng(seed = 731) {
  * terrain, lighting, water, petals and motion remain custom Three.js work.
  * Both sources publish free-to-use models; keep these URLs in the asset notes.
  */
-function loadExternalModel(url, onLoad) {
-  const loader = new GLTFLoader();
-  loader.load(
-    url,
-    (gltf) => {
-      gltf.scene.traverse((object) => {
-        if (!object.isMesh) return;
-        object.castShadow = true;
-        object.receiveShadow = true;
-        if (object.material) {
-          const materials = Array.isArray(object.material) ? object.material : [object.material];
-          for (const material of materials) {
-            material.needsUpdate = true;
+async function loadExternalModel(url, onLoad) {
+  try {
+    // Keep GLTFLoader out of the initial hero bundle; fetch it only for the
+    // optional models, preserving a quick first paint on slower devices.
+    const { GLTFLoader } = await import("three/addons/loaders/GLTFLoader.js");
+    const loader = new GLTFLoader();
+    loader.load(
+      url,
+      (gltf) => {
+        gltf.scene.traverse((object) => {
+          if (!object.isMesh) return;
+          object.castShadow = true;
+          object.receiveShadow = true;
+          if (object.material) {
+            const materials = Array.isArray(object.material) ? object.material : [object.material];
+            for (const material of materials) material.needsUpdate = true;
           }
-        }
-      });
-      onLoad(gltf.scene);
-    },
-    undefined,
-    (error) => {
-      console.warn("Ember & Ink: optional 3D asset could not be loaded; using the built-in scene model.", error);
-    },
-  );
+        });
+        onLoad(gltf.scene);
+      },
+      undefined,
+      (error) => {
+        console.warn("Ember & Ink: optional 3D asset could not be loaded; using the built-in scene model.", error);
+      },
+    );
+  } catch (error) {
+    console.warn("Ember & Ink: the optional GLB loader could not be initialized.", error);
+  }
 }
 
 function disposeObject3D(root) {
@@ -954,8 +958,8 @@ export function mountHeroScene(canvas) {
     },
   );
 
-  const readingCorner = createBench(scene, 5.95, 3.6);
-  const lamp = createLamp(scene, 8.15, 3.9);
+  createBench(scene, 5.95, 3.6);
+  createLamp(scene, 8.15, 3.9);
   const airPetals = createAirPetals(scene, mobile, rng);
 
   // A few low-opacity sun shafts add atmosphere without turning the morning into fantasy lighting.
