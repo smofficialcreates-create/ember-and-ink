@@ -122,6 +122,37 @@ const others = all.filter((p) => p.id !== featured[0]?.id).slice(0, 3);
 
   document.addEventListener('DOMContentLoaded', () => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Cinematic depth: the 3D world drifts more slowly than the editorial copy.
+    // Keep this subtle, desktop-only, and fully disabled for reduced-motion users.
+    const hero = document.querySelector<HTMLElement>('#hero');
+    const heroCanvas = document.querySelector<HTMLElement>('#hero-canvas');
+    const heroCopy = document.querySelector<HTMLElement>('.hero-copy');
+    if (hero && heroCanvas && window.matchMedia('(min-width: 761px)').matches) {
+      gsap.to(heroCanvas, {
+        yPercent: 13,
+        scale: 1.055,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.8,
+        },
+      });
+    }
+    if (hero && heroCopy) {
+      gsap.to(heroCopy, {
+        yPercent: -8,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.8,
+        },
+      });
+    }
+
     // Fade up text blocks as you scroll
     const revealElements = gsap.utils.toArray<HTMLElement>('.reveal-up');
     revealElements.forEach((elem) => {
