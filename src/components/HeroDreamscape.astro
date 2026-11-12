@@ -1,257 +1,121 @@
 ---
-// Ember & Ink — countryside hero. HTML copy stays above a Three.js scene.
+/**
+ * Ember & Ink — immersive countryside hero.
+ * The scene renderer lives in src/scripts/hero-scene.js so geometry,
+ * materials and animation remain separate from the accessible HTML.
+ */
 ---
 
-<section id="hero" class="relative w-full h-screen overflow-hidden bg-[#c5d7b4]">
-  <canvas id="hero-canvas" class="absolute inset-0 z-0 h-full w-full" aria-hidden="true"></canvas>
-  <div class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#f7f1e4]/75 via-[#f7f1e4]/25 to-transparent"></div>
+<section id="hero" class="hero-dreamscape relative isolate min-h-[760px] h-[100svh] w-full overflow-hidden bg-[#c6dce0]">
+  <canvas
+    id="hero-canvas"
+    class="absolute inset-0 z-0 h-full w-full"
+    aria-hidden="true"
+  ></canvas>
 
-  <header class="absolute top-0 z-30 flex w-full items-center justify-between px-6 py-6 text-[#3a2218] md:px-12">
-    <a href="/" class="flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
-      </svg>
-      <span class="font-display text-xl tracking-wide font-medium">Ember & Ink</span>
+  <div class="hero-wash pointer-events-none absolute inset-0 z-[1]" aria-hidden="true"></div>
+
+  <header class="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 text-[#302d27] md:px-10 md:py-7">
+    <a href="/" class="flex items-center gap-2.5 font-display text-xl font-semibold tracking-tight md:text-2xl" aria-label="Ember and Ink home">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#715d47]/30 bg-[#fffaf0]/65 text-[#5b1f2a] backdrop-blur-sm">
+        <svg viewBox="0 0 32 32" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M4 8.5c4.2-2 8.2-1.6 12 1.2v16c-3.8-2.8-7.8-3.2-12-1.2zM28 8.5c-4.2-2-8.2-1.6-12 1.2v16c3.8-2.8 7.8-3.2 12-1.2z"/>
+          <path d="M8 12.5c2.2-.6 4.1-.3 6 1M24 12.5c-2.2-.6-4.1-.3-6 1"/>
+        </svg>
+      </span>
+      <span>Ember <span class="text-[#a47a48]">&amp;</span> Ink</span>
     </a>
-    <nav class="hidden items-center gap-8 text-sm font-medium tracking-wide md:flex">
-      <a href="/categories/self-help/" class="hover:text-[#5c1f2c]">Self-Help</a>
-      <a href="/categories/fantasy-romance/" class="hover:text-[#5c1f2c]">Fantasy Romance</a>
-      <a href="/reviews/" class="hover:text-[#5c1f2c]">Reviews</a>
-      <a href="/blog/" class="hover:text-[#5c1f2c]">Blog</a>
-      <a href="/about/" class="hover:text-[#5c1f2c]">About</a>
+
+    <nav class="hidden items-center gap-7 rounded-full border border-white/35 bg-[#f8f4e9]/55 px-6 py-3 text-[13px] font-medium tracking-wide text-[#34352f] shadow-sm backdrop-blur-md md:flex" aria-label="Primary navigation">
+      <a href="/categories/self-help/" class="transition-colors hover:text-[#7a3742]">Self-Help</a>
+      <a href="/categories/fantasy-romance/" class="transition-colors hover:text-[#7a3742]">Fantasy Romance</a>
+      <a href="/reviews/" class="transition-colors hover:text-[#7a3742]">Reviews</a>
+      <a href="/blog/" class="transition-colors hover:text-[#7a3742]">Blog</a>
+      <a href="/faq/" class="transition-colors hover:text-[#7a3742]">FAQ</a>
+      <a href="/about/" class="transition-colors hover:text-[#7a3742]">About</a>
     </nav>
+
+    <details class="relative md:hidden">
+      <summary class="cursor-pointer list-none rounded-full border border-[#695846]/25 bg-[#fffaf0]/65 px-4 py-2 text-sm font-medium text-[#302d27] backdrop-blur-sm">Menu</summary>
+      <nav class="absolute right-0 mt-2 grid min-w-48 gap-1 rounded-2xl border border-white/60 bg-[#faf7ee]/95 p-3 text-sm shadow-xl backdrop-blur-xl" aria-label="Mobile navigation">
+        <a class="rounded-lg px-3 py-2 hover:bg-white/70" href="/categories/self-help/">Self-Help</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/70" href="/categories/fantasy-romance/">Fantasy Romance</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/70" href="/reviews/">Reviews</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/70" href="/blog/">Blog</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/70" href="/faq/">FAQ</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/70" href="/about/">About</a>
+      </nav>
+    </details>
   </header>
 
-  <div id="hero-content" class="container-ember relative z-20 flex h-full flex-col justify-end pb-16 md:justify-center md:pb-0">
-    <div class="max-w-xl pl-1 md:pl-8">
-      <p class="mb-3 text-xs uppercase tracking-[0.28em] text-[#3c2a22]/70">A countryside library</p>
-      <h1 id="hero-title" class="font-display text-5xl leading-[0.95] text-[#3a2218] drop-shadow-sm md:text-7xl">
-        Where stories <span class="italic text-[#5c1f2c]">bloom</span>
+  <div id="hero-content" class="container-ember relative z-20 flex h-full items-start pb-24 pt-40 md:items-center md:pb-10 md:pt-16">
+    <div class="hero-copy max-w-[38rem] rounded-[1.75rem] px-1 py-2 md:px-0">
+      <p class="mb-5 text-[11px] font-semibold uppercase tracking-[0.34em] text-[#655f50] md:text-xs">
+        A countryside library
+      </p>
+      <h1 id="hero-title" class="font-display text-[clamp(3.5rem,7vw,6.7rem)] leading-[0.91] tracking-[-0.055em] text-[#2f332c]">
+        Where stories <span class="block italic font-normal text-[#9b5960]">bloom.</span>
       </h1>
-      <p class="mt-5 max-w-md text-lg leading-relaxed text-[#3a2a22]/90">
+      <p class="mt-7 max-w-[29rem] text-[15px] leading-7 text-[#3d4037] md:text-lg md:leading-8">
         Step into our Japanese countryside library. Honest reviews for self-help and fantasy romance readers.
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
-        <a href="/blog/" class="rounded-full bg-[#5c1f2c] px-6 py-3 text-sm font-medium text-[#f7f1e4]">Explore the library</a>
-        <a href="/categories/" class="rounded-full border border-[#5c1f2c]/40 bg-[#f7f1e4]/75 px-6 py-3 text-sm font-medium text-[#5c1f2c]">Discover books</a>
+        <a href="/blog/" class="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#56303a] px-7 py-3 text-sm font-semibold text-[#fff9ed] shadow-[0_10px_30px_rgba(47,43,34,.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#40232b]">
+          Explore the library <span aria-hidden="true">↗</span>
+        </a>
+        <a href="/categories/" class="inline-flex min-h-12 items-center justify-center rounded-full border border-[#5b5142]/35 bg-[#fffaf0]/60 px-7 py-3 text-sm font-semibold text-[#40382f] backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-[#fffaf0]/85">
+          Discover books
+        </a>
       </div>
     </div>
+  </div>
+
+  <div class="pointer-events-none absolute bottom-7 right-8 z-20 hidden items-center gap-3 text-[10px] uppercase tracking-[0.25em] text-[#45564e]/80 md:flex">
+    <span class="h-px w-10 bg-current"></span>
+    A quieter kind of escape
   </div>
 </section>
 
 <script>
-  import * as THREE from "three";
+  import { mountHeroScene } from "../scripts/hero-scene.js";
 
   const canvas = document.getElementById("hero-canvas");
   if (canvas instanceof HTMLCanvasElement) {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.matchMedia("(max-width: 760px)").matches;
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.25 : 1.6));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
-
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xc5dceb, 0.02);
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 160);
-    camera.position.set(-0.2, 2.35, 7.2);
-
-    scene.add(new THREE.HemisphereLight(0xcfe6ff, 0x6d8a52, 0.75));
-    const sun = new THREE.DirectionalLight(0xfff4dd, 2.3);
-    sun.position.set(-12, 18, 8);
-    scene.add(sun);
-
-    const sky = new THREE.Mesh(
-      new THREE.SphereGeometry(80, 24, 16),
-      new THREE.ShaderMaterial({
-        side: THREE.BackSide,
-        vertexShader: `varying vec3 vP; void main(){ vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
-        fragmentShader: `varying vec3 vP; void main(){ float h=normalize(vP).y*0.5+0.5; vec3 c=mix(vec3(0.78,0.88,0.78), vec3(0.55,0.76,0.92), smoothstep(0.0,0.55,h)); gl_FragColor=vec4(c,1.0); }`,
-      }),
-    );
-    scene.add(sky);
-
-    const terrGeo = new THREE.PlaneGeometry(80, 60, mobile ? 48 : 90, mobile ? 36 : 64);
-    terrGeo.rotateX(-Math.PI / 2);
-    const tp = terrGeo.attributes.position;
-    for (let i = 0; i < tp.count; i++) {
-      const x = tp.getX(i);
-      const z = tp.getZ(i);
-      let y = Math.exp(-(x * x) / 28 - ((z - 1) * (z - 1)) / 16) * 2.2;
-      const river = Math.abs(z + 6 + Math.sin(x * 0.09) * 1.2);
-      y -= Math.exp(-river * river * 0.4) * 0.9;
-      y += Math.sin(x * 0.08) * 0.25;
-      tp.setY(i, y);
-    }
-    terrGeo.computeVertexNormals();
-    scene.add(new THREE.Mesh(terrGeo, new THREE.MeshStandardMaterial({ color: 0x7ea15d, roughness: 0.92 })));
-
-    const riverGeo = new THREE.PlaneGeometry(70, 9, 60, 8);
-    riverGeo.rotateX(-Math.PI / 2);
-    const rp = riverGeo.attributes.position;
-    for (let i = 0; i < rp.count; i++) {
-      rp.setZ(i, rp.getZ(i) - 6.2 + Math.sin(rp.getX(i) * 0.09) * 1.2);
-      rp.setY(i, -0.25);
-    }
-    const riverMat = new THREE.ShaderMaterial({
-      transparent: true,
-      uniforms: { uTime: { value: 0 } },
-      vertexShader: `uniform float uTime; varying vec2 vUv; void main(){ vUv=uv; vec3 p=position; p.y+=sin(p.x*0.7+uTime*1.2)*0.04; gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0); }`,
-      fragmentShader: `varying vec2 vUv; uniform float uTime; void main(){ float f=sin(vUv.x*30.0-uTime*2.0)*0.5+0.5; vec3 c=mix(vec3(0.32,0.58,0.7), vec3(0.75,0.88,0.86), f); gl_FragColor=vec4(c,0.88); }`,
-    });
-    scene.add(new THREE.Mesh(riverGeo, riverMat));
-
-    const hillMat = new THREE.MeshStandardMaterial({ color: 0x8eae78, roughness: 1 });
-    const farMat = new THREE.MeshStandardMaterial({ color: 0xb7cdd0, roughness: 1 });
-    [[18, 4, 8, -20, -24, hillMat], [16, 5, 8, 14, -30, hillMat], [24, 6, 10, -4, -42, farMat]].forEach(([w, h, d, x, z, mat]) => {
-      const m = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 12), mat);
-      m.scale.set(w, h, d);
-      m.position.set(x, -h * 0.35, z);
-      scene.add(m);
-    });
-
-    const tree = new THREE.Group();
-    const bark = new THREE.MeshStandardMaterial({ color: 0x5c3a2a, roughness: 0.86 });
-    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.4, 2.4, 8), bark);
-    trunk.position.y = 1.2;
-    tree.add(trunk);
-    const tips = [];
-    const arms = [[2.4, 3.3, 0.4], [-2.3, 3.1, -0.2], [0.2, 3.8, -1.8], [1.0, 3.2, 1.8], [-0.7, 3.9, 1.1], [1.6, 2.8, -1.2], [-1.7, 2.7, 1.0], [0.1, 3.4, 0.2]];
-    for (const [x, y, z] of arms) {
-      const a = new THREE.Vector3(0, 2, 0);
-      const b = new THREE.Vector3(x, y, z);
-      const path = new THREE.QuadraticBezierCurve3(a, a.clone().lerp(b, 0.5).add(new THREE.Vector3(0, 0.3, 0)), b);
-      tree.add(new THREE.Mesh(new THREE.TubeGeometry(path, 6, 0.055, 5, false), bark));
-      tips.push(b);
-    }
-    const count = mobile ? 320 : 640;
-    const blossoms = new THREE.InstancedMesh(
-      new THREE.SphereGeometry(0.15, 6, 5),
-      new THREE.MeshStandardMaterial({ color: 0xf3b7c4, roughness: 0.65 }),
-      count,
-    );
-    const dummy = new THREE.Object3D();
-    for (let i = 0; i < count; i++) {
-      const tip = tips[i % tips.length];
-      dummy.position.copy(tip).add(new THREE.Vector3((Math.random() - 0.5) * 1.9, (Math.random() - 0.4) * 1, (Math.random() - 0.5) * 1.9));
-      dummy.scale.setScalar(0.5 + Math.random() * 0.9);
-      dummy.updateMatrix();
-      blossoms.setMatrixAt(i, dummy.matrix);
-    }
-    tree.add(blossoms);
-    tree.position.set(-0.4, 1.05, 0.1);
-    tree.scale.setScalar(1.45);
-    scene.add(tree);
-
-    const petalN = mobile ? 60 : 120;
-    const petals = new THREE.InstancedMesh(
-      new THREE.PlaneGeometry(0.08, 0.12),
-      new THREE.MeshStandardMaterial({ color: 0xf7c5d0, side: THREE.DoubleSide }),
-      petalN,
-    );
-    const petalState = Array.from({ length: petalN }, () => ({
-      x: (Math.random() - 0.5) * 8,
-      y: 2 + Math.random() * 5,
-      z: (Math.random() - 0.5) * 6,
-      s: 0.5 + Math.random(),
-      spin: Math.random() * 6,
-    }));
-    scene.add(petals);
-
-    const wood = new THREE.MeshStandardMaterial({ color: 0x8d5a38, roughness: 0.72 });
-    const bench = new THREE.Group();
-    const seat = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.52), wood);
-    seat.position.y = 0.42;
-    bench.add(seat);
-    const back = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.55, 0.06), wood);
-    back.position.set(0, 0.72, -0.22);
-    bench.add(back);
-    bench.position.set(1.7, 1.15, 1.5);
-    bench.rotation.y = -0.5;
-    bench.scale.setScalar(1.35);
-    scene.add(bench);
-
-    const stone = new THREE.MeshStandardMaterial({ color: 0xd9d2c3, roughness: 0.8 });
-    const lamp = new THREE.Group();
-    lamp.add(new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.11, 0.95, 8), stone));
-    const cap = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.14, 0.28), stone);
-    cap.position.y = 0.55;
-    lamp.add(cap);
-    lamp.position.set(2.3, 1.55, 2.2);
-    scene.add(lamp);
-
-    const bridgeMat = new THREE.MeshStandardMaterial({ color: 0x6e5344, roughness: 0.8 });
-    const bridge = new THREE.Group();
-    bridge.add(new THREE.Mesh(new THREE.BoxGeometry(20, 0.16, 1.05), bridgeMat));
-    for (let i = -8; i <= 8; i += 4) {
-      const pier = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.8, 0.25), bridgeMat);
-      pier.position.set(i, -0.9, 0);
-      bridge.add(pier);
-    }
-    bridge.position.set(1, 0.15, -6.2);
-    scene.add(bridge);
-
-    const train = new THREE.Group();
-    const carMat = new THREE.MeshStandardMaterial({ color: 0xf3efe6 });
-    const roofMat = new THREE.MeshStandardMaterial({ color: 0x5c1f2c });
-    for (let i = 0; i < 3; i++) {
-      const car = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.65, 0.5), carMat);
-      car.position.x = -i * 1.65;
-      const roof = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.1, 0.55), roofMat);
-      roof.position.set(-i * 1.65, 0.38, 0);
-      train.add(car, roof);
-    }
-    train.position.set(-6, 0.62, -6.2);
-    scene.add(train);
-
-    const mouse = { x: 0, y: 0 };
-    window.addEventListener("pointermove", (e) => {
-      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
-    }, { passive: true });
-
-    const fit = () => {
-      const w = canvas.clientWidth || window.innerWidth;
-      const h = canvas.clientHeight || window.innerHeight;
-      camera.aspect = w / Math.max(h, 1);
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    fit();
-    window.addEventListener("resize", fit);
-
-    let running = true;
-    document.addEventListener("visibilitychange", () => {
-      running = document.visibilityState === "visible";
-    });
-    const clock = new THREE.Clock();
-    const loop = () => {
-      requestAnimationFrame(loop);
-      if (!running) return;
-      const t = reduced ? 0 : clock.getElapsedTime();
-      const dt = reduced ? 0 : clock.getDelta();
-      riverMat.uniforms.uTime.value = t;
-      for (let i = 0; i < petalN; i++) {
-        const p = petalState[i];
-        if (!reduced) {
-          p.y -= dt * (0.25 + p.s * 0.2);
-          p.x += Math.sin(t + p.spin) * dt * 0.2;
-          p.spin += dt;
-          if (p.y < 1.2) p.y = 6;
-        }
-        dummy.position.set(p.x, p.y + 1.2, p.z);
-        dummy.rotation.set(p.spin, 0, 0);
-        dummy.scale.setScalar(p.s);
-        dummy.updateMatrix();
-        petals.setMatrixAt(i, dummy.matrix);
-      }
-      petals.instanceMatrix.needsUpdate = true;
-      if (!reduced) train.position.x = ((t * 1.1) % 22) - 11;
-      const sway = reduced ? 0 : mouse.x * 0.35;
-      camera.position.x += (-0.2 + sway - camera.position.x) * 0.04;
-      camera.lookAt(-0.3, 2.35, 0.2);
-      renderer.render(scene, camera);
-    };
-    loop();
+    mountHeroScene(canvas);
   }
 </script>
+
+<style>
+  .hero-dreamscape {
+    min-height: 760px;
+    height: 100svh;
+    isolation: isolate;
+  }
+
+  .hero-wash {
+    background:
+      linear-gradient(90deg, rgba(248, 246, 235, 0.88) 0%, rgba(248, 246, 235, 0.72) 28%, rgba(248, 246, 235, 0.18) 56%, rgba(248, 246, 235, 0) 76%),
+      linear-gradient(180deg, rgba(242, 245, 235, 0.28) 0%, transparent 24%, transparent 70%, rgba(38, 55, 42, 0.16) 100%);
+  }
+
+  @media (max-width: 760px) {
+    .hero-dreamscape {
+      min-height: 820px;
+      height: 100svh;
+    }
+
+    .hero-wash {
+      background:
+        linear-gradient(180deg, rgba(248, 246, 235, 0.58) 0%, rgba(248, 246, 235, 0.42) 42%, rgba(248, 246, 235, 0.08) 100%),
+        linear-gradient(90deg, rgba(248, 246, 235, 0.42), transparent 100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-copy,
+    .hero-copy * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+</style>
