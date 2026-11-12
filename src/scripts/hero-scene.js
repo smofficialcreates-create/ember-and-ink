@@ -67,25 +67,43 @@ function disposeObject3D(root) {
 
 function makeSoftTexture() {
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 256;
+  canvas.width = canvas.height = 768;
   const ctx = canvas.getContext("2d");
-  const gradient = ctx.createLinearGradient(0, 0, 256, 256);
-  gradient.addColorStop(0, "#a9c982");
-  gradient.addColorStop(0.5, "#86ad66");
-  gradient.addColorStop(1, "#779d60");
+  const gradient = ctx.createLinearGradient(0, 0, 768, 768);
+  gradient.addColorStop(0, "#b4cb8d");
+  gradient.addColorStop(0.38, "#91b36f");
+  gradient.addColorStop(0.72, "#789e5e");
+  gradient.addColorStop(1, "#668953");
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillRect(0, 0, 768, 768);
   const rng = makeRng(15);
-  for (let i = 0; i < 6500; i++) {
-    const tone = rng() > 0.52 ? "rgba(44,79,42,.09)" : "rgba(231,222,160,.10)";
-    ctx.fillStyle = tone;
-    const w = 1 + rng() * 3;
-    const h = 1 + rng() * 2;
-    ctx.fillRect(rng() * 256, rng() * 256, w, h);
+  // Layered micro-variation prevents the hillside reading as a single flat
+  // green sheet while remaining subtle enough for a clean anime-film palette.
+  for (let i = 0; i < 36000; i++) {
+    const roll = rng();
+    ctx.fillStyle = roll > 0.68
+      ? "rgba(39,76,39,.075)"
+      : roll > 0.34
+        ? "rgba(225,220,157,.075)"
+        : "rgba(255,255,255,.035)";
+    const w = 1 + rng() * 5;
+    const h = 1 + rng() * 3;
+    ctx.fillRect(rng() * 768, rng() * 768, w, h);
+  }
+  for (let i = 0; i < 2600; i++) {
+    const x = rng() * 768;
+    const y = rng() * 768;
+    const length = 3 + rng() * 13;
+    ctx.strokeStyle = rng() > 0.5 ? "rgba(52,91,45,.11)" : "rgba(232,226,170,.13)";
+    ctx.lineWidth = 0.45 + rng() * 0.8;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (rng() - 0.5) * 2.5, y - length);
+    ctx.stroke();
   }
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(11, 12);
+  texture.repeat.set(8, 9);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
   return texture;
@@ -204,7 +222,7 @@ function createTerrain(scene, mobile, rng) {
   const grass = new THREE.InstancedMesh(
     blade,
     new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide, roughness: 1 }),
-    mobile ? 1500 : 3900,
+    mobile ? 3000 : 9800,
   );
   grass.castShadow = false;
   grass.receiveShadow = true;
@@ -879,7 +897,7 @@ export function mountHeroScene(canvas) {
     return () => {};
   }
 
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.1 : 1.55));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.05 : 1.4));
   renderer.setSize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -902,7 +920,7 @@ export function mountHeroScene(canvas) {
   const sunLight = new THREE.DirectionalLight(0xfff1d8, 2.25);
   sunLight.position.set(9, 20, 10);
   sunLight.castShadow = !mobile;
-  sunLight.shadow.mapSize.set(mobile ? 512 : 1536, mobile ? 512 : 1536);
+  sunLight.shadow.mapSize.set(mobile ? 768 : 2048, mobile ? 768 : 2048);
   sunLight.shadow.camera.left = -27;
   sunLight.shadow.camera.right = 27;
   sunLight.shadow.camera.top = 27;
@@ -917,7 +935,34 @@ export function mountHeroScene(canvas) {
 
   const terrain = createTerrain(scene, mobile, rng);
   const river = createRiver(scene);
-  createBridge(scene, rng);
+  const bridgeFallback = createBridge(scene, rng);
+  let importedBridge = null;
+  // A CC0 modular through-girder bridge replaces the block-built placeholder
+  // once the detailed GLB is ready. Three 8.25 m modules create one coherent span.
+  loadExternalModel(
+    "https://cdn.3dassets.dev/assets/14743/v1/model.glb",
+    (bridgeModule) => {
+      if (disposed) {
+        disposeObject3D(bridgeModule);
+        return;
+      }
+      const span = new THREE.Group();
+      for (let i = 0; i < 3; i++) {
+        const segment = bridgeModule.clone(true);
+        segment.rotation.y = Math.PI / 2;
+        segment.position.set(-12.375 + i * 8.25, 2.37, -17);
+        segment.traverse((object) => {
+          if (!object.isMesh) return;
+          object.castShadow = true;
+          object.receiveShadow = true;
+        });
+        span.add(segment);
+      }
+      bridgeFallback.visible = false;
+      importedBridge = span;
+      scene.add(span);
+    },
+  );
   const train = createTrain(scene);
   const tree = createTree(scene, mobile, rng);
   let importedTree = null;
@@ -926,7 +971,7 @@ export function mountHeroScene(canvas) {
   // not a generated blossom-cluster silhouette. The hand-built tree remains
   // as a graceful fallback if the CDN is unavailable.
   loadExternalModel(
-    "https://cdn.3dassets.dev/assets/30082/v1/model.glb",
+    "https://cdn.3dassets.dev/assets/3783/v1/model.glb",
     (model) => {
       if (disposed) {
         disposeObject3D(model);
@@ -937,13 +982,18 @@ export function mountHeroScene(canvas) {
       // its lowest point directly on the hillside.
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
-      const targetHeight = 7.1;
+      const targetHeight = 10.2;
       const modelScale = targetHeight / Math.max(size.y, 0.001);
-      model.scale.setScalar(modelScale);
+      // Keep the mature tree tall while giving its blossom canopy a more
+      // generous natural spread than the source's narrow street-tree profile.
+      const scaleX = modelScale * 1.24;
+      const scaleY = modelScale;
+      const scaleZ = modelScale * 1.18;
+      model.scale.set(scaleX, scaleY, scaleZ);
       model.position.set(
-        5.2 - ((bounds.min.x + bounds.max.x) * 0.5) * modelScale,
-        groundHeight(5.2, 0.8) - bounds.min.y * modelScale,
-        0.8 - ((bounds.min.z + bounds.max.z) * 0.5) * modelScale,
+        5.2 - ((bounds.min.x + bounds.max.x) * 0.5) * scaleX,
+        groundHeight(5.2, 0.8) - bounds.min.y * scaleY,
+        0.8 - ((bounds.min.z + bounds.max.z) * 0.5) * scaleZ,
       );
       model.rotation.y = -0.12;
 
@@ -1021,7 +1071,10 @@ export function mountHeroScene(canvas) {
     if (!reducedMotion) {
       river.material.uniforms.uTime.value = t;
       tree.rotation.z = Math.sin(t * 0.42) * 0.012;
-      if (importedTree) importedTree.rotation.z = Math.sin(t * 0.42) * 0.009;
+      if (importedTree) {
+        importedTree.rotation.z = Math.sin(t * 0.36) * 0.006;
+        importedTree.rotation.x = Math.sin(t * 0.29) * 0.003;
+      }
       terrain.grass.rotation.z = Math.sin(t * 0.62) * 0.006;
       pointer.x = lerp(pointer.x, pointer.tx, 0.025);
       pointer.y = lerp(pointer.y, pointer.ty, 0.025);
@@ -1094,6 +1147,7 @@ export function mountHeroScene(canvas) {
       }
     });
     if (importedTree && importedTree.parent) importedTree.parent.remove(importedTree);
+    if (importedBridge && importedBridge.parent) importedBridge.parent.remove(importedBridge);
     renderer.dispose();
   };
 
