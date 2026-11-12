@@ -83,7 +83,8 @@ const others = all.filter((p) => p.id !== featured[0]?.id).slice(0, 3);
 
   document.addEventListener('DOMContentLoaded', () => {
     // Fade up text blocks as you scroll
-    gsap.utils.toArray<HTMLElement>('.reveal-up').forEach((elem) => {
+    const revealElements = gsap.utils.toArray('.reveal-up') as HTMLElement[];
+    revealElements.forEach((elem) => {
       gsap.from(elem, {
         y: 50,
         opacity: 0,
