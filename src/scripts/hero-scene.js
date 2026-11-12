@@ -38,7 +38,7 @@ async function loadExternalModel(url, onLoad) {
             for (const material of materials) material.needsUpdate = true;
           }
         });
-        onLoad(gltf.scene);
+        onLoad(gltf.scene, gltf.animations ?? []);
       },
       undefined,
       (error) => {
@@ -964,6 +964,54 @@ export function mountHeroScene(canvas) {
     },
   );
   const train = createTrain(scene);
+  const importedTrain = new THREE.Group();
+  importedTrain.position.set(train.position.x, 2.87, -17);
+  importedTrain.rotation.y = Math.PI / 2;
+  scene.add(importedTrain);
+  const trainParts = [];
+  const trainMixers = [];
+  let trainPartsReady = 0;
+  const acceptTrainPart = (model, animations, localZ) => {
+    if (disposed) {
+      disposeObject3D(model);
+      return;
+    }
+    trainParts.push({ model, animations, localZ });
+    trainPartsReady += 1;
+    if (trainPartsReady !== 3) return;
+
+    // A purpose-built, animated steam locomotive and two matching branch-line
+    // passenger coaches replace the toy-like box-built train. All three models
+    // are CC0, metre-scaled GLBs from one coherent railway asset set.
+    for (const part of trainParts) {
+      part.model.scale.setScalar(0.68);
+      part.model.position.set(0, 0, part.localZ);
+      importedTrain.add(part.model);
+      if (part.animations.length) {
+        const mixer = new THREE.AnimationMixer(part.model);
+        mixer.clipAction(part.animations[0]).play();
+        trainMixers.push(mixer);
+      }
+    }
+
+    // Reuse the existing soft smoke sprites, but attach them to the authored
+    // locomotive so the fallback train can disappear cleanly.
+    for (const puff of train.userData.smoke) {
+      train.remove(puff.sprite);
+      puff.sprite.position.set(0, 4.25, 3.65);
+      importedTrain.add(puff.sprite);
+    }
+    train.visible = false;
+    importedTrain.visible = true;
+  };
+  importedTrain.visible = false;
+  loadExternalModel("https://cdn.3dassets.dev/assets/14716/v1/model.glb",
+    (model, animations) => acceptTrainPart(model, animations, 0));
+  loadExternalModel("https://cdn.3dassets.dev/assets/14727/v1/model.glb",
+    (model, animations) => acceptTrainPart(model, animations, -8.3));
+  loadExternalModel("https://cdn.3dassets.dev/assets/14727/v1/model.glb",
+    (model, animations) => acceptTrainPart(model, animations, -15.7));
+
   const tree = createTree(scene, mobile, rng);
   let importedTree = null;
 
@@ -1112,13 +1160,15 @@ export function mountHeroScene(canvas) {
       camera.position.y = 9.6 + pointer.y * 0.13;
       camera.lookAt(target.x + pointer.x * 0.28, target.y - pointer.y * 0.12, target.z);
 
-      train.position.x = -9.2 + ((t * 0.62) % 18.4);
+      train.position.x = -18 + ((t * 0.72) % 36);
+      importedTrain.position.x = train.position.x;
+      for (const mixer of trainMixers) mixer.update(dt);
       for (const wheel of train.userData.wheels) wheel.rotation.z -= dt * 3.1;
       for (const puff of train.userData.smoke) {
         puff.age += dt * 0.23;
         if (puff.age > 1) {
           puff.age = 0;
-          puff.sprite.position.set(1.25 + (rng() - 0.5) * 0.12, 1.63, (rng() - 0.5) * 0.12);
+          puff.sprite.position.set((rng() - 0.5) * 0.08, 4.25, 3.65 + (rng() - 0.5) * 0.08);
         }
         const p = puff.age;
         puff.sprite.position.x += dt * (0.14 + puff.seed * 0.012);
