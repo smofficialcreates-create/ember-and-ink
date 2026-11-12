@@ -622,7 +622,7 @@ function createTrain(scene) {
     smokeSprites.push({ sprite, age: i / 11, seed: i * 1.71 });
   }
 
-  train.position.set(-10.5, 2.8, -17);
+  train.position.set(-9.2, 2.8, -17);
   train.scale.setScalar(0.72);
   train.userData.wheels = wheelMeshes;
   train.userData.smoke = smokeSprites;
@@ -978,7 +978,7 @@ export function mountHeroScene(canvas) {
         return;
       }
 
-      // Normalize the source model to the scene's 7.1 m tree scale and place
+      // Normalize the source model to the scene's 10.2 m tree scale and place
       // its lowest point directly on the hillside.
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
@@ -1082,7 +1082,7 @@ export function mountHeroScene(canvas) {
       camera.position.y = 9.6 + pointer.y * 0.13;
       camera.lookAt(target.x + pointer.x * 0.28, target.y - pointer.y * 0.12, target.z);
 
-      train.position.x = -10.5 + ((t * 0.72) % 21);
+      train.position.x = -9.2 + ((t * 0.62) % 18.4);
       for (const wheel of train.userData.wheels) wheel.rotation.z -= dt * 3.1;
       for (const puff of train.userData.smoke) {
         puff.age += dt * 0.23;
