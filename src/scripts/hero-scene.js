@@ -140,7 +140,6 @@ function createTerrain(scene, mobile, rng) {
     }),
   );
   terrain.receiveShadow = true;
-  terrain.position.z = -6;
   scene.add(terrain);
 
   const bladePositions = [
@@ -859,7 +858,7 @@ export function mountHeroScene(canvas) {
   sunLight.shadow.bias = -0.0003;
   scene.add(sunLight);
 
-  createSky(scene, rng);
+  const clouds = createSky(scene, rng);
   createRidge(scene, { centerX: -9, centerZ: -36, width: 58, depth: 19, height: 5.3, color: 0x789a83, peakShift: -0.15, seed: 8 });
   createRidge(scene, { centerX: 11, centerZ: -42, width: 56, depth: 20, height: 7.1, color: 0x8ba99a, peakShift: 0.24, seed: 12 });
   createRidge(scene, { centerX: -1, centerZ: -50, width: 74, depth: 17, height: 4.2, color: 0xb2c2b8, peakShift: 0.02, seed: 17 });
@@ -871,7 +870,6 @@ export function mountHeroScene(canvas) {
   const tree = createTree(scene, mobile, rng);
   const chair = createBench(scene, 5.95, 3.6);
   const lamp = createLamp(scene, 8.15, 3.9);
-  const clouds = createSkyCloudsAlreadyCreated(scene, rng);
   const airPetals = createAirPetals(scene, mobile, rng);
 
   // A few low-opacity sun shafts add atmosphere without turning the morning into fantasy lighting.
@@ -1001,8 +999,4 @@ export function mountHeroScene(canvas) {
 
   window.addEventListener("pagehide", cleanup, { once: true });
   return cleanup;
-}
-
-function createSkyCloudsAlreadyCreated() {
-  return [];
 }
