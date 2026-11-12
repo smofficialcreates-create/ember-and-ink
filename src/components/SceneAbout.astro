@@ -1,0 +1,159 @@
+---
+/**
+ * SceneAbout.astro
+ * Scene 06 — The Literary Journey: The Japanese riverside village sanctuary
+ * High-res anime illustration background (sakura-village.webp) with live petals
+ * and the personal story of the 11th-grade bibliophile.
+ */
+---
+
+<section
+  id="literary-journey"
+  class="scene-anime relative isolate min-h-[920px] py-28 md:py-44 bg-[#1a1017] text-[#fbf6ee] overflow-hidden"
+>
+  <!-- ░░ HIGH-RES ANIME RIVERSIDE VILLAGE BACKGROUND ░░ -->
+  <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <img
+      id="about-bg"
+      src="/images/scenes/sakura-village.webp"
+      alt="Anime Japanese countryside village along sakura river at golden sunset"
+      class="w-full h-full object-cover object-center scale-105"
+      loading="lazy"
+    />
+  </div>
+
+  <!-- Atmospheric overlays -->
+  <div class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#1a1017]/95 via-[#1a1017]/75 to-[#1a1017]/45"></div>
+  <div class="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-[#140b11] via-transparent to-[#1a1017]/70"></div>
+
+  <!-- Live sakura petal drift canvas -->
+  <canvas
+    id="about-petals-canvas"
+    class="pointer-events-none absolute inset-0 z-[3] w-full h-full"
+    aria-hidden="true"
+  ></canvas>
+
+  <div class="container-ember relative z-10">
+    <div class="grid lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-20 items-center">
+      
+      <!-- Left: Narrative & Ethos -->
+      <div>
+        <p class="text-xs uppercase tracking-[0.32em] text-[#e8d5a3] font-semibold mb-4 drop-shadow">
+          05 / The Journey
+        </p>
+
+        <h2 class="font-display text-4xl md:text-6xl font-bold text-white leading-tight drop-shadow-lg">
+          Where high school ends, <span class="italic text-[#ffcad4]">imagination begins</span>.
+        </h2>
+
+        <div class="mt-8 space-y-4 text-base md:text-lg text-white/85 font-light leading-relaxed drop-shadow">
+          <p>
+            Welcome to Ember &amp; Ink. When I am not buried under high school coursework, I am buried in books. To me, reading is not mere entertainment—it is an anchor in a restless world.
+          </p>
+          <p>
+            I pair <strong>Self-Help</strong> with <strong>Fantasy Romance</strong> deliberately: one provides the grounding habits to build a meaningful life, while the other gives you the wings to escape when reality grows heavy.
+          </p>
+        </div>
+
+        <!-- Three Core Pillars -->
+        <div class="mt-10 grid sm:grid-cols-3 gap-4">
+          <div class="rounded-2xl border border-white/15 bg-[#251522]/80 backdrop-blur-md p-5 shadow-lg">
+            <span class="text-xs font-mono text-[#c9a14a]">01</span>
+            <h4 class="mt-2 font-display text-sm font-semibold text-white">Unvarnished Truth</h4>
+            <p class="mt-1 text-xs text-white/70 leading-relaxed">No paid reviews. If a book falls flat, we say so with gentleness.</p>
+          </div>
+
+          <div class="rounded-2xl border border-white/15 bg-[#251522]/80 backdrop-blur-md p-5 shadow-lg">
+            <span class="text-xs font-mono text-[#c9a14a]">02</span>
+            <h4 class="mt-2 font-display text-sm font-semibold text-white">Slow Curation</h4>
+            <p class="mt-1 text-xs text-white/70 leading-relaxed">Every recommendation is savored, verified, and reread.</p>
+          </div>
+
+          <div class="rounded-2xl border border-white/15 bg-[#251522]/80 backdrop-blur-md p-5 shadow-lg">
+            <span class="text-xs font-mono text-[#c9a14a]">03</span>
+            <h4 class="mt-2 font-display text-sm font-semibold text-white">Modern Craft</h4>
+            <p class="mt-1 text-xs text-white/70 leading-relaxed">Crafted with modern tools so a lone student can publish world-class notes.</p>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div class="mt-10 flex flex-wrap gap-4 items-center">
+          <a
+            href="/about/"
+            class="inline-flex items-center gap-2 rounded-full bg-white text-[#1a1017] px-8 py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-[#e8d5a3] transition-colors shadow-lg"
+          >
+            <span>Read Our Full Story</span>
+            <span>↗</span>
+          </a>
+          <a
+            href="/faq/"
+            class="text-xs font-semibold uppercase tracking-wider text-white/80 hover:text-[#e8d5a3] underline-offset-4 hover:underline transition-colors"
+          >
+            Have questions? Read the FAQ →
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Evocative Arch Window Motif -->
+      <div class="relative">
+        <div class="aspect-[4/5] rounded-[2.5rem] bg-gradient-to-b from-[#2a1727]/90 to-[#140b13]/90 border border-white/20 p-8 md:p-10 shadow-[0_24px_80px_rgba(0,0,0,0.5)] backdrop-blur-xl flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs tracking-widest uppercase text-[#e8d5a3]">
+            <span class="font-mono">FOLIO ARCHIVE</span>
+            <span>🌸</span>
+          </div>
+
+          <div class="text-center my-auto py-6">
+            <div class="inline-flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 mb-6">
+              <svg viewBox="0 0 32 32" class="h-9 w-9 text-[#ffcad4]" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 8.5c4.2-2 8.2-1.6 12 1.2v16c-3.8-2.8-7.8-3.2-12-1.2zM28 8.5c-4.2-2-8.2-1.6-12 1.2v16c3.8-2.8 7.8-3.2 12-1.2z"/>
+                <path d="M8 12.5c2.2-.6 4.1-.3 6 1M24 12.5c-2.2-.6-4.1-.3-6 1"/>
+              </svg>
+            </div>
+            <h3 class="font-display text-2xl md:text-3xl text-white font-semibold">
+              “The right book finds you exactly when you need it.”
+            </h3>
+            <p class="mt-4 text-xs tracking-widest uppercase text-white/50 font-mono">
+              CURATED WITH HONEST INTENTION
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
+            <span>Countryside Village Edition</span>
+            <span class="text-[#e8d5a3]">Est. 2026</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountSakuraPetals } from '../scripts/anime-particles.js';
+  import gsap from 'gsap';
+
+  // Mount sakura petals
+  const canvas = document.getElementById('about-petals-canvas');
+  if (canvas instanceof HTMLCanvasElement) {
+    mountSakuraPetals(canvas, { count: 30 });
+  }
+
+  // Mouse Parallax on village background
+  const bg = document.getElementById('about-bg');
+  const section = document.getElementById('literary-journey');
+
+  if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    section.addEventListener('pointermove', (e) => {
+      const rect = section.getBoundingClientRect();
+      const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+      gsap.to(bg, {
+        x: xNorm * -15,
+        y: yNorm * -10,
+        duration: 1.2,
+        ease: 'power2.out',
+      });
+    });
+  }
+</script>

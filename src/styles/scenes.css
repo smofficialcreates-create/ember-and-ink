@@ -1,0 +1,109 @@
+/*
+ * scenes.css
+ * Shared styles for all 7 immersive scene sections.
+ * 2.5D Anime Cinematography inspired by Makoto Shinkai & Studio Ghibli.
+ */
+
+/* ── Scene shells ──────────────────────────────────────────────────────── */
+.scene-section,
+.scene-anime {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* 2.5D Parallax background image container */
+.scene-anime img[id$="-bg"] {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Scene canvas overlays */
+.scene-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* ── Typography primitives ─────────────────────────────────────────────── */
+.scene-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scene-headline {
+  font-family: var(--font-display-stack);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--burgundy);
+  line-height: 1.08;
+}
+
+.scene-subtext {
+  font-size: 1.0625rem;
+  line-height: 1.72;
+  color: var(--muted);
+  max-width: 36rem;
+}
+
+/* ── Reveal animation states ─────────────────────────────────────────────*/
+.reveal-up,
+.reveal-fade,
+.scene-eyebrow,
+.scene-headline {
+  will-change: opacity, transform;
+}
+
+/* ── Decorative elements ─────────────────────────────────────────────── */
+.reveal-line {
+  display: block;
+  height: 1px;
+  background: var(--line);
+  transform-origin: left;
+}
+
+.section-number {
+  font-family: var(--font-display-stack);
+  font-size: clamp(5rem, 12vw, 10rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--gold-soft);
+  opacity: 0.45;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Book card 3D hover ─────────────────────────────────────────────── */
+.book-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.book-card:hover {
+  transform: translateY(-8px) rotateY(-6deg);
+}
+
+/* ── Genre portal card ─────────────────────────────────────────────── */
+.genre-portal {
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.45s ease;
+  cursor: pointer;
+}
+
+.genre-portal:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Night scene ─────────────────────────────────────────────────────── */
+.night-quote {
+  font-family: var(--font-display-stack);
+  font-style: italic;
+  color: rgba(248, 240, 220, 0.92);
+  line-height: 1.35;
+}

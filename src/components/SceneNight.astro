@@ -1,0 +1,149 @@
+---
+/**
+ * SceneNight.astro
+ * Scene 07 — The Night Sanctuary: Illustrated nocturnal Japanese countryside
+ * with live pulsing fireflies, crescent moon, stars, closing quote, and newsletter.
+ */
+interface Props {
+  newsletterEndpoint?: string | null;
+  siteEmail: string;
+}
+
+const { newsletterEndpoint, siteEmail } = Astro.props;
+---
+
+<section
+  id="night-garden"
+  class="scene-anime relative isolate min-h-[820px] py-28 md:py-44 bg-[#050914] text-[#fbf6ee] overflow-hidden"
+>
+  <!-- ░░ HIGH-RES NOCTURNAL ANIME BACKGROUND ░░ -->
+  <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <img
+      id="night-bg"
+      src="/images/scenes/night-sanctuary.webp"
+      alt="Anime night sky over Japanese countryside with moon and stars"
+      class="w-full h-full object-cover object-center scale-105"
+      loading="lazy"
+    />
+  </div>
+
+  <!-- Atmospheric nocturnal gradient overlays -->
+  <div class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-[#04060c] via-transparent to-[#050914]/80"></div>
+  <div class="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-[#050914]/60 via-transparent to-[#04060c]/90"></div>
+
+  <!-- Live firefly particle canvas -->
+  <canvas
+    id="night-fireflies-canvas"
+    class="pointer-events-none absolute inset-0 z-[3] w-full h-full"
+    aria-hidden="true"
+  ></canvas>
+
+  <div class="container-ember relative z-10">
+    <!-- Part 1: The Closing Literary Quote -->
+    <div class="max-w-3xl mx-auto text-center mb-20 md:mb-28">
+      <div class="inline-flex items-center justify-center gap-3 mb-6">
+        <span class="h-px w-8 bg-[#c9a14a]"></span>
+        <span class="text-xs font-semibold uppercase tracking-[0.32em] text-[#e8d5a3]">
+          07 / The Night Garden
+        </span>
+        <span class="h-px w-8 bg-[#c9a14a]"></span>
+      </div>
+
+      <blockquote class="night-quote font-display text-3xl md:text-5xl lg:text-6xl font-light text-[#fbf6ee] leading-tight drop-shadow-lg">
+        “A book, too, can be a star, a living fire to lighten the darkness, leading out into the expanding universe.”
+      </blockquote>
+      <cite class="block mt-6 text-xs uppercase tracking-[0.28em] text-[#c9a14a] font-normal not-italic">
+        — Madeleine L’Engle
+      </cite>
+    </div>
+
+    <!-- Part 2: The Monthly Letter (Newsletter Card) -->
+    <div class="max-w-3xl mx-auto rounded-3xl border border-white/20 bg-[#0d1424]/80 backdrop-blur-2xl p-8 md:p-12 shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
+      <div class="grid md:grid-cols-[1.1fr_1fr] gap-8 items-center">
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#c9a14a]">
+            A slow letter from the countryside
+          </p>
+          <h3 class="mt-2 font-display text-2xl md:text-3xl text-white font-semibold">
+            One quiet letter, once a month.
+          </h3>
+          <p class="mt-3 text-sm text-[#fbf6ee]/70 leading-relaxed font-light">
+            No algorithmic frenzy. Just carefully chosen book recommendations, quiet essays on living well, and seasonal reading lists.
+          </p>
+        </div>
+
+        <div>
+          {newsletterEndpoint ? (
+            <form action={newsletterEndpoint} method="POST" class="flex flex-col gap-3" data-protected-form>
+              <label class="sr-only" for="night-email">Your email address</label>
+              <input
+                id="night-email"
+                type="email"
+                name="email"
+                required
+                autocomplete="email"
+                placeholder="your.email@example.com"
+                class="min-h-12 w-full rounded-full border border-white/20 bg-white/10 px-5 text-sm text-white placeholder:text-white/40 focus:border-[#c9a14a] focus:outline-none focus:ring-2 focus:ring-[#c9a14a]/30"
+              />
+              <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <input type="hidden" name="_next" value="/thank-you/" />
+              <button
+                type="submit"
+                class="min-h-12 w-full rounded-full bg-[#c9a14a] px-6 text-xs font-bold uppercase tracking-wider text-[#1a140d] hover:bg-[#e8d5a3] transition-colors shadow-md"
+              >
+                Join the Monthly Letter →
+              </button>
+            </form>
+          ) : (
+            <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
+              <p class="text-xs text-white/75 leading-relaxed">
+                The postal courier is preparing the next dispatch.
+              </p>
+              <a
+                href={`mailto:${siteEmail}?subject=Newsletter%20Subscription`}
+                class="mt-3 inline-block text-xs font-semibold text-[#c9a14a] hover:text-[#e8d5a3] underline underline-offset-4"
+              >
+                Send an email to join the registry ↗
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiet closing ambient line -->
+    <div class="mt-20 text-center text-xs text-white/40 font-mono">
+      <span>Ember &amp; Ink · Japanese Countryside Sanctuary</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountFireflies } from '../scripts/anime-particles.js';
+  import gsap from 'gsap';
+
+  // Mount fireflies
+  const canvas = document.getElementById('night-fireflies-canvas');
+  if (canvas instanceof HTMLCanvasElement) {
+    mountFireflies(canvas);
+  }
+
+  // Mouse Parallax on night background
+  const bg = document.getElementById('night-bg');
+  const section = document.getElementById('night-garden');
+
+  if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    section.addEventListener('pointermove', (e) => {
+      const rect = section.getBoundingClientRect();
+      const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+      gsap.to(bg, {
+        x: xNorm * -15,
+        y: yNorm * -10,
+        duration: 1.2,
+        ease: 'power2.out',
+      });
+    });
+  }
+</script>

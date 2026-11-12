@@ -1,0 +1,157 @@
+---
+/**
+ * SceneBooks.astro
+ * Scene 02 — Tranquility: The Waterfall & Nature Sanctuary (inspired by reference video)
+ * High-res anime waterfall background with live mist particles and floating books.
+ */
+import type { BlogPost } from '@lib/posts';
+import { formatDate } from '@lib/format';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+const displayPosts = posts.slice(0, 3);
+---
+
+<section
+  id="tranquility-shelf"
+  class="scene-anime relative isolate min-h-[900px] py-28 md:py-44 bg-[#0a1122] text-[#fbf6ee] overflow-hidden"
+>
+  <!-- ░░ HIGH-RES ANIME WATERFALL BACKGROUND ░░ -->
+  <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <img
+      id="waterfall-bg"
+      src="/images/scenes/waterfall-tranquility.webp"
+      alt="Anime waterfall sanctuary with volumetric sunlight"
+      class="w-full h-full object-cover object-center scale-105"
+      loading="lazy"
+    />
+  </div>
+
+  <!-- Atmospheric overlays -->
+  <div class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#0b1325]/90 via-[#0b1325]/60 to-[#0b1325]/40"></div>
+  <div class="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-[#080d1a] via-transparent to-[#0a1122]/70"></div>
+
+  <!-- Live mist & light spray canvas -->
+  <canvas
+    id="waterfall-mist-canvas"
+    class="pointer-events-none absolute inset-0 z-[3] w-full h-full"
+    aria-hidden="true"
+  ></canvas>
+
+  <div class="container-ember relative z-10">
+    <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
+      
+      <!-- Left: Exact Reference Typography & Layout -->
+      <div class="max-w-xl">
+        <p class="text-xs uppercase tracking-[0.32em] text-[#a5c8ff] font-semibold mb-4 drop-shadow">
+          02 / Experience
+        </p>
+
+        <!-- Monumental Title from Reference (like Tranquility) -->
+        <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight drop-shadow-lg">
+          Tranquility
+        </h2>
+
+        <p class="mt-6 text-base md:text-lg text-white/80 font-light leading-relaxed drop-shadow">
+          The gentle murmur of falling water and mountain breeze. Away from algorithmic noise, reading becomes an act of quiet restoration. Here are three works chosen to anchor your thoughts and nourish your heart.
+        </p>
+
+        <div class="mt-8">
+          <a
+            href="/blog/"
+            class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-[#a5c8ff] hover:text-white transition-colors group"
+          >
+            <span>— Discover all featured books</span>
+            <span class="group-hover:translate-x-1.5 transition-transform">→</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Three Floating Book Showcase Cards -->
+      <div class="space-y-5">
+        {displayPosts.map((post, index) => (
+          <article class="group relative rounded-3xl border border-white/15 bg-[#121c33]/75 backdrop-blur-xl p-6 shadow-[0_16px_48px_rgba(0,0,0,0.35)] transition-all duration-400 hover:-translate-y-1.5 hover:border-[#a5c8ff]/60 hover:bg-[#162340]/90">
+            <div class="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
+              
+              <!-- Book Cover Thumbnail -->
+              <div class="relative w-20 h-28 sm:w-24 sm:h-32 rounded-xl overflow-hidden shadow-md flex-shrink-0 bg-[#080d1a] border border-white/10">
+                {post.data.coverImage ? (
+                  <img
+                    src={post.data.coverImage}
+                    alt={`Cover for ${post.data.title}`}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full h-full bg-[#1b2b4f] flex items-center justify-center p-2 text-center text-xs text-[#a5c8ff] font-display">
+                    {post.data.title}
+                  </div>
+                )}
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between text-xs text-[#a5c8ff]/70 mb-1.5 font-mono">
+                  <span class="uppercase tracking-wider">{post.data.category}</span>
+                  <span>0{index + 1} / 03</span>
+                </div>
+
+                <h3 class="font-display text-xl sm:text-2xl font-semibold text-white group-hover:text-[#a5c8ff] transition-colors line-clamp-1">
+                  <a href={`/blog/${post.id}/`} class="focus:outline-none after:absolute after:inset-0">
+                    {post.data.title}
+                  </a>
+                </h3>
+
+                <p class="mt-2 text-xs sm:text-sm text-white/70 line-clamp-2 font-light leading-relaxed">
+                  {post.data.description}
+                </p>
+
+                <div class="mt-3 flex items-center justify-between text-xs text-white/50 pt-2 border-t border-white/10">
+                  <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                  <span class="text-[#a5c8ff] font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                    Read review <span>→</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </article>
+        ))}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountWaterfallMist } from '../scripts/anime-particles.js';
+  import gsap from 'gsap';
+
+  // Mount waterfall mist
+  const canvas = document.getElementById('waterfall-mist-canvas');
+  if (canvas instanceof HTMLCanvasElement) {
+    mountWaterfallMist(canvas);
+  }
+
+  // Mouse Parallax on waterfall background
+  const bg = document.getElementById('waterfall-bg');
+  const section = document.getElementById('tranquility-shelf');
+
+  if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    section.addEventListener('pointermove', (e) => {
+      const rect = section.getBoundingClientRect();
+      const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+      gsap.to(bg, {
+        x: xNorm * -15,
+        y: yNorm * -10,
+        duration: 1.2,
+        ease: 'power2.out',
+      });
+    });
+  }
+</script>

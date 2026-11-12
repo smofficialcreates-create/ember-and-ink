@@ -1,220 +1,61 @@
 ﻿---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import PostCard from '@components/PostCard.astro';
 import HeroDreamscape from '@components/HeroDreamscape.astro';
+import SceneBooks from '@components/SceneBooks.astro';
+import SceneGenres from '@components/SceneGenres.astro';
+import SceneLibrary from '@components/SceneLibrary.astro';
+import SceneReviews from '@components/SceneReviews.astro';
+import SceneAbout from '@components/SceneAbout.astro';
+import SceneNight from '@components/SceneNight.astro';
 import { getPublishedPosts, getFeaturedPosts } from '@lib/posts';
 import { CATEGORIES } from '@lib/categories';
 import { SITE } from '@lib/site';
 import { NEWSLETTER_ENDPOINT } from '@lib/forms';
+import '@styles/scenes.css';
 
 const all = await getPublishedPosts();
-const featured = await getFeaturedPosts(1);
-const others = all.filter((p) => p.id !== featured[0]?.id).slice(0, 3);
+const featured = await getFeaturedPosts(3);
 ---
 
 <BaseLayout title="Home" description={SITE.description} url={`${SITE.url}/`}>
-  
-  <!-- 1. The Cinematic Hero -->
+  <!-- Scene 01: Hero — The Spring Countryside Hillside (VISITE / EMBER & INK) -->
   <HeroDreamscape />
-
-  <!-- Reading note: keep the site's editorial personality visible below the hero. -->
-  <section class="relative z-20 border-y border-[#d8cdbb] bg-[#5b1f2a] text-[#fbf6ee]">
+  
+  <!-- Editorial Reading Strip: Seamless atmospheric bridge -->
+  <section class="relative z-20 border-y border-white/10 bg-[#140e1e] text-[#fbf6ee]">
     <div class="container-ember flex flex-col items-center justify-between gap-3 py-5 sm:flex-row">
       <div class="flex items-center gap-3">
         <span class="text-2xl" aria-hidden="true">📖</span>
         <div>
-          <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#e8d9a8]">Currently reading</p>
-          <p class="font-display text-lg">The Midnight Library <span class="text-sm text-[#fbf6ee]/65">by Matt Haig</span></p>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#e8d5a3]">Currently reading on the veranda</p>
+          <p class="font-display text-lg text-white">The Midnight Library <span class="text-sm text-white/60">by Matt Haig</span></p>
         </div>
       </div>
-      <a href="/blog/" class="text-sm font-medium text-[#e8d9a8] underline-offset-4 hover:underline">Browse all reviews ↗</a>
+      <a href="/blog/" class="text-xs uppercase tracking-widest font-semibold text-[#e8d5a3] hover:text-white transition-colors">
+        Browse all reviews ↗
+      </a>
     </div>
   </section>
 
-  <!-- 2. Immersive Story Intro (Reveals on scroll) -->
-  <section class="py-32 md:py-48 bg-[#fbf6ee] relative z-20">
-    <div class="container-ember text-center max-w-4xl mx-auto reveal-text">
-      <h2 class="font-display text-4xl md:text-6xl text-burgundy leading-tight">
-        We believe the right book <br/>
-        <span class="italic text-gold">finds you</span> at the right time.
-      </h2>
-      <p class="mt-8 text-xl text-muted leading-relaxed font-light">
-        Ember & Ink is not just a review site. It is a curated sanctuary for readers who want to escape into sweeping fantasy romances, or find grounding wisdom in self-help. 
-      </p>
-    </div>
-  </section>
+  <!-- Scene 02: Tranquility — The Waterfall & Nature Sanctuary -->
+  <SceneBooks posts={featured} />
 
-  <!-- 3. Featured Books (Horizontal Scroll / Parallax reveal) -->
-  <section class="py-20 bg-paper border-y border-line overflow-hidden">
-    <div class="container-ember">
-      <div class="flex items-end justify-between gap-4 mb-12 reveal-up">
-        <div>
-          <h2 class="text-3xl md:text-5xl text-burgundy">Fresh from the shelf</h2>
-          <p class="mt-2 text-muted">Hand-picked reviews for your next escape.</p>
-        </div>
-        <a href="/blog/" class="text-sm font-medium text-burgundy hover:underline shrink-0 hidden md:block">All posts →</a>
-      </div>
-      
-      <!-- Books staggered in -->
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {others.map((post) => (
-          <div class="reveal-card">
-            <PostCard post={post} />
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- Scene 03: Atmospheric Portals — Six Realms of Literature -->
+  <SceneGenres categories={CATEGORIES} />
 
-  <!-- 4. The Genres (Fade up) -->
-  <section class="bg-burgundy text-cream py-24 relative overflow-hidden">
-    <!-- Atmospheric background glow -->
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/10 rounded-full blur-[100px] pointer-events-none"></div>
-    
-    <div class="container-ember relative z-10">
-      <div class="text-center max-w-2xl mx-auto mb-16 reveal-up">
-        <h2 class="text-3xl md:text-5xl text-gold">Explore the Universe</h2>
-        <p class="mt-4 text-cream/80 text-lg">Every genre has a corner here. Choose your world.</p>
-      </div>
-      
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {CATEGORIES.slice(0, 8).map((cat, index) => (
-          <a href={`/categories/${cat.slug}/`} class="genre-card group relative isolate min-h-40 overflow-hidden rounded-2xl border border-cream/15 bg-[#f8efe0]/[0.045] p-6 transition duration-500 hover:-translate-y-1 hover:border-[#d7b56d]/65 hover:bg-[#f8efe0]/[0.09]">
-            <span class="pointer-events-none absolute -right-8 -top-10 -z-10 h-28 w-28 rounded-full border border-[#d7b56d]/10 transition duration-700 group-hover:scale-150 group-hover:border-[#d7b56d]/25"></span>
-            <span class="flex items-center justify-between text-[10px] font-medium uppercase tracking-[0.24em] text-cream/35">
-              <span>Collection</span>
-              <span>0{index + 1}</span>
-            </span>
-            <p class="mt-8 font-display text-xl leading-tight text-[#e7c98b] transition-colors duration-300 group-hover:text-[#fff7e8]">{cat.label}</p>
-            <p class="mt-2 text-xs leading-relaxed text-cream/55">{cat.description}</p>
-            <span class="absolute bottom-5 right-5 translate-y-1 text-sm text-[#d7b56d]/60 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100" aria-hidden="true">↗</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- Scene 04: The Archive — The Hillside Countryside Library -->
+  <SceneLibrary posts={all} />
 
-  <!-- 5. Newsletter: preserve the existing signup and mailto fallback. -->
-  <section class="relative overflow-hidden bg-[#f8f4eb] py-20 md:py-28">
-    <div class="container-ember">
-      <div class="grid gap-10 rounded-[1.75rem] border border-[#d9cdb9] bg-[#fffdf8] p-8 shadow-[0_20px_60px_rgba(61,46,31,.08)] md:grid-cols-[1fr_1.1fr] md:items-center md:p-12">
-        <div>
-          <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#9a7444]">A letter from the library</p>
-          <h2 class="mt-3 font-display text-3xl leading-tight text-[#5b1f2a] md:text-4xl">A slow letter, once a month.</h2>
-          <p class="mt-4 max-w-md leading-7 text-[#6f6257]">New reviews, thoughtful recommendations and the occasional reading list. No noise, just good books.</p>
-        </div>
-        {NEWSLETTER_ENDPOINT ? (
-          <form action={NEWSLETTER_ENDPOINT} method="POST" class="flex flex-col gap-3 sm:flex-row" data-protected-form>
-            <label class="sr-only" for="home-email">Email address</label>
-            <input id="home-email" type="email" name="email" required autocomplete="email" placeholder="you@example.com" class="min-h-12 min-w-0 flex-1 rounded-full border border-[#d9cdb9] bg-white px-5 text-[#2b2118] placeholder:text-[#8b8174] focus:border-[#9a7444] focus:outline-none focus:ring-2 focus:ring-[#c9a14a]/35" />
-            <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
-            <input type="hidden" name="_next" value="/thank-you/" />
-            <button type="submit" class="min-h-12 rounded-full bg-[#5b1f2a] px-7 text-sm font-semibold text-[#fffaf0] transition hover:bg-[#42151f]">Join the letter</button>
-          </form>
-        ) : (
-          <p class="text-[#6f6257]">The monthly letter is being prepared. <a href={`mailto:${SITE.email}?subject=Newsletter`} class="font-semibold text-[#5b1f2a] underline underline-offset-4">Email us to join ↗</a></p>
-        )}
-      </div>
-    </div>
-  </section>
+  <!-- Scene 05: The Open Tome — Two-Page Editorial Examination -->
+  <SceneReviews posts={featured} />
 
+  <!-- Scene 06: The Journey — Japanese Countryside Village & Ethos -->
+  <SceneAbout />
+
+  <!-- Scene 07: The Night Garden — Nocturnal Mountain Sky, Fireflies & The Letter -->
+  <SceneNight newsletterEndpoint={NEWSLETTER_ENDPOINT} siteEmail={SITE.email} />
 </BaseLayout>
 
 <script>
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    // Cinematic depth: the 3D world drifts more slowly than the editorial copy.
-    // Keep this subtle, desktop-only, and fully disabled for reduced-motion users.
-    const hero = document.querySelector<HTMLElement>('#hero');
-    const heroCanvas = document.querySelector<HTMLElement>('#hero-canvas');
-    const heroCopy = document.querySelector<HTMLElement>('.hero-copy');
-    if (hero && heroCanvas && window.matchMedia('(min-width: 761px)').matches) {
-      gsap.to(heroCanvas, {
-        yPercent: 13,
-        scale: 1.055,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: hero,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.8,
-        },
-      });
-    }
-    if (hero && heroCopy) {
-      gsap.to(heroCopy, {
-        yPercent: -8,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: hero,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.8,
-        },
-      });
-    }
-
-    // Fade up text blocks as you scroll
-    const revealElements = gsap.utils.toArray<HTMLElement>('.reveal-up');
-    revealElements.forEach((elem) => {
-      gsap.from(elem, {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: elem,
-          start: 'top 85%', // Trigger when element is 85% down the viewport
-        }
-      });
-    });
-
-    // Reveal editorial cards individually so each row enters naturally.
-    gsap.utils.toArray<HTMLElement>('.reveal-card, .genre-card').forEach((card, index) => {
-      gsap.fromTo(card,
-        { y: 54, opacity: 0, rotateX: 2 },
-        {
-          y: 0,
-          opacity: 1,
-          rotateX: 0,
-          duration: 0.9,
-          delay: (index % 4) * 0.07,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 88%',
-            once: true,
-          },
-        },
-      );
-    });
-
-    // Text reveal
-    gsap.from('.reveal-text h2', {
-      y: 40,
-      opacity: 0,
-      duration: 1.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '.reveal-text',
-        start: 'top 80%',
-      }
-    });
-    gsap.from('.reveal-text p', {
-      y: 40,
-      opacity: 0,
-      duration: 1.2,
-      delay: 0.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '.reveal-text',
-        start: 'top 80%',
-      }
-    });
-  });
+  import '../scripts/scroll-orchestrator.js';
 </script>

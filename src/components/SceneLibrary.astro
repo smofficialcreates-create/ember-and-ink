@@ -1,0 +1,144 @@
+---
+/**
+ * SceneLibrary.astro
+ * Scene 04 — The Countryside Library: Illustrated anime sanctuary
+ * featuring the hillside traditional Japanese library cabin with floating sakura petals.
+ */
+import type { BlogPost } from '@lib/posts';
+import { formatDate } from '@lib/format';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+<section
+  id="interactive-library"
+  class="scene-anime relative isolate min-h-[920px] py-28 md:py-44 bg-[#14121a] text-[#fbf6ee] overflow-hidden"
+>
+  <!-- ░░ HIGH-RES ANIME COTTAGE LIBRARY BACKGROUND ░░ -->
+  <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <img
+      id="library-bg"
+      src="/images/scenes/library-cottage.webp"
+      alt="Anime Japanese countryside library cottage under cherry blossoms"
+      class="w-full h-full object-cover object-center scale-105"
+      loading="lazy"
+    />
+  </div>
+
+  <!-- Atmospheric overlays -->
+  <div class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#14121a]/92 via-[#14121a]/65 to-[#14121a]/30"></div>
+  <div class="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-[#100d16] via-transparent to-[#14121a]/70"></div>
+
+  <!-- Live sakura petal drift canvas -->
+  <canvas
+    id="library-petals-canvas"
+    class="pointer-events-none absolute inset-0 z-[3] w-full h-full"
+    aria-hidden="true"
+  ></canvas>
+
+  <div class="container-ember relative z-10">
+    <!-- Header -->
+    <div class="max-w-2xl mb-14 md:mb-20">
+      <p class="text-xs uppercase tracking-[0.32em] text-[#e8d5a3] font-semibold mb-4 drop-shadow">
+        03 / The Archive
+      </p>
+
+      <h2 class="font-display text-4xl md:text-6xl font-bold text-white leading-tight drop-shadow-lg">
+        The Library Between Worlds
+      </h2>
+
+      <p class="mt-5 text-base md:text-lg text-white/80 font-light leading-relaxed drop-shadow">
+        Perched atop a quiet hill, our Japanese countryside cabin holds volumes that alter the architecture of your thoughts. From habits forged in silence to sweeping romantasy courts.
+      </p>
+    </div>
+
+    <!-- Curated Library Shelf Cards Grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {posts.slice(0, 8).map((post, i) => (
+        <a
+          href={`/blog/${post.id}/`}
+          class="group relative rounded-3xl border border-white/15 bg-[#1e1929]/75 backdrop-blur-xl p-5 shadow-[0_16px_40px_rgba(0,0,0,0.35)] transition-all duration-400 hover:-translate-y-2 hover:border-[#e8d5a3]/70 hover:bg-[#251e33]/90 flex flex-col justify-between"
+        >
+          <div>
+            <!-- Thumbnail cover -->
+            <div class="relative aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-black/40 border border-white/10">
+              {post.data.coverImage ? (
+                <img
+                  src={post.data.coverImage}
+                  alt={`Cover of ${post.data.title}`}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="w-full h-full bg-gradient-to-br from-[#5c1f2c] to-[#1c0f16] flex items-center justify-center p-3 text-center text-xs text-[#e8d5a3] font-display">
+                  {post.data.title}
+                </div>
+              )}
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-[#e8d5a3]/70 mb-2 font-mono">
+              <span>VOL. 0{i + 1}</span>
+              <span class="uppercase tracking-wider truncate max-w-[120px]">{post.data.category}</span>
+            </div>
+
+            <h3 class="font-display text-lg font-semibold text-white group-hover:text-[#e8d5a3] transition-colors line-clamp-2 leading-snug">
+              {post.data.title}
+            </h3>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
+            <span>{formatDate(post.data.pubDate)}</span>
+            <span class="text-[#e8d5a3] font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              Read <span>→</span>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Bottom link to full archive -->
+    <div class="mt-12 text-center">
+      <a
+        href="/blog/"
+        class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-8 py-3.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-white hover:text-[#14121a] backdrop-blur-md transition-all shadow-md"
+      >
+        <span>Browse All {posts.length} Volumes in the Catalog</span>
+        <span>→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountSakuraPetals } from '../scripts/anime-particles.js';
+  import gsap from 'gsap';
+
+  // Mount sakura petals
+  const canvas = document.getElementById('library-petals-canvas');
+  if (canvas instanceof HTMLCanvasElement) {
+    mountSakuraPetals(canvas, { count: 35 });
+  }
+
+  // Mouse Parallax on library background
+  const bg = document.getElementById('library-bg');
+  const section = document.getElementById('interactive-library');
+
+  if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    section.addEventListener('pointermove', (e) => {
+      const rect = section.getBoundingClientRect();
+      const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+      gsap.to(bg, {
+        x: xNorm * -15,
+        y: yNorm * -10,
+        duration: 1.2,
+        ease: 'power2.out',
+      });
+    });
+  }
+</script>

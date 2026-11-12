@@ -1,0 +1,179 @@
+---
+/**
+ * SceneGenres.astro
+ * Scene 03 — Explore Genres: Atmospheric Portals into Literary Worlds
+ * Fantasy, Romance, Mystery, Self-Help/Philosophy, Poetry, Sci-Fi
+ */
+import type { Category } from '@lib/categories';
+
+interface Props {
+  categories: ReadonlyArray<Category>;
+}
+
+const { categories } = Astro.props;
+
+// Flagship genre portals with bespoke visual aesthetics & atmospheres
+const FLAGSHIP_GENRES = [
+  {
+    slug: 'fantasy',
+    label: 'Fantasy',
+    tagline: 'Ancient woods, quiet sorcery, and forgotten realms.',
+    accent: '#4ade80',
+    glowColor: 'rgba(74, 222, 128, 0.15)',
+    gradient: 'from-[#0b2416] via-[#123824] to-[#08150e]',
+    borderColor: 'border-emerald-600/30 hover:border-emerald-400/80',
+    symbol: '✧',
+    sceneDesc: 'Canopy of ancient pines under moonlit mist'
+  },
+  {
+    slug: 'fantasy-romance',
+    label: 'Romantasy & Romance',
+    tagline: 'Sweeping courts, slow-burning fire, and vows kept.',
+    accent: '#f472b6',
+    glowColor: 'rgba(244, 114, 182, 0.18)',
+    gradient: 'from-[#3b121e] via-[#5b1f2e] to-[#240810]',
+    borderColor: 'border-rose-500/30 hover:border-rose-300/80',
+    symbol: '❦',
+    sceneDesc: 'Golden sunset over rose gardens & quiet balconies'
+  },
+  {
+    slug: 'mystery-thriller',
+    label: 'Mystery & Thriller',
+    tagline: 'Cobblestone fog, ticking clocks, and hidden confessions.',
+    accent: '#38bdf8',
+    glowColor: 'rgba(56, 189, 248, 0.15)',
+    gradient: 'from-[#0e1d2e] via-[#162a3f] to-[#070e17]',
+    borderColor: 'border-sky-500/30 hover:border-sky-300/80',
+    symbol: '☽',
+    sceneDesc: 'Rain-slicked lanterns & shadowy gaslit corridors'
+  },
+  {
+    slug: 'self-help',
+    label: 'Self-Help & Mindset',
+    tagline: 'Grounding wisdom, quiet mornings, and deep work.',
+    accent: '#fbbf24',
+    glowColor: 'rgba(251, 191, 36, 0.20)',
+    gradient: 'from-[#2e230f] via-[#453414] to-[#1c1507]',
+    borderColor: 'border-amber-500/30 hover:border-amber-300/80',
+    symbol: '🪶',
+    sceneDesc: 'Mahogany desk in dawn light with warm tea'
+  },
+  {
+    slug: 'poetry-essays',
+    label: 'Poetry & Essays',
+    tagline: 'Small forms, big resonance, and contemplative grace.',
+    accent: '#cbd5e1',
+    glowColor: 'rgba(203, 213, 225, 0.15)',
+    gradient: 'from-[#212128] via-[#2f2f3a] to-[#141418]',
+    borderColor: 'border-slate-400/30 hover:border-slate-200/80',
+    symbol: '📜',
+    sceneDesc: 'Still water reflections and ink upon handmade paper'
+  },
+  {
+    slug: 'science-fiction',
+    label: 'Science Fiction',
+    tagline: 'Far horizons, silent orbits, and cosmic memory.',
+    accent: '#a78bfa',
+    glowColor: 'rgba(167, 139, 250, 0.18)',
+    gradient: 'from-[#1a1438] via-[#2a1d52] to-[#0c091f]',
+    borderColor: 'border-purple-500/30 hover:border-purple-300/80',
+    symbol: '✦',
+    sceneDesc: 'Deep indigo horizons and distant constellations'
+  }
+];
+---
+
+<section id="genre-portals" class="scene-section relative bg-[#130b0f] text-[#fbf6ee] py-28 md:py-40 overflow-hidden">
+  <!-- Atmospheric background lights -->
+  <div class="pointer-events-none absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-[#5c1f2c]/20 blur-[140px]"></div>
+  <div class="pointer-events-none absolute -bottom-40 right-1/4 h-[500px] w-[500px] rounded-full bg-[#c9a14a]/10 blur-[160px]"></div>
+
+  <!-- Decorative numbering -->
+  <div class="pointer-events-none absolute left-8 top-12 select-none text-[8rem] md:text-[14rem] font-display font-bold leading-none text-white/[0.02]">
+    03
+  </div>
+
+  <div class="container-ember relative z-10">
+    <!-- Section Header -->
+    <div class="max-w-2xl mb-16 md:mb-20">
+      <div class="flex items-center gap-3">
+        <span class="h-px w-8 bg-[#c9a14a]"></span>
+        <p class="scene-eyebrow text-[#e8d5a3]">Scene 03 · Atmospheric Portals</p>
+      </div>
+      <h2 class="scene-headline mt-3 text-3xl md:text-5xl text-[#fffdf7]">
+        Every realm has its <span class="italic text-[#e8d5a3]">own weather</span>.
+      </h2>
+      <p class="mt-4 text-lg text-[#fbf6ee]/70 font-light leading-relaxed">
+        Choose your atmospheric destination. Step across the threshold into distinct visual landscapes crafted for every mood.
+      </p>
+    </div>
+
+    <!-- 6 Atmospheric Portals Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {FLAGSHIP_GENRES.map((genre, i) => (
+        <a
+          href={`/categories/${genre.slug}/`}
+          class:list={[
+            'genre-portal group relative isolate min-h-[320px] rounded-3xl p-8 flex flex-col justify-between overflow-hidden border transition-all duration-500',
+            `bg-gradient-to-b ${genre.gradient}`,
+            genre.borderColor
+          ]}
+        >
+          <!-- Ambient portal inner glow on hover -->
+          <div
+            class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"
+            style={`background: radial-gradient(circle at 50% 20%, ${genre.glowColor}, transparent 70%);`}
+          ></div>
+
+          <!-- Top meta line -->
+          <div class="flex items-center justify-between text-xs tracking-widest uppercase text-white/50 z-10">
+            <span class="font-mono">GATE 0{i + 1}</span>
+            <span class="text-lg opacity-80 group-hover:scale-125 transition-transform duration-300" style={`color: ${genre.accent};`}>
+              {genre.symbol}
+            </span>
+          </div>
+
+          <!-- Middle visual evocative badge -->
+          <div class="my-6 z-10">
+            <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium text-white/70 backdrop-blur-sm">
+              <span class="w-1.5 h-1.5 rounded-full" style={`background-color: ${genre.accent};`}></span>
+              <span>{genre.sceneDesc}</span>
+            </div>
+            <h3 class="mt-4 font-display text-2xl md:text-3xl font-semibold text-white group-hover:translate-x-1 transition-transform duration-300">
+              {genre.label}
+            </h3>
+            <p class="mt-2 text-sm leading-relaxed text-white/65 font-light">
+              {genre.tagline}
+            </p>
+          </div>
+
+          <!-- Bottom CTA link -->
+          <div class="flex items-center justify-between pt-4 border-t border-white/10 text-xs font-semibold uppercase tracking-wider text-[#e8d5a3] z-10">
+            <span>Enter the shelf</span>
+            <span class="group-hover:translate-x-1.5 transition-transform duration-300 text-sm">→</span>
+          </div>
+
+          <!-- Subtle background decorative line grid -->
+          <div class="pointer-events-none absolute -bottom-12 -right-12 w-48 h-48 rounded-full border border-white/5 opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Remaining categories minimal shelf pills -->
+    <div class="mt-16 pt-10 border-t border-white/10">
+      <p class="text-xs font-semibold uppercase tracking-[0.24em] text-white/40 mb-5">
+        More Quiet Corners
+      </p>
+      <div class="flex flex-wrap gap-2.5">
+        {categories.filter(c => !FLAGSHIP_GENRES.some(f => f.slug === c.slug)).map(cat => (
+          <a
+            href={`/categories/${cat.slug}/`}
+            class="rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-medium text-white/75 hover:border-[#c9a14a] hover:bg-white/[0.08] hover:text-[#e8d5a3] transition-colors"
+          >
+            {cat.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
