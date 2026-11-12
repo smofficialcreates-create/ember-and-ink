@@ -1016,7 +1016,37 @@ export function mountHeroScene(canvas) {
     },
   );
 
-  createBench(scene, 5.95, 3.6);
+  const readingNook = createBench(scene, 5.95, 3.6);
+  // Swap the block-built placeholder furniture for individually authored,
+  // real-scale CC0 GLB assets from one coordinated garden-reading collection.
+  // Keep the original meshes as an offline fallback until each model arrives.
+  loadExternalModel(
+    "https://cdn.3dassets.dev/assets/30945/v1/model.glb",
+    (benchModel) => {
+      if (disposed) {
+        disposeObject3D(benchModel);
+        return;
+      }
+      benchModel.position.set(5.95, groundHeight(5.95, 3.6), 3.6);
+      benchModel.rotation.y = -0.18;
+      readingNook.group.visible = false;
+      scene.add(benchModel);
+    },
+  );
+  loadExternalModel(
+    "https://cdn.3dassets.dev/assets/30947/v1/model.glb",
+    (tableModel) => {
+      if (disposed) {
+        disposeObject3D(tableModel);
+        return;
+      }
+      tableModel.scale.setScalar(1.38);
+      tableModel.position.set(7.3, groundHeight(7.3, 3.65), 3.65);
+      tableModel.rotation.y = -0.18;
+      readingNook.table.visible = false;
+      scene.add(tableModel);
+    },
+  );
   createLamp(scene, 8.15, 3.9);
   const airPetals = createAirPetals(scene, mobile, rng);
 
