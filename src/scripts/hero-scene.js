@@ -919,42 +919,50 @@ export function mountHeroScene(canvas) {
   const river = createRiver(scene);
   createBridge(scene, rng);
   const train = createTrain(scene);
-  const fallbackTrainEngine = train.children[0];
   const tree = createTree(scene, mobile, rng);
   let importedTree = null;
-  let importedTrainEngine = null;
 
-  // Replace the two most visually recognisable hero silhouettes with actual
-  // GLB assets when the CDN is reachable. The handcrafted models remain as
-  // resilient fallbacks, so a CDN outage never blanks the environment.
+  // CC0 cherry tree model from 3DAssets.dev. This is a real textured GLB,
+  // not a generated blossom-cluster silhouette. The hand-built tree remains
+  // as a graceful fallback if the CDN is unavailable.
   loadExternalModel(
-    "https://polyfork.dev/cdn/cherry-tree-a710a9.glb",
+    "https://cdn.3dassets.dev/assets/30082/v1/model.glb",
     (model) => {
       if (disposed) {
         disposeObject3D(model);
         return;
       }
-      model.scale.setScalar(1.22);
-      model.position.set(5.2, groundHeight(5.2, 0.8), 0.8);
+
+      // Normalize the source model to the scene's 7.1 m tree scale and place
+      // its lowest point directly on the hillside.
+      const bounds = new THREE.Box3().setFromObject(model);
+      const size = bounds.getSize(new THREE.Vector3());
+      const targetHeight = 7.1;
+      const modelScale = targetHeight / Math.max(size.y, 0.001);
+      model.scale.setScalar(modelScale);
+      model.position.set(
+        5.2 - ((bounds.min.x + bounds.max.x) * 0.5) * modelScale,
+        groundHeight(5.2, 0.8) - bounds.min.y * modelScale,
+        0.8 - ((bounds.min.z + bounds.max.z) * 0.5) * modelScale,
+      );
       model.rotation.y = -0.12;
+
+      // Keep imported materials intact; gently lift roughness where needed
+      // to avoid a plastic appearance under the bright morning sun.
+      model.traverse((object) => {
+        if (!object.isMesh || !object.material) return;
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        for (const material of materials) {
+          if ("roughness" in material && Number.isFinite(material.roughness)) {
+            material.roughness = Math.max(material.roughness, 0.72);
+          }
+          material.needsUpdate = true;
+        }
+      });
+
       tree.visible = false;
       importedTree = model;
       scene.add(model);
-    },
-  );
-
-  loadExternalModel(
-    "https://polyfork.dev/cdn/train-engine-180979.glb",
-    (model) => {
-      if (disposed) {
-        disposeObject3D(model);
-        return;
-      }
-      model.scale.setScalar(0.72);
-      model.position.set(0.4, 0, 0);
-      fallbackTrainEngine.visible = false;
-      importedTrainEngine = model;
-      train.add(model);
     },
   );
 
@@ -1086,7 +1094,6 @@ export function mountHeroScene(canvas) {
       }
     });
     if (importedTree && importedTree.parent) importedTree.parent.remove(importedTree);
-    if (importedTrainEngine && importedTrainEngine.parent) importedTrainEngine.parent.remove(importedTrainEngine);
     renderer.dispose();
   };
 
