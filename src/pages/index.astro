@@ -11,52 +11,99 @@ import { getPublishedPosts, getFeaturedPosts } from '@lib/posts';
 import { CATEGORIES } from '@lib/categories';
 import { SITE } from '@lib/site';
 import { NEWSLETTER_ENDPOINT } from '@lib/forms';
-import '@styles/scenes.css';
 
 const all = await getPublishedPosts();
-const featured = await getFeaturedPosts(3);
+const featured = await getFeaturedPosts(1);
+const others = all.filter((p) => p.id !== featured[0]?.id);
 ---
 
 <BaseLayout title="Home" description={SITE.description} url={`${SITE.url}/`}>
-  <!-- Scene 01: Hero — The Spring Countryside Hillside (VISITE / EMBER & INK) -->
-  <HeroDreamscape />
-  
-  <!-- Editorial Reading Strip: Seamless atmospheric bridge -->
-  <section class="relative z-20 border-y border-white/10 bg-[#140e1e] text-[#fbf6ee]">
-    <div class="container-ember flex flex-col items-center justify-between gap-3 py-5 sm:flex-row">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl" aria-hidden="true">📖</span>
-        <div>
-          <p class="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#e8d5a3]">Currently reading on the veranda</p>
-          <p class="font-display text-lg text-white">The Midnight Library <span class="text-sm text-white/60">by Matt Haig</span></p>
-        </div>
-      </div>
-      <a href="/blog/" class="text-xs uppercase tracking-widest font-semibold text-[#e8d5a3] hover:text-white transition-colors">
-        Browse all reviews ↗
-      </a>
-    </div>
-  </section>
-
-  <!-- Scene 02: Tranquility — The Waterfall & Nature Sanctuary -->
-  <SceneBooks posts={featured} />
-
-  <!-- Scene 03: Atmospheric Portals — Six Realms of Literature -->
-  <SceneGenres categories={CATEGORIES} />
-
-  <!-- Scene 04: The Archive — The Hillside Countryside Library -->
-  <SceneLibrary posts={all} />
-
-  <!-- Scene 05: The Open Tome — Two-Page Editorial Examination -->
-  <SceneReviews posts={featured} />
-
-  <!-- Scene 06: The Journey — Japanese Countryside Village & Ethos -->
-  <SceneAbout />
-
-  <!-- Scene 07: The Night Garden — Nocturnal Mountain Sky, Fireflies & The Letter -->
-  <SceneNight newsletterEndpoint={NEWSLETTER_ENDPOINT} siteEmail={SITE.email} />
+  <main id="cinematic-scroll">
+    <HeroDreamscape />
+    <SceneBooks posts={others} />
+    <SceneGenres categories={CATEGORIES} />
+    <SceneLibrary posts={all} />
+    <SceneReviews posts={all} />
+    <SceneAbout />
+    <SceneNight newsletterEndpoint={NEWSLETTER_ENDPOINT} siteEmail={SITE.email} />
+  </main>
 </BaseLayout>
 
 <script>
-  import '../scripts/scroll-orchestrator.js';
-</script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. HERO PARALLAX (Requires IDs from HeroDreamscape.astro)
+    // If you used different IDs in your Hero, update these selectors!
+    const heroBg = document.getElementById('hero-bg') || document.querySelector('.hero-bg');
+    const heroContent = document.getElementById('hero-content') || document.querySelector('.hero-content');
+
+    if (heroBg && heroContent) {
+      // As you scroll down, the background zooms in slowly
+      gsap.to(heroBg, {
+        yPercent: 20,
+        scale: 1.1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true
+        }
+      });
+
+      // The text moves up and fades out faster
+      gsap.to(heroContent, {
+        yPercent: -50,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: 'center top',
+          scrub: true
+        }
+      });
+    }
+
+    // 2. GLOBAL SCENE REVEAL
+    // This makes every section after the hero slide up and fade in as you scroll down
+    gsap.utils.toArray('main#cinematic-scroll > section').forEach((section) => {
+      // Skip the hero if it's the first section
+      if (section.id === 'hero') return;
+
+      gsap.from(section, {
+        y: 100,
+        opacity: 0,
+        duration: 1.2,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 85%', // Start animating when section is 85% down the screen
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+
+    // 3. BOOK CARDS STAGGER (Inside SceneBooks)
+    const bookCards = document.querySelectorAll('.book-card, .grid > div'); 
+    if (bookCards.length > 0) {
+      gsap.from(bookCards, {
+        y: 80,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.15,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: bookCards[0],
+          start: 'top 85%',
+        }
+      });
+    }
+
+  });
+</script>
