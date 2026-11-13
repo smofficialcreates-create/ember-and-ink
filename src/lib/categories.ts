@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The single source of truth for blog categories.
  *
  * Each entry has:
@@ -19,7 +19,7 @@ export interface Category {
 }
 
 export const CATEGORIES: ReadonlyArray<Category> = [
-  { slug: 'classics', label: 'Classics', description: 'Timeless masterpieces, from Dostoevsky's existential depths to the sweeping romances of the past.' },
+  { slug: 'classics', label: 'Classics', description: "Timeless masterpieces, from Dostoevsky's existential depths to the sweeping romances of the past." },
   { slug: 'dark-academia', label: 'Dark Academia & Gothic', description: 'Gothic libraries, existential dread, and beautifully tragic prose. For readers who like their literature with a shadow.' },
   { slug: 'literary-fiction', label: 'Literary Fiction', description: 'Character-driven, deeply philosophical, and beautifully written modern novels that stay with you.' },
   { slug: 'philosophy', label: 'Philosophy', description: 'Deep thoughts, ancient wisdom, and modern philosophical explorations.' },

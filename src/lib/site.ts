@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Central site identity. Change the name, URL, or tagline here once and
  * every page, meta tag, and footer picks it up.
  */
