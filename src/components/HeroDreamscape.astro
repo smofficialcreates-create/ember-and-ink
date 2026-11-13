@@ -18,9 +18,10 @@
       id="hero-anime-bg"
       src="/images/scenes/sakura-hillside.webp"
       alt="Anime spring morning on Japanese countryside hillside"
-      class="w-full h-full object-cover object-center scale-105 transition-transform duration-700 ease-out"
+      class="w-full h-full object-cover object-center scale-105"
       loading="eager"
       fetchpriority="high"
+      decoding="async"
     />
   </div>
 
@@ -159,11 +160,12 @@
     mountSakuraPetals(canvas);
   }
 
-  // 2.5D Mouse Parallax on illustrated background
+  // 2.5D Mouse Parallax on illustrated background (desktop fine-pointer only to keep mobile touch scroll native & silky smooth)
   const bg = document.getElementById('hero-anime-bg');
   const hero = document.getElementById('hero');
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  if (bg && hero && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (bg && hero && isFinePointer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     hero.addEventListener('pointermove', (e) => {
       const rect = hero.getBoundingClientRect();
       const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
@@ -174,8 +176,9 @@
         y: yNorm * -14,
         duration: 1.2,
         ease: 'power2.out',
+        overwrite: 'auto',
       });
-    });
+    }, { passive: true });
   }
 
   // GSAP Entrance
