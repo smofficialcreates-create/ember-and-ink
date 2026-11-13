@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 /**
  * SceneBooks.astro
  * Scene 02 â€” Tranquility: The Waterfall & Nature Sanctuary (inspired by reference video)
@@ -142,18 +141,17 @@ const displayPosts = posts.slice(0, 3);
   const section = document.getElementById('tranquility-shelf');
 
   if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const moveX = gsap.quickTo(bg, 'x', { duration: 0.8, ease: 'power2.out' });
+    const moveY = gsap.quickTo(bg, 'y', { duration: 0.8, ease: 'power2.out' });
+
     section.addEventListener('pointermove', (e) => {
       const rect = section.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-
-      gsap.to(bg, {
-        x: xNorm * -15,
-        y: yNorm * -10,
-        duration: 1.2,
-        ease: 'power2.out',
-      });
-    });
+      moveX(xNorm * -15);
+      moveY(yNorm * -10);
+    }, { passive: true });
   }
 </script>
 

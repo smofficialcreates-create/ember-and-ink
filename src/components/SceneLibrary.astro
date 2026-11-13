@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 /**
  * SceneLibrary.astro
  * Scene 04 â€” The Countryside Library: Illustrated anime sanctuary
@@ -129,18 +128,17 @@ const { posts } = Astro.props;
   const section = document.getElementById('interactive-library');
 
   if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const moveX = gsap.quickTo(bg, 'x', { duration: 0.8, ease: 'power2.out' });
+    const moveY = gsap.quickTo(bg, 'y', { duration: 0.8, ease: 'power2.out' });
+
     section.addEventListener('pointermove', (e) => {
       const rect = section.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-
-      gsap.to(bg, {
-        x: xNorm * -15,
-        y: yNorm * -10,
-        duration: 1.2,
-        ease: 'power2.out',
-      });
-    });
+      moveX(xNorm * -15);
+      moveY(yNorm * -10);
+    }, { passive: true });
   }
 </script>
 
