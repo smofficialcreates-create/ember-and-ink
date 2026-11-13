@@ -187,3 +187,4 @@ https://ember-and-ink.sm-officialcreates.workers.dev/blog/${slug}/`);
   }
 }
 generate();
+
