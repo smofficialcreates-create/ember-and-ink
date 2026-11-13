@@ -111,7 +111,9 @@
     scroll-behavior: auto !important;
   }
 }
-/* Smooth global transitions */
+/* Animate only compositor-friendly and paint-safe properties. */
 a, button {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-duration: 220ms;
+  transition-timing-function: cubic-bezier(0.2, 0.65, 0.3, 1);
 }

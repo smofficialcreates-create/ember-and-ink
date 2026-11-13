@@ -18,7 +18,7 @@ const others = all.filter((p) => p.id !== featured[0]?.id);
 ---
 
 <BaseLayout title="Home" description={SITE.description} url={`${SITE.url}/`}>
-  <main id="cinematic-scroll">
+
     <HeroDreamscape />
     <SceneBooks posts={others} />
     <SceneGenres categories={CATEGORIES} />
@@ -26,84 +26,5 @@ const others = all.filter((p) => p.id !== featured[0]?.id);
     <SceneReviews posts={all} />
     <SceneAbout />
     <SceneNight newsletterEndpoint={NEWSLETTER_ENDPOINT} siteEmail={SITE.email} />
-  </main>
 </BaseLayout>
 
-<script>
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. HERO PARALLAX (Requires IDs from HeroDreamscape.astro)
-    // If you used different IDs in your Hero, update these selectors!
-    const heroBg = document.getElementById('hero-bg') || document.querySelector('.hero-bg');
-    const heroContent = document.getElementById('hero-content') || document.querySelector('.hero-content');
-
-    if (heroBg && heroContent) {
-      // As you scroll down, the background zooms in slowly
-      gsap.to(heroBg, {
-        yPercent: 20,
-        scale: 1.1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#hero',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true
-        }
-      });
-
-      // The text moves up and fades out faster
-      gsap.to(heroContent, {
-        yPercent: -50,
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '#hero',
-          start: 'top top',
-          end: 'center top',
-          scrub: true
-        }
-      });
-    }
-
-    // 2. GLOBAL SCENE REVEAL
-    // This makes every section after the hero slide up and fade in as you scroll down
-    gsap.utils.toArray('main#cinematic-scroll > section').forEach((section) => {
-      // Skip the hero if it's the first section
-      if (section.id === 'hero') return;
-
-      gsap.from(section, {
-        y: 100,
-        opacity: 0,
-        duration: 1.2,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top 85%', // Start animating when section is 85% down the screen
-          toggleActions: 'play none none reverse'
-        }
-      });
-    });
-
-    // 3. BOOK CARDS STAGGER (Inside SceneBooks)
-    const bookCards = document.querySelectorAll('.book-card, .grid > div'); 
-    if (bookCards.length > 0) {
-      gsap.from(bookCards, {
-        y: 80,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: bookCards[0],
-          start: 'top 85%',
-        }
-      });
-    }
-
-  });
-</script>

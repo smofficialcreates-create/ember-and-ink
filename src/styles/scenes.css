@@ -51,13 +51,7 @@
   max-width: 36rem;
 }
 
-/* ── Reveal animation states ─────────────────────────────────────────────*/
-.reveal-up,
-.reveal-fade,
-.scene-eyebrow,
-.scene-headline {
-  will-change: opacity, transform;
-}
+/* Reveal transforms are promoted only while GSAP animates them. */
 
 /* ── Decorative elements ─────────────────────────────────────────────── */
 .reveal-line {

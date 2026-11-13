@@ -18,12 +18,8 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
 
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: 'viewport',
-  },
-
-  // Typed environment variables. Access them via `astro:env/client`
+  // Avoid eagerly prefetching every visible link; pages opt in only where useful.
+// Typed environment variables. Access them via `astro:env/client`
   // in components â€” never read `process.env` directly in client code.
   env: {
     schema: {
