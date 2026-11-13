@@ -1,8 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 /**
  * SceneLibrary.astro
- * Scene 04 â€” The Countryside Library: Illustrated anime sanctuary
+ * Scene 04 — The Countryside Library: Illustrated anime sanctuary
  * featuring the hillside traditional Japanese library cabin with floating sakura petals.
  */
 import type { BlogPost } from '@lib/posts';
@@ -94,7 +93,7 @@ const { posts } = Astro.props;
           <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
             <span>{formatDate(post.data.pubDate)}</span>
             <span class="text-[#e8d5a3] font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-              Read <span>â†’</span>
+              Read <span>→</span>
             </span>
           </div>
         </a>
@@ -108,7 +107,7 @@ const { posts } = Astro.props;
         class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-8 py-3.5 text-xs font-semibold uppercase tracking-widest text-white hover:bg-white hover:text-[#14121a] backdrop-blur-md transition-all shadow-md"
       >
         <span>Browse All {posts.length} Volumes in the Catalog</span>
-        <span>â†’</span>
+        <span>→</span>
       </a>
     </div>
   </div>
@@ -129,18 +128,17 @@ const { posts } = Astro.props;
   const section = document.getElementById('interactive-library');
 
   if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const moveX = gsap.quickTo(bg, 'x', { duration: 0.8, ease: 'power2.out' });
+    const moveY = gsap.quickTo(bg, 'y', { duration: 0.8, ease: 'power2.out' });
+
     section.addEventListener('pointermove', (e) => {
       const rect = section.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-
-      gsap.to(bg, {
-        x: xNorm * -15,
-        y: yNorm * -10,
-        duration: 1.2,
-        ease: 'power2.out',
-      });
-    });
+      moveX(xNorm * -15);
+      moveY(yNorm * -10);
+    }, { passive: true });
   }
 </script>
 

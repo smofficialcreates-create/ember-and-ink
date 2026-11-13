@@ -1,8 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 /**
  * SceneReviews.astro
- * Scene 05 â€” Open Book Reviews: Realistic two-page spread showing book
+ * Scene 05 — Open Book Reviews: Realistic two-page spread showing book
  * cover, editorial verdict, quote, and direct affiliate reading links.
  */
 import type { BlogPost } from '@lib/posts';
@@ -28,7 +27,7 @@ const reviewPosts = posts.slice(0, 3);
     <div class="max-w-2xl mb-12 md:mb-16">
       <div class="flex items-center gap-3">
         <span class="h-px w-8 bg-[#c9a14a]"></span>
-        <p class="scene-eyebrow text-[#9a7444]">Scene 05 Â· The Open Tome</p>
+        <p class="scene-eyebrow text-[#9a7444]">Scene 05 · The Open Tome</p>
       </div>
       <h2 class="scene-headline mt-3 text-3xl md:text-5xl text-[#5c1f2c]">
         Between the covers, <span class="italic text-[#9b3c4a]">truths unfold</span>.
@@ -100,11 +99,7 @@ const reviewPosts = posts.slice(0, 3);
                   )}
                 </div>
 
-                <div class="mt-6 text-center">
-                  <span class="inline-block px-3 py-1 rounded-full bg-[#f3ebd9] text-[#5c1f2c] text-xs font-semibold">
-                    Verdict: Highly Recommended
-                  </span>
-                </div>
+
               </div>
 
               <!-- Action Buttons -->
@@ -116,14 +111,14 @@ const reviewPosts = posts.slice(0, 3);
                     rel="sponsored nofollow noopener noreferrer"
                     class="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[#5c1f2c] text-[#fffaf0] py-3 px-5 text-xs font-semibold hover:bg-[#40141e] transition-colors shadow-sm"
                   >
-                    Check Price on Amazon â†—
+                    Check Price on Amazon ↗
                   </a>
                 )}
                 <a
                   href={`/blog/${post.id}/`}
                   class="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-[#5c1f2c] text-[#5c1f2c] py-3 px-5 text-xs font-semibold hover:bg-[#5c1f2c]/5 transition-colors"
                 >
-                  Full Review â†’
+                  Full Review →
                 </a>
               </div>
             </div>
@@ -132,23 +127,16 @@ const reviewPosts = posts.slice(0, 3);
             <div class="flex flex-col justify-between md:pl-4">
               <div>
                 <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#9a7444] mb-2">
-                  Editorial Examination Â· {formatDate(post.data.pubDate)}
+                  Editorial Examination · {formatDate(post.data.pubDate)}
                 </p>
 
                 <h3 class="font-display text-2xl md:text-3xl font-semibold text-[#5c1f2c] leading-tight mb-4">
                   {post.data.title}
                 </h3>
 
-                <!-- Decorative quote callout -->
-                <blockquote class="my-6 pl-5 border-l-2 border-[#c9a14a] italic font-display text-lg text-[#2a2118] bg-[#fbf7ee] py-3 rounded-r-xl">
-                  â€œ{post.data.description}â€
-                </blockquote>
-
-                <!-- Excerpt body -->
+                <!-- Honest editorial summary drawn from this post's own description. -->
                 <div class="text-[#2a2118]/85 text-sm md:text-base leading-relaxed space-y-3 font-serif">
-                  <p>
-                    Every reader knows the singular sensation of picking up a work that reframes their perspective. In our examination, this title distinguishes itself through crystalline prose and an uncompromising narrative velocity.
-                  </p>
+                  <p>{post.data.description}</p>
                   <p class="text-xs text-[#6e6155] italic">
                     Tags: {post.data.tags.slice(0, 4).map(t => `#${t}`).join(' ')}
                   </p>

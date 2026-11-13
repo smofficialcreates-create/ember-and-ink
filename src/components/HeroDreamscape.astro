@@ -166,18 +166,16 @@
   const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   if (bg && hero && isFinePointer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const moveX = gsap.quickTo(bg, 'x', { duration: 0.8, ease: 'power2.out' });
+    const moveY = gsap.quickTo(bg, 'y', { duration: 0.8, ease: 'power2.out' });
+
     hero.addEventListener('pointermove', (e) => {
       const rect = hero.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-
-      gsap.to(bg, {
-        x: xNorm * -18,
-        y: yNorm * -14,
-        duration: 1.2,
-        ease: 'power2.out',
-        overwrite: 'auto',
-      });
+      moveX(xNorm * -18);
+      moveY(yNorm * -14);
     }, { passive: true });
   }
 
