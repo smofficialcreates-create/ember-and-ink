@@ -1,4 +1,4 @@
-/**
+﻿/**
  * The single source of truth for blog categories.
  *
  * Each entry has:
@@ -9,7 +9,7 @@
  *                    Fantasy Romance) in the header and home page
  *
  * Add or rename a category here and every page that lists categories
- * picks it up automatically — no other file needs to change.
+ * picks it up automatically â€” no other file needs to change.
  */
 export interface Category {
   slug: string;
@@ -19,6 +19,7 @@ export interface Category {
 }
 
 export const CATEGORIES: ReadonlyArray<Category> = [
+  { slug: 'philosophy', label: 'Philosophy', description: 'Deep thoughts, ancient wisdom, and modern philosophical explorations.' },
   {
     slug: 'self-help',
     label: 'Self-Help',
@@ -42,12 +43,12 @@ export const CATEGORIES: ReadonlyArray<Category> = [
   { slug: 'nonfiction', label: 'Nonfiction', description: 'True stories and ideas worth keeping.' },
   { slug: 'poetry-essays', label: 'Poetry & Essays', description: 'Small forms, big feelings.' },
   { slug: 'seasonal-mood-reads', label: 'Seasonal & Mood Reads', description: 'Reads for the season you are in.' },
-  { slug: 'books-like', label: 'Books Like…', description: 'If you loved X, you will love these.' },
+  { slug: 'books-like', label: 'Books Likeâ€¦', description: 'If you loved X, you will love these.' },
 ];
 
 /**
  * Converts an arbitrary label into a URL slug.
- * Handles the "&" and "…" characters explicitly so "Fantasy & Romance"
+ * Handles the "&" and "â€¦" characters explicitly so "Fantasy & Romance"
  * becomes "fantasy-and-romance", not "fantasy--romance".
  */
 export function slugify(value: string): string {
@@ -55,7 +56,7 @@ export function slugify(value: string): string {
     .toLowerCase()
     .trim()
     .replace(/&/g, 'and')
-    .replace(/…/g, '')
+    .replace(/â€¦/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 }

@@ -1,11 +1,11 @@
-import { defineCollection, z } from 'astro:content';
+﻿import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 /**
  * Blog collection.
  *
  * Every post's frontmatter MUST satisfy this schema. The build fails
- * if a required field is missing or malformed — this guarantees a
+ * if a required field is missing or malformed â€” this guarantees a
  * stable, predictable content contract for authors and AI generators.
  */
 const blog = defineCollection({
@@ -30,14 +30,14 @@ const blog = defineCollection({
       'Nonfiction',
       'Poetry & Essays',
       'Seasonal & Mood Reads',
-      'Books Like…',
+      'Books Likeâ€¦',
     ]),
 
     tags: z.array(z.string()).default([]),
 
     /**
      * Path relative to `public/`, e.g. "/images/blog/my-cover.png".
-     * Optional — the site falls back to the default OG image.
+     * Optional â€” the site falls back to the default OG image.
      */
     coverImage: z.string().optional(),
     coverAlt: z.string().max(180).optional(),
