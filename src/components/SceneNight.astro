@@ -24,6 +24,7 @@ const { newsletterEndpoint, siteEmail } = Astro.props;
       alt="Anime night sky over Japanese countryside with moon and stars"
       class="w-full h-full object-cover object-center scale-105"
       loading="lazy"
+      decoding="async"
     />
   </div>
 
@@ -132,7 +133,7 @@ const { newsletterEndpoint, siteEmail } = Astro.props;
   const bg = document.getElementById('night-bg');
   const section = document.getElementById('night-garden');
 
-  if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (bg && section && window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const moveX = gsap.quickTo(bg, 'x', { duration: 0.8, ease: 'power2.out' });
     const moveY = gsap.quickTo(bg, 'y', { duration: 0.8, ease: 'power2.out' });
 

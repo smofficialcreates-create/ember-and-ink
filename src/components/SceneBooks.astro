@@ -27,6 +27,7 @@ const displayPosts = posts.slice(0, 3);
       alt="Anime waterfall sanctuary with volumetric sunlight"
       class="w-full h-full object-cover object-center scale-105"
       loading="lazy"
+      decoding="async"
     />
   </div>
 
@@ -84,6 +85,7 @@ const displayPosts = posts.slice(0, 3);
                     alt={`Cover for ${post.data.title}`}
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
+      decoding="async"
                   />
                 ) : (
                   <div class="w-full h-full bg-[#1b2b4f] flex items-center justify-center p-2 text-center text-xs text-[#a5c8ff] font-display">
@@ -140,7 +142,7 @@ const displayPosts = posts.slice(0, 3);
   const bg = document.getElementById('waterfall-bg');
   const section = document.getElementById('tranquility-shelf');
 
-  if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (bg && section && window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const moveX = gsap.quickTo(bg, 'x', { duration: 0.8, ease: 'power2.out' });
     const moveY = gsap.quickTo(bg, 'y', { duration: 0.8, ease: 'power2.out' });
 
