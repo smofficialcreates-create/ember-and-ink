@@ -110,7 +110,9 @@ export function mountSakuraPetals(canvas, options = {}) {
   }
 
   const isMobile = window.innerWidth < 768;
-  const count = options.count || (isMobile ? 14 : 38);
+  // Keep mobile canvases deliberately light, including scenes that request a larger count.
+  const requestedCount = options.count ?? (isMobile ? 10 : 38);
+  const count = isMobile ? Math.min(requestedCount, 8) : requestedCount;
 
   let animationFrame = 0;
   let disposed = false;
@@ -191,8 +193,17 @@ export function mountSakuraPetals(canvas, options = {}) {
 
   const petals = Array.from({ length: count }, () => new Petal());
 
-  const animate = () => {
+  // Mobile GPUs benefit from a capped 30fps particle pass while scrolling.
+  const frameInterval = isMobile ? 1000 / 30 : 1000 / 60;
+  let lastFrameAt = 0;
+
+  const animate = (timestamp = 0) => {
     if (disposed || !isRunning) return;
+    if (timestamp - lastFrameAt < frameInterval) {
+      animationFrame = requestAnimationFrame(animate);
+      return;
+    }
+    lastFrameAt = timestamp;
 
     ctx.clearRect(0, 0, width, height);
     mouse.speedX *= 0.94; // damp wind
@@ -269,8 +280,8 @@ export function mountWaterfallMist(canvas) {
   }
 
   const isMobile = window.innerWidth < 768;
-  const mistCount = isMobile ? 6 : 14;
-  const moteCount = isMobile ? 8 : 22;
+  const mistCount = isMobile ? 4 : 14;
+  const moteCount = isMobile ? 5 : 22;
 
   let animationFrame = 0;
   let disposed = false;
@@ -354,8 +365,17 @@ export function mountWaterfallMist(canvas) {
   const motes = Array.from({ length: moteCount }, () => new SprayMote());
 
   let t = 0;
-  const animate = () => {
+  // Mobile GPUs benefit from a capped 30fps particle pass while scrolling.
+  const frameInterval = isMobile ? 1000 / 30 : 1000 / 60;
+  let lastFrameAt = 0;
+
+  const animate = (timestamp = 0) => {
     if (disposed || !isRunning) return;
+    if (timestamp - lastFrameAt < frameInterval) {
+      animationFrame = requestAnimationFrame(animate);
+      return;
+    }
+    lastFrameAt = timestamp;
 
     ctx.clearRect(0, 0, width, height);
     t += 0.018;
@@ -448,7 +468,7 @@ export function mountFireflies(canvas) {
   if (!cachedFireflyAmber) cachedFireflyAmber = createFireflySprite(false);
 
   const isMobile = window.innerWidth < 768;
-  const count = isMobile ? 10 : 24;
+  const count = isMobile ? 6 : 24;
 
   let animationFrame = 0;
   let disposed = false;
@@ -502,8 +522,17 @@ export function mountFireflies(canvas) {
   const fireflies = Array.from({ length: count }, () => new Firefly());
 
   let t = 0;
-  const animate = () => {
+  // Mobile GPUs benefit from a capped 30fps particle pass while scrolling.
+  const frameInterval = isMobile ? 1000 / 30 : 1000 / 60;
+  let lastFrameAt = 0;
+
+  const animate = (timestamp = 0) => {
     if (disposed || !isRunning) return;
+    if (timestamp - lastFrameAt < frameInterval) {
+      animationFrame = requestAnimationFrame(animate);
+      return;
+    }
+    lastFrameAt = timestamp;
 
     ctx.clearRect(0, 0, width, height);
     t += 0.018;

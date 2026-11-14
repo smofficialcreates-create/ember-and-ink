@@ -12,10 +12,31 @@
   isolation: isolate;
 }
 
-/* 2.5D Parallax background image container */
+/* Background layers are promoted only while a desktop parallax tween is active.
+   Avoid forcing full-width mobile images into permanent GPU layers. */
 .scene-anime img[id$="-bg"] {
-  will-change: transform;
-  transform: translateZ(0);
+  transform-origin: center;
+}
+
+/* Touch devices prioritize responsive scrolling over decorative hover effects. */
+@media (hover: none), (pointer: coarse) {
+  .scene-anime [class*="backdrop-blur"],
+  .scene-section [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Large blurred genre glows are decorative; omit their expensive raster filter. */
+  .scene-section > div[class*="blur-"] {
+    filter: none !important;
+    opacity: 0.18 !important;
+  }
+
+  .book-card:hover,
+  .genre-portal:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 /* Scene canvas overlays */

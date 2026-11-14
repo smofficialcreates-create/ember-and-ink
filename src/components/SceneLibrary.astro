@@ -26,6 +26,7 @@ const { posts } = Astro.props;
       alt="Anime Japanese countryside library cottage under cherry blossoms"
       class="w-full h-full object-cover object-center scale-105"
       loading="lazy"
+      decoding="async"
     />
   </div>
 
@@ -72,6 +73,7 @@ const { posts } = Astro.props;
                   alt={`Cover of ${post.data.title}`}
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
+      decoding="async"
                 />
               ) : (
                 <div class="w-full h-full bg-gradient-to-br from-[#5c1f2c] to-[#1c0f16] flex items-center justify-center p-3 text-center text-xs text-[#e8d5a3] font-display">
@@ -127,7 +129,7 @@ const { posts } = Astro.props;
   const bg = document.getElementById('library-bg');
   const section = document.getElementById('interactive-library');
 
-  if (bg && section && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (bg && section && window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const moveX = gsap.quickTo(bg, 'x', { duration: 0.8, ease: 'power2.out' });
     const moveY = gsap.quickTo(bg, 'y', { duration: 0.8, ease: 'power2.out' });
 

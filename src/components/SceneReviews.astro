@@ -91,6 +91,8 @@ const reviewPosts = posts.slice(0, 3);
                       src={post.data.coverImage}
                       alt={`Cover of ${post.data.title}`}
                       class="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <div class="w-full h-full bg-gradient-to-br from-[#5c1f2c] to-[#2a2118] flex items-center justify-center p-6 text-center text-[#e8d5a3] font-display text-xl">
