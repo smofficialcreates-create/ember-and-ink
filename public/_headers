@@ -1,6 +1,9 @@
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
+  X-Permitted-Cross-Domain-Policies: none
+  Cross-Origin-Opener-Policy: same-origin
+  Origin-Agent-Cluster: ?1
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
@@ -14,3 +17,5 @@
 
 /404
   X-Robots-Tag: noindex
+/images/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
