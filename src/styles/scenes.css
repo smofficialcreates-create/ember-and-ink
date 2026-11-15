@@ -12,6 +12,13 @@
   isolation: isolate;
 }
 
+/* Offscreen scenes skip rendering and layout until scrolled near, boosting mobile FPS & load */
+.scene-section,
+.scene-anime:not(#hero) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 850px;
+}
+
 /* Background layers are promoted only while a desktop parallax tween is active.
    Avoid forcing full-width mobile images into permanent GPU layers. */
 .scene-anime img[id$="-bg"] {

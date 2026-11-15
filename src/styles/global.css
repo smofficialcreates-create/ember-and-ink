@@ -33,11 +33,20 @@
 /* Base element styles */
 @layer base {
   html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
 
+  @media (min-width: 769px) {
+    @media (prefers-reduced-motion: no-preference) {
+      html {
+        scroll-behavior: smooth;
+      }
+    }
+  }
+
   body {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
     background-color: var(--cream);
     color: var(--ink);
     font-family: var(--font-body-stack);
