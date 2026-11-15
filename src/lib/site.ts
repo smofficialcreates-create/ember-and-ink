@@ -28,6 +28,8 @@ export const NAV: ReadonlyArray<{
 }> = [
   { label: 'Self-Help', href: '/categories/self-help/', highlight: true },
   { label: 'Fantasy Romance', href: '/categories/fantasy-romance/', highlight: true },
+  { label: 'Philosophy', href: '/categories/philosophy/', highlight: true },
+  { label: 'Hindi Classics', href: '/categories/hindi-classics/', highlight: true },
   { label: 'Reviews', href: '/reviews/' },
   { label: 'Blog', href: '/blog/' },
   { label: 'FAQ', href: '/faq/' },

@@ -19,10 +19,12 @@ export interface Category {
 }
 
 export const CATEGORIES: ReadonlyArray<Category> = [
+  { slug: 'hindi-classics', label: 'Hindi Classics', description: 'Timeless Hindi literature, rich poetry, and the masterpieces that shaped a culture.', featured: true },
+
   { slug: 'classics', label: 'Classics', description: "Timeless masterpieces, from Dostoevsky's existential depths to the sweeping romances of the past." },
   { slug: 'dark-academia', label: 'Dark Academia & Gothic', description: 'Gothic libraries, existential dread, and beautifully tragic prose. For readers who like their literature with a shadow.' },
   { slug: 'literary-fiction', label: 'Literary Fiction', description: 'Character-driven, deeply philosophical, and beautifully written modern novels that stay with you.' },
-  { slug: 'philosophy', label: 'Philosophy', description: 'Deep thoughts, ancient wisdom, and modern philosophical explorations.' },
+  { slug: 'philosophy', label: 'Philosophy', description: 'Deep thoughts, ancient wisdom, and modern philosophical explorations.', featured: true },
   {
     slug: 'self-help',
     label: 'Self-Help',
