@@ -13,21 +13,19 @@ const isActive = (href: string) =>
 ---
 
 <header class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-line">
-  <div class="container-ember flex items-center justify-between gap-4 h-16 md:h-20">
+  <div class="container-ember flex items-center justify-between gap-4 min-h-20 md:min-h-24 py-2">
     {/* Logo */}
-    <a
-      href="/"
-      class="flex items-center gap-2 font-display text-xl md:text-2xl font-semibold text-burgundy hover:text-burgundy-dark transition-colors shrink-0"
-    >
-      <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-burgundy text-gold">
-       <svg viewBox="0 0 64 64" class="h-5 w-5" aria-hidden="true">
-  <!-- Outer Diamond (The Book) -->
-  <path d="M32 6 L56 32 L32 58 L8 32 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
-  <!-- Inner Flame (The Ember) -->
-  <path d="M32 20 c4 6 8 8 8 14 a8 8 0 0 1 -16 0 c0 -4 2 -6 4 -8 c1 2 2 4 4 6 c-1 -5 0 -8 0 -12 Z" fill="currentColor"/>
-</svg> 
-      </span>
-      <span>Ember <span class="text-gold">&amp;</span> Ink</span>
+    <a href="/" class="flex items-center shrink-0" aria-label="Ember & Ink home">
+      <img
+        src="/images/ember-and-ink-logo.jpg"
+        alt="Ember & Ink"
+        width="348"
+        height="256"
+        class="w-[100px] md:w-[116px] h-auto object-contain"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
     </a>
 
     {/* Desktop navigation */}

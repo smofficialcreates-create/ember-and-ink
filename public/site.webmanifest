@@ -8,9 +8,9 @@
   "theme_color": "#5B1F2A",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/images/ember-and-ink-logo.jpg",
+      "sizes": "348x256",
+      "type": "image/jpeg",
       "purpose": "any"
     }
   ]
