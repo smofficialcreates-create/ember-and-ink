@@ -1,9 +1,10 @@
 ---
 /**
- * RelatedPosts — "You may also like" section shown at the bottom of posts.
- * Reuses PostCard for visual consistency.
+ * RelatedPosts.astro
+ * Refined "Further Literary Inquiries" shelf at the end of each review.
+ * Displays 3D vertical book cards for related titles.
  */
-import PostCard from './PostCard.astro';
+import BookCard from './BookCard.astro';
 import type { BlogPost } from '@lib/posts';
 
 interface Props {
@@ -13,17 +14,30 @@ interface Props {
 const { posts } = Astro.props;
 ---
 
-<section class="bg-paper border-t border-line mt-20">
-  <div class="container-ember py-14 md:py-20">
-    <div class="flex items-end justify-between gap-4 mb-8">
-      <h2 class="text-3xl md:text-4xl">You may also like</h2>
-      <a href="/blog/" class="text-sm font-medium text-burgundy hover:underline shrink-0">
-        All posts →
+<section class="bg-gradient-to-b from-paper via-cream to-[#f7f2e7] border-t border-line mt-20">
+  <div class="container-ember py-16 md:py-24">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.26em] text-[#9b3c4a]">
+          Curated Recommendations
+        </p>
+        <h2 class="mt-2 font-display text-3xl md:text-4xl text-burgundy font-bold">
+          Further Literary Inquiries
+        </h2>
+      </div>
+      <a
+        href="/reviews/"
+        class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-burgundy hover:text-gold transition-colors shrink-0"
+      >
+        <span>Explore All Reviews</span>
+        <span aria-hidden="true">→</span>
       </a>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {posts.map((post) => <PostCard post={post} />)}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+      {posts.map((post) => (
+        <BookCard post={post} layout="vertical" />
+      ))}
     </div>
   </div>
 </section>

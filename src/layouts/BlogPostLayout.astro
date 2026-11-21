@@ -1,15 +1,31 @@
 ---
+/**
+ * BlogPostLayout.astro
+ * Premium Literary Reading Experience for Ember & Ink.
+ *
+ * Implements:
+ * - Unobtrusive hairline reading progress bar at top of viewport.
+ * - Cinematic book introduction with 3D physical hardcover spotlight.
+ * - Author byline, publication information, rating, and synopsis.
+ * - Sticky editorial sidebar with active scroll-spy Table of Contents.
+ * - Mobile responsive TOC & reading jump actions.
+ * - Generous, comfortable editorial reading typography.
+ * - Distinctive final verdict conclusion module.
+ * - "Further Literary Inquiries" related books shelf.
+ * - Fully compliant FTC affiliate disclosures and Schema.org structured data.
+ */
 import { render } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import Breadcrumbs from '@components/Breadcrumbs.astro';
-import CategoryPill from '@components/CategoryPill.astro';
 import RelatedPosts from '@components/RelatedPosts.astro';
 import AffiliateDisclosure from '@components/AffiliateDisclosure.astro';
+import ReadingProgressBar from '@components/ReadingProgressBar.astro';
+import ReviewVerdict from '@components/ReviewVerdict.astro';
 import type { BlogPost } from '@lib/posts';
 import { SITE } from '@lib/site';
 import { withAmazonTag } from '@lib/amazon';
-import { formatDate, readingTime } from '@lib/format';
 import { slugify } from '@lib/categories';
+import { getBookEditorialMeta } from '@lib/book-meta';
 
 interface Props {
   post: BlogPost;
@@ -18,126 +34,533 @@ interface Props {
 
 const { post, related } = Astro.props;
 const { Content } = await render(post);
+const meta = getBookEditorialMeta(post);
 
 const amazonUrl = withAmazonTag(post.data.amazonLink);
-const goodreadsUrl = `https://www.goodreads.com/search?q=${encodeURIComponent(post.data.title)}`;
+const goodreadsUrl = `https://www.goodreads.com/search?q=${encodeURIComponent(meta.bookTitle + ' ' + meta.author)}`;
 const categorySlug = slugify(post.data.category);
-const publishedIso = post.data.pubDate.toISOString();
-const updatedIso = post.data.updatedDate?.toISOString();
-const readTime = readingTime(post.body);
 const pageUrl = `${SITE.url}/blog/${post.id}/`;
 
+// Extract H2 headings for the Table of Contents
 const headings = (post.body || '').match(/^##\s+(.+)$/gm) || [];
-const toc = headings.map(h => {
-  const text = h.replace(/^##\s+/, '');
+const toc = headings.map((h) => {
+  const text = h.replace(/^##\s+/, '').trim();
   return { text, id: slugify(text) };
 });
 
-const articleSchema = {
+// Rich schema.org structured data for Article + Book Review
+const reviewSchema = {
   '@context': 'https://schema.org',
-  '@type': 'Article',
+  '@type': 'Review',
   headline: post.data.title,
   description: post.data.description,
-  datePublished: publishedIso,
-  dateModified: updatedIso ?? publishedIso,
-  author: { '@type': 'Organization', name: SITE.name },
-  publisher: { '@type': 'Organization', name: SITE.name },
+  datePublished: meta.publishedIso,
+  dateModified: post.data.updatedDate?.toISOString() ?? meta.publishedIso,
+  itemReviewed: {
+    '@type': 'Book',
+    name: meta.bookTitle,
+    author: {
+      '@type': 'Person',
+      name: meta.author,
+    },
+    image: `${SITE.url}${meta.coverImage}`,
+  },
+  reviewRating: meta.rating
+    ? {
+        '@type': 'Rating',
+        ratingValue: meta.rating,
+        bestRating: 5,
+        worstRating: 1,
+      }
+    : undefined,
+  author: {
+    '@type': 'Organization',
+    name: SITE.name,
+    url: SITE.url,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    url: SITE.url,
+  },
   mainEntityOfPage: pageUrl,
 };
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} type="article" publishedTime={publishedIso} modifiedTime={updatedIso} image={post.data.coverImage} url={pageUrl}>
-  <article class="pb-20">
-    <header class="bg-paper border-b border-line">
-      <div class="container-ember py-10 md:py-16">
-        <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Blog', href: '/blog/' }, { label: post.data.category, href: `/categories/${categorySlug}/` }, { label: post.data.title }]} />
-        <div class="mt-6 flex flex-wrap items-center gap-3">
-          <CategoryPill label={post.data.category} slug={categorySlug} />
-          <time datetime={publishedIso} class="text-sm text-muted">{formatDate(post.data.pubDate)}</time>
-          <span class="text-sm text-muted" aria-hidden="true">•</span>
-          <span class="text-sm text-muted">{readTime}</span>
-        </div>
-        <h1 class="mt-4 text-3xl md:text-5xl leading-tight max-w-3xl">{post.data.title}</h1>
-        <p class="mt-4 text-lg text-muted max-w-2xl">{post.data.description}</p>
-      </div>
-    </header>
+<BaseLayout
+  title={`${meta.bookTitle} by ${meta.author} — Book Review`}
+  description={post.data.description}
+  type="article"
+  publishedTime={meta.publishedIso}
+  modifiedTime={post.data.updatedDate?.toISOString()}
+  image={meta.coverImage}
+  url={pageUrl}
+>
+  {/* Hairline Reading Progress Indicator */}
+  <ReadingProgressBar />
 
-    {post.data.coverImage && (
-      <div class="container-ember -mt-8 md:-mt-12">
-        <div class="rounded-card overflow-hidden shadow-lift bg-paper">
-          <img src={post.data.coverImage} alt={post.data.coverAlt ?? `Cover for ${post.data.title}`} class="w-full h-auto max-h-[600px] object-contain" loading="eager" decoding="async" />
-        </div>
+  <article class="pb-16 selection:bg-gold-soft/50">
+    
+    {/* ══════════════════════════════════════════════════════════════════════════
+        A. CINEMATIC BOOK INTRODUCTION HERO
+    ══════════════════════════════════════════════════════════════════════════ */}
+    <header class="relative isolate overflow-hidden bg-gradient-to-b from-[#f7f2e8] via-cream to-paper pt-8 pb-14 md:pt-12 md:pb-20 border-b border-line" id="top">
+      {/* Background Japanese watermark */}
+      <div class="pointer-events-none absolute right-4 top-8 opacity-[0.035] select-none text-[16rem] md:text-[22rem] font-serif font-bold text-burgundy">
+        評
       </div>
-    )}
 
-    <div class="container-ember mt-12">
-      <div class="grid md:grid-cols-[minmax(0,1fr)_18rem] gap-12">
-        <div class="prose-ember">
+      <div class="container-ember relative z-10">
+        
+        {/* Breadcrumb Trail */}
+        <div class="mb-8">
+          <Breadcrumbs
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'The Reading Room', href: '/reviews/' },
+              { label: meta.curatedShelf.shortName, href: `/categories/${categorySlug}/` },
+              { label: meta.bookTitle },
+            ]}
+          />
+        </div>
+
+        {/* Hero Grid: Left Book Details / Right 3D Hardcover Cover */}
+        <div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-16 items-center">
           
-          <div class="not-prose mb-8">
-            <AffiliateDisclosure />
+          {/* Left Column: Editorial Headings & Metadata */}
+          <div class="space-y-6">
             
-            {/* BUTTONS */}
-            <div class="mt-4 flex flex-wrap gap-3">
+            {/* Badges Row */}
+            <div class="flex flex-wrap items-center gap-3 text-xs">
+              <span class:list={['inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium border border-current/25 shadow-xs', meta.curatedShelf.badgeBg, meta.curatedShelf.badgeText]}>
+                <span aria-hidden="true">{meta.curatedShelf.motif}</span>
+                <span>{meta.curatedShelf.name}</span>
+              </span>
+
+              <span class="text-muted/70 font-mono text-[11px]">•</span>
+              <time datetime={meta.publishedIso} class="text-muted font-mono text-xs">
+                {meta.publishedFormatted}
+              </time>
+              <span class="text-muted/70 font-mono text-[11px]">•</span>
+              <span class="text-muted font-mono text-xs">{meta.readTime}</span>
+            </div>
+
+            {/* Book Title & Byline */}
+            <div class="space-y-2">
+              <p class="text-xs sm:text-sm font-semibold uppercase tracking-[0.24em] text-[#9b3c4a]">
+                By {meta.author}
+              </p>
+              <h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-burgundy tracking-tight leading-[1.08]">
+                {meta.bookTitle}
+              </h1>
+              {post.data.title !== meta.bookTitle && (
+                <p class="font-serif italic text-base sm:text-lg text-muted/90 pt-1">
+                  {post.data.title}
+                </p>
+              )}
+            </div>
+
+            {/* Rating / Editorial Seal */}
+            <div class="flex flex-wrap items-center gap-3 pt-1">
+              {meta.ratingStars ? (
+                <div class="inline-flex items-center gap-2 rounded-2xl bg-paper border border-gold/40 px-3.5 py-1.5 shadow-xs">
+                  <span class="font-mono text-gold tracking-widest text-sm">{meta.ratingStars}</span>
+                  <span class="text-xs font-semibold font-mono text-burgundy">{meta.rating} / 5</span>
+                </div>
+              ) : (
+                <div class="inline-flex items-center gap-1.5 rounded-full bg-gold-soft/40 border border-gold/30 px-3 py-1 text-xs font-semibold text-burgundy">
+                  <span>Curated Selection</span>
+                </div>
+              )}
+              <span class="text-xs uppercase tracking-wider text-muted/80 font-mono">
+                Ember &amp; Ink Critical Examination
+              </span>
+            </div>
+
+            {/* Editorial Lead Synopsis Quote */}
+            <blockquote class="my-4 pl-4 border-l-2 border-gold font-display text-base sm:text-lg italic text-ink/85 leading-relaxed bg-[#fffdf7]/60 py-2.5 rounded-r-xl">
+              “{post.data.description}”
+            </blockquote>
+
+            {/* Quick Action Navigation Buttons */}
+            <div class="pt-2 flex flex-wrap items-center gap-3">
+              <a
+                href="#review-content"
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-burgundy px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-[#fffaf0] shadow-soft hover:bg-burgundy-dark transition-all hover:scale-105"
+              >
+                <span>Read Full Review</span>
+                <span aria-hidden="true">↓</span>
+              </a>
+
+              <a
+                href="#final-verdict"
+                class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-burgundy/30 bg-paper px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-burgundy hover:border-burgundy hover:bg-cream transition-colors"
+              >
+                <span>Verdict ⚖</span>
+              </a>
+
               {amazonUrl && (
-                <a href={amazonUrl} class="inline-flex items-center gap-2 rounded-pill bg-burgundy !text-[#FBF6EE] !no-underline px-6 py-3 font-medium shadow-soft hover:bg-burgundy-dark transition-colors" rel="sponsored nofollow noopener noreferrer" target="_blank">
-                  Check Price on Amazon →
+                <a
+                  href={amazonUrl}
+                  target="_blank"
+                  rel="sponsored nofollow noopener noreferrer"
+                  class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-gold/50 bg-[#fffdf7] px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#7a4d2b] hover:bg-gold-soft/30 transition-colors shadow-xs"
+                >
+                  <span>Find Book</span>
+                  <span class="text-[10px] opacity-70">&nearr;</span>
                 </a>
               )}
-              <a href={goodreadsUrl} class="inline-flex items-center gap-2 rounded-pill bg-gold-soft !text-[#5B1F2A] !no-underline px-6 py-3 font-medium hover:bg-gold/40 transition-colors" rel="noopener noreferrer" target="_blank">
-                View on Goodreads →
+
+              <a
+                href={goodreadsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-line bg-paper px-4 py-2.5 text-xs font-medium text-muted hover:text-burgundy hover:border-gold transition-colors"
+              >
+                <span>Goodreads</span>
+                <span class="text-[10px] opacity-70">&nearr;</span>
               </a>
             </div>
 
-            {/* TOP SOCIAL SHARING */}
-            <div class="mt-6 flex flex-wrap items-center gap-4 text-sm">
-              <span class="font-medium text-muted uppercase tracking-wider text-xs">Share:</span>
-              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">X (Twitter)</a>
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">Facebook</a>
-              <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(post.data.title)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">Pinterest</a>
-              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.data.title + ' ' + pageUrl)}`} target="_blank" rel="noopener" class="!text-muted !no-underline hover:!text-burgundy transition-colors">WhatsApp</a>
+          </div>
+
+          {/* Right Column: 3D Hardcover Book Presentation */}
+          <div class="flex items-center justify-center lg:justify-end">
+            <div class="relative w-48 sm:w-56 md:w-64 aspect-[2/3] transition-transform duration-500 hover:scale-[1.02] hover:-rotate-0.5">
+              
+              {/* Pedestal shadow on tabletop */}
+              <div class="absolute -bottom-6 inset-x-3 h-8 bg-black/35 blur-xl rounded-full"></div>
+
+              {/* 3D Physical Hardbound Book */}
+              <div class="relative h-full w-full rounded-r-xl rounded-l-[3px] overflow-hidden shadow-[6px_18px_36px_-6px_rgba(42,33,24,0.4)] border border-black/15 bg-[#1b1419]">
+                <img
+                  src={meta.coverImage}
+                  alt={meta.coverAlt}
+                  class="h-full w-full object-cover object-center"
+                  loading="eager"
+                  decoding="async"
+                  width="360"
+                  height="540"
+                />
+
+                {/* Hardcover Left Spine Lighting & Bevel */}
+                <div class="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-black/45 via-white/20 to-transparent"></div>
+                {/* Book Edge Trim */}
+                <div class="pointer-events-none absolute inset-y-0 right-0 w-[2px] bg-gradient-to-b from-amber-100/50 via-amber-50/25 to-amber-100/50"></div>
+                {/* Surface Sheen */}
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/15"></div>
+              </div>
+
+              {/* Japanese Book Seal */}
+              <div class="pointer-events-none absolute -bottom-3 -right-3 h-11 w-11 rounded-full bg-[#5c1f2c] border border-gold-soft text-gold-soft flex items-center justify-center font-serif text-sm shadow-lg">
+                <span>印</span>
+              </div>
             </div>
           </div>
 
-          <Content />
-
-          {/* BOTTOM SOCIAL SHARING */}
-          <div class="not-prose mt-12 pt-8 border-t border-line">
-            <h3 class="font-display text-lg text-burgundy mb-4">Share this review</h3>
-            <div class="flex flex-wrap gap-2">
-              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">X (Twitter)</a>
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">Facebook</a>
-              <a href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(post.data.title)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">Pinterest</a>
-              <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.data.title + ' ' + pageUrl)}`} target="_blank" rel="noopener" class="rounded-pill bg-cream border border-line px-4 py-2 text-sm !text-ink !no-underline hover:border-gold transition-colors">WhatsApp</a>
-            </div>
-          </div>
         </div>
 
-        <aside class="space-y-6 md:sticky md:top-24 self-start">
+      </div>
+    </header>
+
+    {/* ══════════════════════════════════════════════════════════════════════════
+        MOBILE STICKY UTILITY BAR
+    ══════════════════════════════════════════════════════════════════════════ */}
+    <div class="sticky top-16 z-30 lg:hidden bg-paper/95 backdrop-blur border-b border-line px-4 py-2.5 flex items-center justify-between text-xs font-medium text-ink shadow-xs">
+      <div class="flex items-center gap-2 truncate max-w-[60%]">
+        <span class="font-display font-semibold text-burgundy truncate">{meta.bookTitle}</span>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        {toc.length > 0 && (
+          <details class="relative">
+            <summary class="list-none cursor-pointer rounded-full border border-line bg-cream px-3 py-1 text-xs font-semibold uppercase tracking-wider text-burgundy">
+              Sections ▾
+            </summary>
+            <nav class="absolute right-0 mt-2 w-64 max-h-72 overflow-y-auto rounded-2xl bg-paper border border-line shadow-lift p-3 space-y-1.5 z-40 text-xs">
+              <p class="font-display font-semibold text-burgundy pb-1 border-b border-line">In this review</p>
+              {toc.map((item) => (
+                <a href={`#${item.id}`} class="block py-1 px-2 rounded hover:bg-cream text-muted hover:text-burgundy transition-colors">
+                  {item.text}
+                </a>
+              ))}
+              <a href="#final-verdict" class="block py-1 px-2 rounded font-semibold text-[#9b3c4a] hover:bg-cream transition-colors">
+                The Final Verdict ⚖
+              </a>
+            </nav>
+          </details>
+        )}
+
+        {amazonUrl && (
+          <a
+            href={amazonUrl}
+            target="_blank"
+            rel="sponsored nofollow noopener noreferrer"
+            class="rounded-full bg-burgundy px-3.5 py-1 text-xs font-semibold text-[#fffaf0] hover:bg-burgundy-dark transition-colors"
+          >
+            Find Book ↗
+          </a>
+        )}
+      </div>
+    </div>
+
+    {/* ══════════════════════════════════════════════════════════════════════════
+        B, C & D. EDITORIAL READING BODY & STICKY SIDEBAR
+    ══════════════════════════════════════════════════════════════════════════ */}
+    <div class="container-ember mt-12 md:mt-16" id="review-content">
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_20rem] gap-12 lg:gap-16 items-start">
+        
+        {/* Main Column: Review Text & Verdict */}
+        <div class="min-w-0">
+          
+          {/* FTC Affiliate Disclosure */}
+          <div class="mb-10">
+            <AffiliateDisclosure />
+          </div>
+
+          {/* Reading Typography */}
+          <div class="prose-ember leading-relaxed max-w-none text-ink/90 font-light text-base sm:text-lg">
+            <Content />
+          </div>
+
+          {/* E. Final Verdict Module */}
+          <ReviewVerdict meta={meta} amazonUrl={amazonUrl || null} />
+
+          {/* Bottom Social Share & Tags Row */}
+          <div class="mt-12 pt-8 border-t border-line not-prose flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div>
+              <h3 class="text-xs font-semibold uppercase tracking-[0.22em] text-muted mb-3">
+                Share This Literary Note
+              </h3>
+              <div class="flex flex-wrap items-center gap-2">
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(pageUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="rounded-full bg-cream border border-line px-4 py-2 text-xs font-medium text-ink hover:border-gold hover:text-burgundy transition-colors"
+                >
+                  X (Twitter)
+                </a>
+                <a
+                  href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(post.data.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="rounded-full bg-cream border border-line px-4 py-2 text-xs font-medium text-ink hover:border-gold hover:text-burgundy transition-colors"
+                >
+                  Pinterest
+                </a>
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.data.title + ' ' + pageUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="rounded-full bg-cream border border-line px-4 py-2 text-xs font-medium text-ink hover:border-gold hover:text-burgundy transition-colors"
+                >
+                  WhatsApp
+                </a>
+                <button
+                  type="button"
+                  id="copy-link-btn"
+                  class="rounded-full bg-cream border border-line px-4 py-2 text-xs font-medium text-ink hover:border-gold hover:text-burgundy transition-colors"
+                >
+                  Copy Link
+                </button>
+              </div>
+            </div>
+
+            <div class="text-right sm:text-right">
+              <a
+                href="/reviews/"
+                class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-burgundy hover:text-gold transition-colors"
+              >
+                <span>← Return to The Reading Room</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Sidebar: Sticky Desktop Table of Contents & Book Dossier */}
+        <aside class="hidden lg:block space-y-8 sticky top-24 self-start">
+          
+          {/* Table of Contents Card with Scroll-Spy */}
           {toc.length > 0 && (
-            <section class="rounded-card bg-paper border border-line p-5 shadow-soft">
-              <h2 class="text-lg font-display text-burgundy">In this review</h2>
-              <ul class="mt-3 space-y-2 text-sm">
-                {toc.map(item => (
-                  <li><a href={`#${item.id}`} class="text-muted hover:text-burgundy hover:underline transition-colors">{item.text}</a></li>
+            <section class="rounded-2xl bg-paper border border-line p-6 shadow-sm" aria-label="Table of contents">
+              <div class="flex items-center justify-between pb-3 border-b border-line">
+                <h2 class="font-display text-base font-semibold text-burgundy">
+                  In This Review
+                </h2>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-muted">
+                  Index
+                </span>
+              </div>
+
+              <ul class="mt-4 space-y-2.5 text-xs text-muted" id="desktop-toc">
+                {toc.map((item) => (
+                  <li>
+                    <a
+                      href={`#${item.id}`}
+                      class="toc-link block py-1 pl-2 border-l-2 border-transparent hover:border-gold hover:text-burgundy transition-all"
+                      data-target-id={item.id}
+                    >
+                      {item.text}
+                    </a>
+                  </li>
                 ))}
+                <li>
+                  <a
+                    href="#final-verdict"
+                    class="toc-link block py-1 pl-2 border-l-2 border-transparent font-semibold text-[#9b3c4a] hover:border-gold hover:text-burgundy transition-all"
+                    data-target-id="final-verdict"
+                  >
+                    The Final Verdict ⚖
+                  </a>
+                </li>
               </ul>
             </section>
           )}
-          <section class="rounded-card bg-paper border border-line p-5 shadow-soft">
-            <h2 class="text-lg font-display text-burgundy">Tags</h2>
-            {post.data.tags.length > 0 ? (
-              <ul class="mt-3 flex flex-wrap gap-2">
-                {post.data.tags.map((tag) => (
-                  <li><a href={`/tags/${slugify(tag)}/`} class="inline-block rounded-pill border border-line px-3 py-1 text-sm text-muted hover:text-burgundy hover:border-gold transition-colors">#{tag}</a></li>
-                ))}
-              </ul>
-            ) : <p class="mt-3 text-sm text-muted">No tags yet.</p>}
+
+          {/* Book Dossier Summary Card */}
+          <section class="rounded-2xl bg-[#fffdf7] border border-line p-6 shadow-sm space-y-4">
+            <h3 class="font-display text-base font-semibold text-burgundy border-b border-line pb-2">
+              Book Details
+            </h3>
+
+            <div class="space-y-3 text-xs">
+              <div class="flex justify-between items-center py-1 border-b border-line/40">
+                <span class="text-muted">Author</span>
+                <span class="font-semibold text-ink">{meta.author}</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-line/40">
+                <span class="text-muted">Genre</span>
+                <span class="font-semibold text-ink">{meta.genre}</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-line/40">
+                <span class="text-muted">Shelf</span>
+                <span class="font-semibold text-ink">{meta.curatedShelf.shortName}</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-line/40">
+                <span class="text-muted">Reviewed</span>
+                <span class="font-mono text-ink">{meta.publishedFormatted}</span>
+              </div>
+              {meta.ratingStars && (
+                <div class="flex justify-between items-center py-1 border-b border-line/40">
+                  <span class="text-muted">Rating</span>
+                  <span class="text-gold font-mono tracking-widest">{meta.ratingStars}</span>
+                </div>
+              )}
+            </div>
+
+            {amazonUrl && (
+              <div class="pt-2">
+                <a
+                  href={amazonUrl}
+                  target="_blank"
+                  rel="sponsored nofollow noopener noreferrer"
+                  class="w-full inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-burgundy px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[#fffaf0] hover:bg-burgundy-dark transition-colors shadow-xs"
+                >
+                  <span>Find on Amazon</span>
+                  <span class="text-xs">↗</span>
+                </a>
+              </div>
+            )}
           </section>
+
+          {/* Tags Cloud */}
+          {post.data.tags.length > 0 && (
+            <section class="rounded-2xl bg-paper border border-line p-5 shadow-xs">
+              <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-3">
+                Tags &amp; Tropes
+              </h3>
+              <div class="flex flex-wrap gap-1.5">
+                {post.data.tags.map((tag) => (
+                  <a
+                    href={`/tags/${slugify(tag)}/`}
+                    class="rounded-full border border-line bg-cream/60 px-3 py-1 text-[11px] text-muted hover:border-gold hover:text-burgundy transition-colors"
+                  >
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
         </aside>
+
       </div>
     </div>
+
+    {/* F. Related Books Shelf */}
     {related.length > 0 && <RelatedPosts posts={related} />}
+
   </article>
-  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  {/* Schema.org Article Structured Data */}
+  <script type="application/ld+json" set:html={JSON.stringify(reviewSchema)} />
 </BaseLayout>
+
+{/* ══════════════════════════════════════════════════════════════════════════
+    SCROLL-SPY TOC & COPY LINK SCRIPT
+══════════════════════════════════════════════════════════════════════════ */}
+<script>
+  function setupReadingPage() {
+    // Copy link helper
+    const copyBtn = document.getElementById('copy-link-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          const original = copyBtn.textContent;
+          copyBtn.textContent = 'Copied! ✓';
+          setTimeout(() => {
+            copyBtn.textContent = original;
+          }, 2000);
+        } catch {
+          // Fallback
+        }
+      });
+    }
+
+    // Scroll-Spy for Table of Contents
+    const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+    if (tocLinks.length === 0) return;
+
+    const headingTargets: HTMLElement[] = [];
+    tocLinks.forEach((link) => {
+      const targetId = link.dataset.targetId;
+      if (targetId) {
+        const el = document.getElementById(targetId);
+        if (el) headingTargets.push(el);
+      }
+    });
+
+    if (headingTargets.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach((link) => {
+              if (link.dataset.targetId === id) {
+                link.classList.add('border-burgundy', 'text-burgundy', 'font-semibold');
+                link.classList.remove('border-transparent', 'text-muted');
+              } else {
+                link.classList.remove('border-burgundy', 'text-burgundy', 'font-semibold');
+                link.classList.add('border-transparent', 'text-muted');
+              }
+            });
+          }
+        });
+      },
+      {
+        rootMargin: '-10% 0px -75% 0px',
+        threshold: 0,
+      }
+    );
+
+    headingTargets.forEach((target) => observer.observe(target));
+  }
+
+  document.addEventListener('DOMContentLoaded', setupReadingPage);
+  document.addEventListener('astro:page-load', setupReadingPage);
+</script>

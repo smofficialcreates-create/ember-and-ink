@@ -1,0 +1,117 @@
+---
+/**
+ * ReviewVerdict.astro
+ * Distinctive, memorable conclusion card for individual book reviews.
+ * Includes rating, what worked, considerations, ideal audience, and tasteful affiliate CTA.
+ */
+import type { BookEditorialMeta } from '@lib/book-meta';
+
+interface Props {
+  meta: BookEditorialMeta;
+  amazonUrl?: string | null;
+}
+
+const { meta, amazonUrl = null } = Astro.props;
+---
+
+<section
+  id="final-verdict"
+  class="relative isolate overflow-hidden rounded-3xl bg-gradient-to-b from-[#f7f1e6] to-[#fffdf7] border-2 border-[#e0d2bd] p-8 sm:p-10 md:p-12 shadow-[0_16px_40px_-12px_rgba(42,33,24,0.12)] my-14 not-prose"
+  aria-label="Editorial Verdict"
+>
+  {/* Corner antique motifs */}
+  <div class="pointer-events-none absolute top-3 left-3 text-gold/30 text-lg font-serif select-none">⌜</div>
+  <div class="pointer-events-none absolute top-3 right-3 text-gold/30 text-lg font-serif select-none">⌝</div>
+  <div class="pointer-events-none absolute bottom-3 left-3 text-gold/30 text-lg font-serif select-none">⌞</div>
+  <div class="pointer-events-none absolute bottom-3 right-3 text-gold/30 text-lg font-serif select-none">⌟</div>
+
+  {/* Header Row */}
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-line">
+    <div>
+      <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#9b3c4a]">
+        <span class="text-gold">✦</span>
+        <span>Ember &amp; Ink Examination</span>
+      </div>
+      <h2 class="mt-1 font-display text-2xl sm:text-3xl text-burgundy font-bold">
+        The Final Verdict
+      </h2>
+    </div>
+
+    {/* Rating or Editorial Badge */}
+    {meta.ratingStars ? (
+      <div class="flex items-center gap-2 bg-[#fffdf7] border border-gold/40 rounded-2xl px-4 py-2.5 shadow-sm self-start sm:self-auto">
+        <span class="font-mono text-lg text-gold tracking-widest">{meta.ratingStars}</span>
+        <span class="text-xs font-mono font-semibold text-burgundy">{meta.rating} / 5</span>
+      </div>
+    ) : (
+      <div class="inline-flex items-center gap-1.5 bg-burgundy/10 border border-burgundy/20 rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-burgundy">
+        <span>Curated Selection</span>
+      </div>
+    )}
+  </div>
+
+  {/* Core Synthesis Quote */}
+  <blockquote class="my-6 pl-4 border-l-2 border-gold font-display text-lg sm:text-xl italic text-ink/90 leading-relaxed">
+    “{meta.verdictShort}”
+  </blockquote>
+
+  {/* Grid: What Worked & Considerations */}
+  <div class="grid sm:grid-cols-2 gap-6 my-8 pt-6 border-t border-line/60">
+    
+    {/* What Worked Well */}
+    <div class="bg-paper rounded-2xl p-5 border border-line shadow-xs">
+      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2e593a] mb-3">
+        <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-[11px]">✓</span>
+        <span>What Stood Out</span>
+      </div>
+      <ul class="space-y-2 text-xs sm:text-sm text-ink/80 font-light">
+        {meta.highlights.map((item) => (
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-600 mt-0.5">•</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {/* Ideal Audience / Who Should Read It */}
+    <div class="bg-paper rounded-2xl p-5 border border-line shadow-xs">
+      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#7a4d2b] mb-3">
+        <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-800 text-[11px]">❦</span>
+        <span>Ideal Reader</span>
+      </div>
+      <p class="text-xs sm:text-sm text-ink/80 font-light leading-relaxed">
+        Recommended for readers of <strong>{meta.genre}</strong> seeking intentional depth, memorable tension, and prose that lingers well past the final page.
+      </p>
+    </div>
+
+  </div>
+
+  {/* Tasteful Action Area */}
+  <div class="pt-6 border-t border-line flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="text-xs text-muted font-light text-center sm:text-left">
+      <p class="font-medium text-ink">Ready to begin reading?</p>
+      <p class="text-[11px] text-muted/70 mt-0.5">Purchases via verified book links support our independent reviews at zero additional cost to you.</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 shrink-0">
+      {amazonUrl && (
+        <a
+          href={amazonUrl}
+          target="_blank"
+          rel="sponsored nofollow noopener noreferrer"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-burgundy px-7 py-2.5 text-xs font-bold uppercase tracking-widest text-[#fffaf0] shadow-soft hover:bg-burgundy-dark transition-all hover:scale-105"
+        >
+          <span>Find This Book on Amazon</span>
+          <span class="text-xs" aria-hidden="true">&nearr;</span>
+        </a>
+      )}
+      <a
+        href="#top"
+        class="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-paper px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-muted hover:text-burgundy hover:border-gold transition-colors"
+      >
+        <span>Back to Top &uarr;</span>
+      </a>
+    </div>
+  </div>
+</section>

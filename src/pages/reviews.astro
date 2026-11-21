@@ -1,50 +1,486 @@
 ---
+/**
+ * reviews.astro
+ * The Reading Room — All Book Reviews & Discovery Experience.
+ *
+ * Implements:
+ * - Editorial introduction with subtle literary motifs & refined background.
+ * - 7 bespoke genre categories with functional filtering.
+ * - Real-time search by title or author.
+ * - Sort by Latest, Rating, Title, or Staff Pick.
+ * - Grid & List view layout toggles.
+ * - Vertical 3D physical book cards respecting true cover proportions.
+ * - Featured flagship book spotlight.
+ * - Reader testimonials preserved in a dedicated closing lounge.
+ */
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BookCard from '@components/BookCard.astro';
+import FeaturedBookHero from '@components/FeaturedBookHero.astro';
 import ReviewsSection from '@components/ReviewsSection.astro';
-import PostCard from '@components/PostCard.astro';
 import { getPublishedPosts } from '@lib/posts';
+import { CURATED_GENRES } from '@lib/book-meta';
 import { SITE } from '@lib/site';
 
-const posts = (await getPublishedPosts()).slice(0, 5);
+const allPosts = await getPublishedPosts();
+// Identify lead featured book
+const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
 ---
 
 <BaseLayout
-  title="Reviews"
-  description="Reader reviews of Ember & Ink, plus the latest book reviews from the site."
+  title="The Reading Room — All Book Reviews & Literary Discovery"
+  description="Explore honest, deeply considered book reviews across self-help, romantasy, psychological thrillers, and philosophy. Curated with intention by Ember & Ink."
   url={`${SITE.url}/reviews/`}
 >
-  <section class="container-ember py-16 md:py-24">
-    <header class="max-w-2xl">
-      <p class="text-sm uppercase tracking-[0.2em] text-muted">Reviews</p>
-      <h1 class="mt-3 text-4xl md:text-5xl text-burgundy">
-        Honest opinions, from books and readers alike.
-      </h1>
-      <p class="mt-4 text-lg text-muted">
-        Every book review here is written by a human who read the whole
-        book. Every reader testimonial is shared with permission — and
-        never invented.
-      </p>
-    </header>
-
-    <div class="mt-10">
-      <ReviewsSection />
+  {/* ══════════════════════════════════════════════════════════════════════════
+      A. EDITORIAL INTRODUCTION (The Reading Room)
+  ══════════════════════════════════════════════════════════════════════════ */}
+  <section class="relative isolate overflow-hidden bg-gradient-to-b from-[#f7f2e7] via-cream to-paper pt-16 pb-12 md:pt-24 md:pb-16 border-b border-line">
+    {/* Subtle Japanese paper watermark */}
+    <div class="pointer-events-none absolute inset-0 opacity-[0.035] select-none flex items-center justify-center">
+      <span class="font-serif text-[18rem] md:text-[28rem] font-bold text-burgundy">書</span>
     </div>
 
-    <div class="mt-16">
-      <div class="flex items-end justify-between gap-4 mb-6">
-        <h2 class="text-2xl md:text-3xl">Latest book reviews</h2>
-        <a href="/blog/" class="text-sm font-medium text-burgundy hover:underline shrink-0">
-          All posts →
-        </a>
+    {/* Background accent lines */}
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+
+    <div class="container-ember relative z-10">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.28em] text-[#9b3c4a]">
+          <span class="text-gold" aria-hidden="true">❦</span>
+          <span>The Reading Room · Curated Archives</span>
+        </div>
+
+        <h1 class="mt-4 font-display text-4xl sm:text-5xl md:text-6xl text-burgundy font-bold tracking-tight leading-[1.08]">
+          Explore Our Library
+        </h1>
+
+        <p class="mt-5 text-base sm:text-lg text-muted font-light leading-relaxed max-w-2xl">
+          Every review on Ember &amp; Ink is written by a human who sat with the complete work. From grounding self-help practices to slow-burn romantasy and existential philosophy, browse our honest examinations below.
+        </p>
+
+        {/* Ambient Reading Statistics */}
+        <div class="mt-8 pt-6 border-t border-line/70 flex flex-wrap items-center gap-6 text-xs text-muted font-mono">
+          <div class="flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+            <span class="text-ink font-semibold">{allPosts.length} Reviews In Library</span>
+          </div>
+          <span class="text-line">•</span>
+          <div>Zero sponsored bias</div>
+          <span class="text-line">•</span>
+          <div>100% human-read</div>
+        </div>
       </div>
 
-      {posts.length > 0 ? (
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => <PostCard post={post} />)}
+      {/* Flagship Featured Book Spotlight */}
+      {leadPost && (
+        <div class="mt-10">
+          <FeaturedBookHero post={leadPost} />
         </div>
-      ) : (
-        <p class="text-muted">No book reviews published yet — check back soon.</p>
       )}
     </div>
   </section>
+
+  {/* ══════════════════════════════════════════════════════════════════════════
+      B & D. INTERACTIVE DISCOVERY & GENRE SHELVES
+  ══════════════════════════════════════════════════════════════════════════ */}
+  <section class="container-ember py-12 md:py-16" id="catalog-section">
+    
+    {/* 1. SEVEN CURATED GENRE SHELVES */}
+    <div class="mb-10">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
+          Curated Literary Shelves
+        </h2>
+        <span class="text-xs font-mono text-muted/70 hidden sm:inline">
+          Filter by genre
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5" id="genre-filter-buttons" role="tablist">
+        {/* All Shelves Button */}
+        <button
+          type="button"
+          data-filter-genre="all"
+          class="genre-filter-btn active col-span-2 sm:col-span-1 flex flex-col items-start p-3 rounded-xl border border-burgundy bg-burgundy text-[#fffaf0] shadow-sm transition-all text-left focus:outline-none focus:ring-2 focus:ring-gold"
+          aria-selected="true"
+        >
+          <span class="text-xs text-gold-soft font-mono font-semibold">ALL</span>
+          <span class="font-display text-sm font-semibold mt-1">All Shelves</span>
+          <span class="text-[10px] text-white/70 mt-1 font-mono">{allPosts.length} Books</span>
+        </button>
+
+        {/* Seven Curated Shelves */}
+        {CURATED_GENRES.map((g) => (
+          <button
+            type="button"
+            data-filter-genre={g.id}
+            class="genre-filter-btn flex flex-col items-start p-3 rounded-xl border border-line bg-paper text-ink hover:border-gold hover:bg-cream/60 transition-all text-left focus:outline-none focus:ring-2 focus:ring-gold"
+            aria-selected="false"
+          >
+            <span class="text-xs font-mono opacity-80" aria-hidden="true">{g.motif}</span>
+            <span class="font-display text-xs sm:text-sm font-medium mt-1 line-clamp-1">{g.shortName}</span>
+            <span class="text-[10px] text-muted mt-1 font-mono truncate max-w-full">
+              Explore
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* 2. SEARCH & SORT TOOLBAR */}
+    <div class="bg-paper border border-line rounded-2xl p-4 sm:p-5 shadow-sm mb-10">
+      <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+        
+        {/* Search Input Box */}
+        <div class="relative flex-1 max-w-md">
+          <div class="pointer-events-none absolute inset-y-0 left-0 pl-3.5 flex items-center text-muted">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="search"
+            id="book-search-input"
+            placeholder="Search by book title or author..."
+            class="w-full rounded-xl border border-line bg-cream/40 pl-10 pr-10 py-2.5 text-sm text-ink placeholder:text-muted/60 focus:border-gold focus:bg-paper focus:outline-none focus:ring-1 focus:ring-gold transition-colors"
+          />
+          <button
+            type="button"
+            id="clear-search-btn"
+            class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-muted hover:text-burgundy"
+            aria-label="Clear search"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Controls Row: Sort & View Toggle */}
+        <div class="flex flex-wrap items-center gap-3">
+          {/* Sort Dropdown */}
+          <div class="flex items-center gap-2">
+            <label for="sort-select" class="text-xs font-semibold uppercase tracking-wider text-muted shrink-0">
+              Sort:
+            </label>
+            <select
+              id="sort-select"
+              class="rounded-xl border border-line bg-cream/40 px-3 py-2 text-xs font-medium text-ink focus:border-gold focus:bg-paper focus:outline-none focus:ring-1 focus:ring-gold"
+            >
+              <option value="latest">Latest Reviews</option>
+              <option value="rating">Highest Rated</option>
+              <option value="title-asc">Title (A–Z)</option>
+              <option value="author-asc">Author (A–Z)</option>
+              <option value="featured">Featured First</option>
+            </select>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div class="hidden sm:flex items-center rounded-xl border border-line bg-cream/40 p-1" role="radiogroup" aria-label="Layout mode">
+            <button
+              type="button"
+              id="view-grid-btn"
+              class="view-toggle-btn active p-1.5 rounded-lg text-burgundy bg-paper shadow-sm"
+              aria-label="Grid layout"
+              title="Editorial 3-column grid"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              id="view-list-btn"
+              class="view-toggle-btn p-1.5 rounded-lg text-muted hover:text-burgundy"
+              aria-label="List layout"
+              title="Bookshelf list view"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Result Indicator Counter */}
+      <div class="mt-3 pt-3 border-t border-line/60 flex items-center justify-between text-xs text-muted">
+        <div id="results-count">
+          Showing <span class="font-semibold text-burgundy" id="current-count">{allPosts.length}</span> of {allPosts.length} books in <span class="font-semibold text-burgundy" id="current-shelf-name">All Shelves</span>
+        </div>
+        <button
+          type="button"
+          id="reset-all-filters"
+          class="hidden text-xs text-[#9b3c4a] hover:underline font-semibold"
+        >
+          Reset Filters
+        </button>
+      </div>
+    </div>
+
+    {/* 3. BOOK COLLECTION CONTAINER */}
+    <div
+      id="books-grid-container"
+      class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7 transition-opacity duration-300"
+    >
+      {allPosts.map((post, i) => (
+        <div class="book-card-item">
+          <BookCard post={post} eager={i < 3} layout="vertical" />
+        </div>
+      ))}
+    </div>
+
+    {/* Graceful Empty State */}
+    <div id="no-books-found" class="hidden text-center py-20 px-4 rounded-3xl bg-paper border border-line">
+      <div class="text-4xl mb-3">📖</div>
+      <h3 class="font-display text-2xl text-burgundy font-semibold">No books found</h3>
+      <p class="mt-2 text-sm text-muted max-w-md mx-auto">
+        No reviews matched your current search and shelf filters. Try clearing the search term or switching to another genre.
+      </p>
+      <button
+        type="button"
+        id="empty-reset-btn"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-burgundy px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#fffaf0] hover:bg-burgundy-dark transition-colors"
+      >
+        <span>Reset All Filters</span>
+        <span>↺</span>
+      </button>
+    </div>
+
+  </section>
+
+  {/* ══════════════════════════════════════════════════════════════════════════
+      READER TESTIMONIALS & COMMUNITY LOUNGE
+  ══════════════════════════════════════════════════════════════════════════ */}
+  <section class="bg-cream/50 border-t border-line py-16 md:py-24">
+    <div class="container-ember">
+      <div class="max-w-2xl mb-12">
+        <p class="text-xs uppercase tracking-[0.24em] text-[#9b3c4a] font-semibold">The Community</p>
+        <h2 class="mt-2 font-display text-3xl md:text-4xl text-burgundy font-bold">
+          What Readers Are Saying
+        </h2>
+        <p class="mt-3 text-sm sm:text-base text-muted font-light leading-relaxed">
+          Unsolicited notes and shared thoughts from fellow book lovers who visit our quiet countryside corner.
+        </p>
+      </div>
+
+      <ReviewsSection />
+    </div>
+  </section>
+
 </BaseLayout>
+
+{/* ══════════════════════════════════════════════════════════════════════════
+    CLIENT-SIDE FILTERING & DISCOVERY SCRIPT
+══════════════════════════════════════════════════════════════════════════ */}
+<script>
+  function setupDiscoveryPage() {
+    const searchInput = document.getElementById('book-search-input') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('clear-search-btn');
+    const sortSelect = document.getElementById('sort-select') as HTMLSelectElement | null;
+    const genreButtons = document.querySelectorAll<HTMLButtonElement>('.genre-filter-btn');
+    const cardsContainer = document.getElementById('books-grid-container');
+    const emptyState = document.getElementById('no-books-found');
+    const emptyResetBtn = document.getElementById('empty-reset-btn');
+    const resetAllBtn = document.getElementById('reset-all-filters');
+    const currentCountEl = document.getElementById('current-count');
+    const currentShelfEl = document.getElementById('current-shelf-name');
+    const viewGridBtn = document.getElementById('view-grid-btn');
+    const viewListBtn = document.getElementById('view-list-btn');
+
+    if (!cardsContainer) return;
+    const container = cardsContainer;
+
+    const cardWrappers = Array.from(container.querySelectorAll<HTMLElement>('.book-card-item'));
+
+    let currentGenre = 'all';
+    let searchQuery = '';
+    let currentSort = 'latest';
+
+    function applyFilters() {
+      let visibleCount = 0;
+
+      cardWrappers.forEach((wrapper) => {
+        const article = wrapper.querySelector<HTMLElement>('[data-book-card]');
+        if (!article) return;
+
+        const genreId = article.dataset.genreId || '';
+        const title = article.dataset.title || '';
+        const author = article.dataset.author || '';
+        const category = article.dataset.category || '';
+
+        // Genre match
+        const matchesGenre = currentGenre === 'all' || genreId === currentGenre;
+
+        // Search match (title, author, or category)
+        const matchesSearch =
+          !searchQuery ||
+          title.includes(searchQuery) ||
+          author.includes(searchQuery) ||
+          category.toLowerCase().includes(searchQuery);
+
+        if (matchesGenre && matchesSearch) {
+          wrapper.style.display = '';
+          visibleCount++;
+        } else {
+          wrapper.style.display = 'none';
+        }
+      });
+
+      // Sort visible cards
+      const sorted = cardWrappers.slice().sort((a, b) => {
+        const aArt = a.querySelector<HTMLElement>('[data-book-card]');
+        const bArt = b.querySelector<HTMLElement>('[data-book-card]');
+        if (!aArt || !bArt) return 0;
+
+        if (currentSort === 'latest') {
+          return Number(bArt.dataset.pubTime || 0) - Number(aArt.dataset.pubTime || 0);
+        }
+        if (currentSort === 'rating') {
+          return Number(bArt.dataset.rating || 0) - Number(aArt.dataset.rating || 0);
+        }
+        if (currentSort === 'title-asc') {
+          return (aArt.dataset.title || '').localeCompare(bArt.dataset.title || '');
+        }
+        if (currentSort === 'author-asc') {
+          return (aArt.dataset.author || '').localeCompare(bArt.dataset.author || '');
+        }
+        if (currentSort === 'featured') {
+          const aFeat = aArt.dataset.featured === 'true' ? 1 : 0;
+          const bFeat = bArt.dataset.featured === 'true' ? 1 : 0;
+          return bFeat - aFeat;
+        }
+        return 0;
+      });
+
+      sorted.forEach((w) => container.appendChild(w));
+
+      // Update UI counts
+      if (currentCountEl) currentCountEl.textContent = String(visibleCount);
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+          container.classList.add('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+          container.classList.remove('hidden');
+        }
+      }
+
+      // Show reset button if filtered
+      const isFiltered = currentGenre !== 'all' || searchQuery !== '';
+      if (resetAllBtn) {
+        if (isFiltered) resetAllBtn.classList.remove('hidden');
+        else resetAllBtn.classList.add('hidden');
+      }
+    }
+
+    // Genre Buttons Click
+    genreButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const genre = btn.dataset.filterGenre || 'all';
+        currentGenre = genre;
+
+        genreButtons.forEach((b) => {
+          b.classList.remove('active', 'bg-burgundy', 'text-[#fffaf0]', 'border-burgundy');
+          b.classList.add('bg-paper', 'text-ink', 'border-line');
+          b.setAttribute('aria-selected', 'false');
+        });
+
+        btn.classList.add('active', 'bg-burgundy', 'text-[#fffaf0]', 'border-burgundy');
+        btn.classList.remove('bg-paper', 'text-ink', 'border-line');
+        btn.setAttribute('aria-selected', 'true');
+
+        if (currentShelfEl) {
+          const shelfLabel = btn.querySelector('.font-display')?.textContent || 'All Shelves';
+          currentShelfEl.textContent = shelfLabel;
+        }
+
+        applyFilters();
+      });
+    });
+
+    // Search Input
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        searchQuery = searchInput.value.trim().toLowerCase();
+        if (clearBtn) {
+          if (searchQuery) clearBtn.classList.remove('hidden');
+          else clearBtn.classList.add('hidden');
+        }
+        applyFilters();
+      });
+    }
+
+    // Clear Search Button
+    if (clearBtn && searchInput) {
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        clearBtn.classList.add('hidden');
+        applyFilters();
+      });
+    }
+
+    // Sort Dropdown
+    if (sortSelect) {
+      sortSelect.addEventListener('change', () => {
+        currentSort = sortSelect.value;
+        applyFilters();
+      });
+    }
+
+    // Reset Buttons
+    const reset = () => {
+      currentGenre = 'all';
+      searchQuery = '';
+      currentSort = 'latest';
+      if (searchInput) searchInput.value = '';
+      if (clearBtn) clearBtn.classList.add('hidden');
+      if (sortSelect) sortSelect.value = 'latest';
+
+      genreButtons.forEach((b, idx) => {
+        if (idx === 0) {
+          b.classList.add('active', 'bg-burgundy', 'text-[#fffaf0]', 'border-burgundy');
+          b.classList.remove('bg-paper', 'text-ink', 'border-line');
+          b.setAttribute('aria-selected', 'true');
+        } else {
+          b.classList.remove('active', 'bg-burgundy', 'text-[#fffaf0]', 'border-burgundy');
+          b.classList.add('bg-paper', 'text-ink', 'border-line');
+          b.setAttribute('aria-selected', 'false');
+        }
+      });
+      if (currentShelfEl) currentShelfEl.textContent = 'All Shelves';
+
+      applyFilters();
+    };
+
+    if (resetAllBtn) resetAllBtn.addEventListener('click', reset);
+    if (emptyResetBtn) emptyResetBtn.addEventListener('click', reset);
+
+    // View Mode Toggle (Grid vs List)
+    if (viewGridBtn && viewListBtn) {
+      viewGridBtn.addEventListener('click', () => {
+        viewGridBtn.classList.add('active', 'text-burgundy', 'bg-paper', 'shadow-sm');
+        viewGridBtn.classList.remove('text-muted');
+        viewListBtn.classList.remove('active', 'text-burgundy', 'bg-paper', 'shadow-sm');
+        viewListBtn.classList.add('text-muted');
+
+        container.classList.remove('grid-cols-1');
+        container.classList.add('sm:grid-cols-2', 'lg:grid-cols-3');
+      });
+
+      viewListBtn.addEventListener('click', () => {
+        viewListBtn.classList.add('active', 'text-burgundy', 'bg-paper', 'shadow-sm');
+        viewListBtn.classList.remove('text-muted');
+        viewGridBtn.classList.remove('active', 'text-burgundy', 'bg-paper', 'shadow-sm');
+        viewGridBtn.classList.add('text-muted');
+
+        container.classList.remove('sm:grid-cols-2', 'lg:grid-cols-3');
+        container.classList.add('grid-cols-1');
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', setupDiscoveryPage);
+  document.addEventListener('astro:page-load', setupDiscoveryPage);
+</script>
