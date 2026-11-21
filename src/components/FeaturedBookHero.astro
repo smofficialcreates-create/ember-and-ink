@@ -1,0 +1,118 @@
+---
+/**
+ * FeaturedBookHero.astro
+ * Monumental editorial featured book showcase for the discovery page.
+ * Evokes a luxury literary journal feature with high-res cover spotlight.
+ */
+import type { BlogPost } from '@lib/posts';
+import { getBookEditorialMeta } from '@lib/book-meta';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const meta = getBookEditorialMeta(post);
+const reviewUrl = `/blog/${post.id}/`;
+---
+
+<section class="relative isolate overflow-hidden rounded-3xl bg-[#1f1722] text-[#fbf6ee] border border-white/10 shadow-[0_24px_64px_-16px_rgba(20,14,24,0.4)] my-12">
+  {/* Atmospheric subtle background glow */}
+  <div class="pointer-events-none absolute -top-40 -right-40 w-96 h-96 rounded-full bg-[#c9a14a]/10 blur-[100px]"></div>
+  <div class="pointer-events-none absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-[#5c1f2c]/30 blur-[90px]"></div>
+
+  <div class="relative z-10 grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-14 p-8 sm:p-12 lg:p-14 items-center">
+    
+    {/* Editorial Details */}
+    <div class="space-y-6 max-w-xl">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#e8d5a3]/15 border border-[#e8d5a3]/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#e8d5a3]">
+          <span aria-hidden="true">★</span>
+          <span>Lead Examination</span>
+        </span>
+        <span class="text-xs uppercase tracking-widest text-white/50 font-mono">
+          {meta.curatedShelf.name}
+        </span>
+      </div>
+
+      <div class="space-y-2">
+        <p class="text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#e8d5a3]">
+          {meta.author}
+        </p>
+        <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.08] tracking-tight">
+          {meta.bookTitle}
+        </h2>
+      </div>
+
+      {meta.ratingStars && (
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-base tracking-widest text-[#e8d5a3]">{meta.ratingStars}</span>
+          <span class="text-xs text-white/50 font-mono">· Editorial Rating</span>
+        </div>
+      )}
+
+      <blockquote class="pl-4 border-l-2 border-[#c9a14a] italic font-display text-base sm:text-lg text-[#fbf6ee]/90 leading-relaxed">
+        “{meta.verdictShort}”
+      </blockquote>
+
+      <p class="text-sm sm:text-base text-white/70 font-light leading-relaxed">
+        {meta.excerpt}
+      </p>
+
+      {/* Action Buttons */}
+      <div class="pt-4 flex flex-wrap items-center gap-4">
+        <a
+          href={reviewUrl}
+          class="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-[#e8d5a3] px-7 py-3 text-xs font-bold uppercase tracking-widest text-[#181124] shadow-lg transition-all duration-300 hover:bg-white hover:scale-105"
+        >
+          <span>Read Full Review</span>
+          <span aria-hidden="true">→</span>
+        </a>
+
+        {meta.amazonLink && (
+          <a
+            href={meta.amazonLink}
+            target="_blank"
+            rel="sponsored nofollow noopener noreferrer"
+            class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white hover:bg-white/15 transition-colors"
+          >
+            <span>Find This Book</span>
+            <span class="text-[10px] opacity-60">↗</span>
+          </a>
+        )}
+      </div>
+    </div>
+
+    {/* Book Cover Spotlight Presentation */}
+    <div class="relative flex items-center justify-center lg:justify-end">
+      {/* 3D Physical Book */}
+      <div class="relative w-48 sm:w-56 md:w-64 aspect-[2/3] transition-transform duration-500 hover:scale-[1.02]">
+        {/* Deep drop shadow under the book */}
+        <div class="absolute -bottom-6 inset-x-4 h-8 bg-black/60 blur-xl rounded-full"></div>
+
+        <div class="relative h-full w-full rounded-r-xl rounded-l-[3px] overflow-hidden shadow-[8px_20px_40px_rgba(0,0,0,0.6)] border border-white/10 bg-[#120e18]">
+          <img
+            src={meta.coverImage}
+            alt={meta.coverAlt}
+            class="h-full w-full object-cover object-center"
+            loading="eager"
+            decoding="async"
+            width="360"
+            height="540"
+          />
+
+          {/* Hardbound Spine Highlight */}
+          <div class="pointer-events-none absolute inset-y-0 left-0 w-5 bg-gradient-to-r from-black/50 via-white/20 to-transparent"></div>
+          {/* Subtle page edge line on right */}
+          <div class="pointer-events-none absolute inset-y-0 right-0 w-[3px] bg-gradient-to-b from-amber-100/40 via-amber-50/20 to-amber-100/40"></div>
+        </div>
+
+        {/* Floating Japanese Seal Ornament */}
+        <div class="pointer-events-none absolute -bottom-3 -right-3 h-12 w-12 rounded-full bg-[#5c1f2c] border border-[#e8d5a3] text-[#e8d5a3] flex items-center justify-center font-serif text-sm shadow-xl">
+          <span>讀</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
