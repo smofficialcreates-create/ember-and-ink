@@ -221,6 +221,51 @@ const VERIFIED_BOOK_METADATA: Record<
     verdictShort: 'A claustrophobic, morally chilling manuscript mystery that forces readers to question every single word.',
     highlights: ['The sinister manuscript conceit', 'Unsettling domestic tension', 'Unforgettable ending debate'],
   },
+  'if-we-were-villains': {
+    bookTitle: 'If We Were Villains',
+    author: 'M.L. Rio',
+    rating: 4.5,
+    ratingStars: '★★★★½',
+    shelfId: 'mystery-thriller',
+    verdictShort: 'A Shakespearean Dark Academia thriller of deadly rivalry, theatrical obsession, and tragic secrets.',
+    highlights: ['Lush Dark Academia atmosphere', 'Shakespearean tragedy tension', 'Unforgettable ensemble cast'],
+  },
+  'a-court-of-mist-and-fury': {
+    bookTitle: 'A Court of Mist and Fury',
+    author: 'Sarah J. Maas',
+    rating: 5.0,
+    ratingStars: '★★★★★',
+    shelfId: 'fantasy-romance',
+    verdictShort: 'The emotional high-water mark of modern romantasy exploring trauma recovery, autonomy, and epic slow-burn love.',
+    highlights: ['Trauma healing & autonomy', 'The iconic Night Court inner circle', 'Sensational enemies-to-lovers slow burn'],
+  },
+  'the-mountain-is-you': {
+    bookTitle: 'The Mountain Is You',
+    author: 'Brianna Wiest',
+    rating: 4.5,
+    ratingStars: '★★★★½',
+    shelfId: 'self-help',
+    verdictShort: 'A transformative guide showing that self-sabotage is a miscommunicated need for growth, not a personal flaw.',
+    highlights: ['Self-sabotage psychology', 'Emotional intelligence over brute force', 'Actionable internal shifts'],
+  },
+  'rashmirathi': {
+    bookTitle: 'Rashmirathi',
+    author: 'Ramdhari Singh Dinkar',
+    rating: 5.0,
+    ratingStars: '★★★★★',
+    shelfId: 'classics-historical',
+    verdictShort: 'A timeless Hindi epic poem exploring righteousness, tragic destiny, and Karna’s unyielding valor.',
+    highlights: ['Profound philosophical depth', 'Electrifying poetic rhythm', 'Tragic heroic journey of Karna'],
+  },
+  'the-stranger': {
+    bookTitle: 'The Stranger',
+    author: 'Albert Camus',
+    rating: 4.5,
+    ratingStars: '★★★★½',
+    shelfId: 'psychology-philosophy',
+    verdictShort: 'Albert Camus’s foundational existential masterpiece examining absurdism, society’s hypocrisies, and quiet defiance.',
+    highlights: ['Foundational philosophy of the absurd', 'Crystalline, unflinching prose', 'Enduring existential questions'],
+  },
   'cozy-fantasy-self-help': {
     bookTitle: 'Cozy Fantasy + Self-Help',
     author: 'Curated by Ember & Ink',
@@ -262,14 +307,36 @@ export function getBookEditorialMeta(post: BlogPost): BookEditorialMeta {
   let author = verified?.author;
 
   if (!bookTitle) {
-    // Fallback extraction from post title like "Book Title by Author: Subtitle"
+    // 1. Check title for "Book Title by Author"
     const byMatch = post.data.title.match(/^([^:]+?)\s+by\s+([^:]+?)(?::|$)/i);
     if (byMatch) {
       bookTitle = byMatch[1].trim();
       author = byMatch[2].trim();
     } else {
       bookTitle = post.data.title.replace(/Review:.*$/i, '').replace(/:\s*A Review.*$/i, '').trim();
-      author = 'Ember & Ink Literary Staff';
+    }
+  }
+
+  if (!author) {
+    // 2. Check description for "Author's Book Title" or "by Author"
+    const descAuthorMatch =
+      post.data.description.match(/(?:discover\s+(?:why|how|the\s+secrets\s+in)|in)\s+([A-Z][a-zA-Z\.\s]{1,30}?)'s\s+/i) ||
+      post.data.description.match(/\bby\s+([A-Z][a-zA-Z\.\s]{1,30}?)(?:'s|\s+is|\.|\,|$)/i);
+
+    if (descAuthorMatch) {
+      author = descAuthorMatch[1].trim();
+    } else {
+      // 3. Check tags for author name pattern (2-3 capitalized words)
+      const excludedTags = new Set([
+        'BookTok', 'Thriller', 'Romantasy', 'Self-Help', 'Mindset', 'Classic Books',
+        'Indian Literature', 'Hindi Poetry', 'Mahabharata', 'Gothic', 'Shakespeare',
+        'Dark Academia', 'Enemies to Lovers', 'Psychological Thriller', 'Personal Growth',
+        'Habit Building', 'Book Review', 'Classic Literature', 'Existentialism', 'Absurdism'
+      ]);
+      const authorTag = post.data.tags.find(
+        (t) => !excludedTags.has(t) && /^[A-Z][a-z\.]+(?:\s+[A-Z][a-z\.]+){1,2}$/.test(t.trim())
+      );
+      author = authorTag ? authorTag.trim() : 'Acclaimed Author';
     }
   }
 
