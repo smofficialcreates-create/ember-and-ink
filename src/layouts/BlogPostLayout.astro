@@ -3,13 +3,13 @@
  * BlogPostLayout.astro
  * High-Converting Editorial Reading Experience for Ember & Ink.
  *
- * CRO Redesign Highlights:
- * 1. Fixed Byline & Metadata: Displays actual book author dynamically with clear 'Reviewed by Ember & Ink' badge.
- * 2. 'Above the Fold' Sales Hook: 3D interactive hardcover presentation alongside a high-converting CTA box with prominent Amazon link.
- * 3. 'Why You Should Buy This' (TL;DR) module with 3 bulleted insights before the review text.
- * 4. Sticky Mobile Buy Bar: Follows mobile users on scroll with a thumb-friendly 'Buy Now' button.
- * 5. Redesigned 'Final Verdict' framed editorial certificate with the page's largest 'Buy on Amazon' CTA & FTC disclosure.
- * 6. Editorial typography using Fraunces headings & Inter body text at optimal reading measure (max-w-prose).
+ * CRO Architecture:
+ * 1. Metadata & Byline: Dynamic author attribution with 'Reviewed by Ember & Ink' verification.
+ * 2. 'Above the Fold' Hero: 2-column grid. Left: 3D-styled physical hardcover. Right: Title, Author, 5-star rating & massive high-contrast pulsing Amazon CTA.
+ * 3. 'Why You Should Read This' (TL;DR): 3 bulleted insightsHOOK before review text.
+ * 4. Sticky Mobile CTA Bar: Appears on mobile devices (md:hidden) with book thumbnail & 'Buy Now on Amazon' button.
+ * 5. The Final Verdict Module: Ornate editorial certificate featuring 'What Stood Out' vs 'Ideal Reader', largest Amazon button & strict FTC disclosure.
+ * 6. Editorial Typography & Layout: Fraunces serif headings, Inter body, max-w-prose measure, brand palette (Cream, Deep Burgundy, Gold, Ink).
  */
 import { render } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
@@ -91,13 +91,13 @@ const reviewSchema = {
   image={meta.coverImage}
   url={pageUrl}
 >
-  {/* Hairline Reading Progress Indicator */}
+  {/* Reading Progress Indicator fixed at top */}
   <ReadingProgressBar />
 
   <article class="pb-24 selection:bg-gold-soft/50">
     
     {/* ══════════════════════════════════════════════════════════════════════════
-        1 & 2. 'ABOVE THE FOLD' SALES HOOK & CINEMATIC BOOK INTRODUCTION
+        1 & 2. 'ABOVE THE FOLD' SALES HERO & METADATA
     ══════════════════════════════════════════════════════════════════════════ */}
     <header class="relative isolate overflow-hidden bg-gradient-to-b from-[#f7f2e8] via-cream to-paper pt-8 pb-12 md:pt-12 md:pb-16 border-b border-line" id="top">
       {/* Background Japanese Watermark */}
@@ -107,8 +107,8 @@ const reviewSchema = {
 
       <div class="container-ember relative z-10">
         
-        {/* Breadcrumb Trail */}
-        <div class="mb-6">
+        {/* Breadcrumb Trail & Quick FTC Header */}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <Breadcrumbs
             items={[
               { label: 'Home', href: '/' },
@@ -117,12 +117,50 @@ const reviewSchema = {
               { label: meta.bookTitle },
             ]}
           />
+          <div class="text-[11px] text-muted font-light flex items-center gap-1.5 shrink-0">
+            <span class="text-gold font-bold">ⓘ</span>
+            <span>As an Amazon Associate, Ember &amp; Ink earns from qualifying purchases.</span>
+          </div>
         </div>
 
-        {/* Hero Grid: Left Metadata & High-Converting CTA Box / Right 3D Interactive Hardcover */}
-        <div class="grid lg:grid-cols-[1.25fr_0.75fr] gap-10 lg:gap-14 items-center">
+        {/* 2-Column Hero Grid: Left = 3D Hardcover Book / Right = Title, Author, Rating & High-Converting CTA Box */}
+        <div class="grid md:grid-cols-[0.8fr_1.2fr] gap-8 lg:gap-14 items-center">
           
-          {/* Left Column: Title, Author, Subheading & Instant Sales Hook */}
+          {/* Left Column: 3D Interactive Hardcover Book Presentation */}
+          <div class="flex items-center justify-center md:justify-start">
+            <div class="relative w-52 sm:w-64 md:w-72 aspect-[2/3] transition-transform duration-500 hover:scale-[1.03] hover:-rotate-1">
+              
+              {/* Pedestal shadow on tabletop */}
+              <div class="absolute -bottom-6 inset-x-3 h-8 bg-black/35 blur-xl rounded-full"></div>
+
+              {/* 3D Physical Hardbound Book */}
+              <div class="relative h-full w-full rounded-r-xl rounded-l-[3px] overflow-hidden shadow-[8px_22px_44px_-6px_rgba(42,33,24,0.45)] border border-black/15 bg-[#1b1419]">
+                <img
+                  src={meta.coverImage}
+                  alt={meta.coverAlt}
+                  class="h-full w-full object-cover object-center"
+                  loading="eager"
+                  decoding="async"
+                  width="360"
+                  height="540"
+                />
+
+                {/* Hardcover Left Spine Lighting & Bevel */}
+                <div class="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-black/45 via-white/20 to-transparent"></div>
+                {/* Book Edge Trim */}
+                <div class="pointer-events-none absolute inset-y-0 right-0 w-[2px] bg-gradient-to-b from-amber-100/50 via-amber-50/25 to-amber-100/50"></div>
+                {/* Surface Sheen */}
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/15"></div>
+              </div>
+
+              {/* Japanese Book Seal */}
+              <div class="pointer-events-none absolute -bottom-3 -right-3 h-11 w-11 rounded-full bg-[#5c1f2c] border border-gold-soft text-gold-soft flex items-center justify-center font-serif text-sm shadow-lg">
+                <span>印</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Title, Author, Subheading & Instant Sales Hook */}
           <div class="space-y-6">
             
             {/* Reviewed By Subheading & Shelf Badge */}
@@ -143,11 +181,14 @@ const reviewSchema = {
 
             {/* Dynamic Author Byline & Monumental Title */}
             <div class="space-y-2">
-              <h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.35rem] font-bold text-burgundy tracking-tight leading-[1.08]">
+              <h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-burgundy tracking-tight leading-[1.08]">
                 {meta.bookTitle}
               </h1>
               <p class="font-display text-lg sm:text-xl text-ink font-medium">
                 By <span class="text-burgundy font-semibold">{meta.author}</span>
+              </p>
+              <p class="text-xs uppercase tracking-widest text-muted font-medium pt-1">
+                Reviewed by Ember &amp; Ink Literary Staff
               </p>
             </div>
 
@@ -193,7 +234,7 @@ const reviewSchema = {
                     href={amazonUrl}
                     target="_blank"
                     rel="sponsored nofollow noopener noreferrer"
-                    class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-burgundy via-[#8c2b3f] to-burgundy text-[#fffdf7] font-bold text-sm sm:text-base px-7 py-3 shadow-[0_8px_20px_rgba(92,31,44,0.35)] hover:shadow-[0_12px_28px_rgba(92,31,44,0.5)] hover:scale-105 active:scale-95 transition-all group"
+                    class="relative inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-burgundy via-[#8c2b3f] to-burgundy text-[#fffdf7] font-bold text-sm sm:text-base px-7 py-3 shadow-[0_8px_20px_rgba(92,31,44,0.35)] hover:shadow-[0_12px_28px_rgba(92,31,44,0.5)] hover:scale-105 active:scale-95 transition-all group amazon-pulse-btn"
                   >
                     <span>Check Price on Amazon</span>
                     <span class="text-gold-soft text-lg transition-transform group-hover:translate-x-1" aria-hidden="true">&nearr;</span>
@@ -212,52 +253,18 @@ const reviewSchema = {
 
           </div>
 
-          {/* Right Column: 3D Interactive Hardcover Book Presentation */}
-          <div class="flex items-center justify-center lg:justify-end">
-            <div class="relative w-52 sm:w-60 md:w-68 aspect-[2/3] transition-transform duration-500 hover:scale-[1.03] hover:-rotate-1">
-              
-              {/* Pedestal shadow on tabletop */}
-              <div class="absolute -bottom-6 inset-x-3 h-8 bg-black/35 blur-xl rounded-full"></div>
-
-              {/* 3D Physical Hardbound Book */}
-              <div class="relative h-full w-full rounded-r-xl rounded-l-[3px] overflow-hidden shadow-[8px_22px_44px_-6px_rgba(42,33,24,0.45)] border border-black/15 bg-[#1b1419]">
-                <img
-                  src={meta.coverImage}
-                  alt={meta.coverAlt}
-                  class="h-full w-full object-cover object-center"
-                  loading="eager"
-                  decoding="async"
-                  width="360"
-                  height="540"
-                />
-
-                {/* Hardcover Left Spine Lighting & Bevel */}
-                <div class="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-black/45 via-white/20 to-transparent"></div>
-                {/* Book Edge Trim */}
-                <div class="pointer-events-none absolute inset-y-0 right-0 w-[2px] bg-gradient-to-b from-amber-100/50 via-amber-50/25 to-amber-100/50"></div>
-                {/* Surface Sheen */}
-                <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/15"></div>
-              </div>
-
-              {/* Japanese Book Seal */}
-              <div class="pointer-events-none absolute -bottom-3 -right-3 h-11 w-11 rounded-full bg-[#5c1f2c] border border-gold-soft text-gold-soft flex items-center justify-center font-serif text-sm shadow-lg">
-                <span>印</span>
-              </div>
-            </div>
-          </div>
-
         </div>
 
       </div>
     </header>
 
     {/* ══════════════════════════════════════════════════════════════════════════
-        4. STICKY MOBILE BUY BAR (Maximizing Mobile CRO)
+        4. STICKY MOBILE BUY BAR (Maximizing Mobile CRO: md:hidden)
     ══════════════════════════════════════════════════════════════════════════ */}
     {amazonUrl && (
       <div
         id="mobile-sticky-buy-bar"
-        class="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-paper/95 backdrop-blur-md border-t border-line px-4 py-3 shadow-[0_-8px_24px_rgba(42,33,24,0.14)] flex items-center justify-between gap-3"
+        class="fixed bottom-0 inset-x-0 z-50 md:hidden bg-paper/95 backdrop-blur-md border-t border-line px-4 py-3 shadow-[0_-8px_24px_rgba(42,33,24,0.18)] flex items-center justify-between gap-3"
       >
         <div class="flex items-center gap-2.5 min-w-0">
           <img
@@ -277,9 +284,9 @@ const reviewSchema = {
           href={amazonUrl}
           target="_blank"
           rel="sponsored nofollow noopener noreferrer"
-          class="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-burgundy to-[#8c2b3f] px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#fffaf0] shadow-md active:scale-95 transition-transform"
+          class="inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-burgundy to-[#8c2b3f] px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#fffaf0] shadow-md active:scale-95 transition-transform amazon-pulse-btn"
         >
-          <span>Buy Now</span>
+          <span>Buy Now on Amazon</span>
           <span aria-hidden="true">&nearr;</span>
         </a>
       </div>
@@ -294,9 +301,9 @@ const reviewSchema = {
         {/* Main Column: Review Text & Final Verdict Certificate */}
         <div class="min-w-0">
           
-          {/* FTC Affiliate Disclosure */}
+          {/* Prominent FTC Banner Disclosure */}
           <div class="mb-8">
-            <AffiliateDisclosure />
+            <AffiliateDisclosure banner={true} />
           </div>
 
           {/* 3. THE 'WHY YOU SHOULD READ THIS' (TL;DR) HOOK */}
@@ -304,7 +311,7 @@ const reviewSchema = {
             <div class="flex items-center justify-between pb-3 border-b border-line/70">
               <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-burgundy">
                 <span class="text-gold text-base" aria-hidden="true">✦</span>
-                <span>TL;DR · Why You Should Read This</span>
+                <span>Why You Should Read This</span>
               </div>
               <span class="text-[11px] font-mono text-muted uppercase tracking-wider hidden sm:inline">Executive Summary</span>
             </div>
@@ -341,8 +348,8 @@ const reviewSchema = {
             )}
           </div>
 
-          {/* Editorial Reading Typography (Fraunces + Inter, max-w-prose) */}
-          <div class="prose-ember max-w-prose leading-relaxed text-ink/90 font-body text-base sm:text-lg">
+          {/* Editorial Reading Typography (Fraunces + Inter, max-w-prose / max-w-3xl) */}
+          <div class="prose-ember max-w-prose max-w-3xl leading-relaxed text-ink/90 font-body text-base sm:text-lg">
             <Content />
           </div>
 
@@ -394,12 +401,12 @@ const reviewSchema = {
               </blockquote>
             </div>
 
-            {/* Highlights Comparison Grid */}
+            {/* Side-by-Side: What Stood Out vs Ideal Reader */}
             <div class="grid sm:grid-cols-2 gap-6 my-8 max-w-3xl mx-auto">
               <div class="bg-paper rounded-2xl p-6 border border-line shadow-2xs">
                 <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2e593a] mb-3">
                   <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-[11px]">✓</span>
-                  <span>What Worked Exceptionally Well</span>
+                  <span>What Stood Out</span>
                 </div>
                 <ul class="space-y-2.5 text-xs sm:text-sm text-ink/80 font-light">
                   {meta.highlights.map((item) => (
@@ -414,10 +421,10 @@ const reviewSchema = {
               <div class="bg-paper rounded-2xl p-6 border border-line shadow-2xs">
                 <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#7a4d2b] mb-3">
                   <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-800 text-[11px]">❦</span>
-                  <span>Who Should Read It</span>
+                  <span>Ideal Reader</span>
                 </div>
                 <p class="text-xs sm:text-sm text-ink/80 font-light leading-relaxed">
-                  Essential reading for lovers of <strong>{meta.genre}</strong> looking for depth, craft, and an unforgettable story that stays with you.
+                  Essential reading for lovers of <strong>{meta.genre}</strong> looking for depth, craft, and an unforgettable story that stays with you long after the final page.
                 </p>
               </div>
             </div>
@@ -429,15 +436,15 @@ const reviewSchema = {
                   href={amazonUrl}
                   target="_blank"
                   rel="sponsored nofollow noopener noreferrer"
-                  class="w-full sm:w-auto inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-gradient-to-r from-burgundy via-[#8c2b3f] to-burgundy px-10 py-4 text-base sm:text-lg font-bold uppercase tracking-widest text-[#fffaf0] shadow-[0_12px_32px_rgba(92,31,44,0.4)] hover:shadow-[0_16px_40px_rgba(92,31,44,0.6)] hover:scale-105 active:scale-95 transition-all"
+                  class="relative w-full sm:w-auto inline-flex min-h-16 items-center justify-center gap-3 rounded-full bg-gradient-to-r from-burgundy via-[#8c2b3f] to-burgundy px-10 py-4 text-base sm:text-lg font-bold uppercase tracking-widest text-[#fffaf0] shadow-[0_12px_32px_rgba(92,31,44,0.4)] hover:shadow-[0_16px_40px_rgba(92,31,44,0.6)] hover:scale-105 active:scale-95 transition-all amazon-pulse-btn"
                 >
-                  <span>Buy on Amazon</span>
+                  <span>Find This Book on Amazon</span>
                   <span class="text-gold-soft text-xl" aria-hidden="true">&nearr;</span>
                 </a>
 
                 {/* Explicit FTC Disclosure as requested */}
                 <p class="text-xs text-muted/80 font-light leading-relaxed">
-                  As an Amazon Associate, we earn from qualifying purchases at no extra cost to you.
+                  As an Amazon Associate, Ember &amp; Ink earns from qualifying purchases.
                 </p>
               </div>
             )}
@@ -681,3 +688,22 @@ const reviewSchema = {
   document.addEventListener('DOMContentLoaded', setupReadingPage);
   document.addEventListener('astro:page-load', setupReadingPage);
 </script>
+
+<style>
+  /* Pulsing glow ring on primary Amazon CTA buttons */
+  @keyframes amazon-ring-pulse {
+    0%, 100% {
+      box-shadow: 0 8px 20px rgba(92,31,44,0.35), 0 0 0 0 rgba(201,161,74,0.55);
+    }
+    50% {
+      box-shadow: 0 8px 20px rgba(92,31,44,0.45), 0 0 0 8px rgba(201,161,74,0);
+    }
+  }
+
+  .amazon-pulse-btn {
+    animation: amazon-ring-pulse 2.6s ease-in-out infinite;
+  }
+  .amazon-pulse-btn:hover {
+    animation: none;
+  }
+</style>

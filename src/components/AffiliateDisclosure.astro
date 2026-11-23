@@ -1,29 +1,38 @@
 ---
 /**
- * AffiliateDisclosure — the small, inline "this is an affiliate link"
- * notice shown near Buy buttons on review pages.
- *
- * The full legal statement lives on /affiliate-disclosure/, which this
- * links to.
+ * AffiliateDisclosure.astro
+ * FTC-compliant Amazon Associate disclosure.
+ * Shown prominently near the top of every review page and next to buy buttons.
  */
 interface Props {
   compact?: boolean;
+  banner?: boolean;
 }
 
-const { compact = false } = Astro.props;
+const { compact = false, banner = false } = Astro.props;
 ---
 
-<p
-  class:list={[
-    'text-xs text-muted leading-relaxed',
-    compact ? '' : 'border-l-2 border-gold pl-3',
-  ]}
->
-  <strong class="text-ink">Affiliate notice:</strong>
-  As an Amazon Associate, Ember &amp; Ink earns from qualifying purchases.
-  Your price is unchanged.
-  <a href="/affiliate-disclosure/" class="underline hover:text-burgundy">
-    Learn more
-  </a>
-  .
-</p>
+{banner ? (
+  <div class="flex items-start gap-3 rounded-xl border border-gold/40 bg-gradient-to-r from-[#fffdf5] to-[#fdf9ee] px-4 py-3 shadow-sm">
+    <span class="text-gold text-lg shrink-0 mt-0.5" aria-hidden="true">&#9432;</span>
+    <p class="text-xs text-ink/80 leading-relaxed">
+      <strong class="text-burgundy font-semibold">Affiliate Disclosure:</strong>{' '}
+      As an Amazon Associate, <strong>Ember &amp; Ink earns from qualifying purchases</strong> at no extra cost to you.
+      Links marked <span class="font-mono bg-gold/15 px-1 rounded text-[10px]">&nearr;</span> go to Amazon.
+      <a href="/affiliate-disclosure/" class="ml-1 underline underline-offset-2 hover:text-burgundy transition-colors font-medium">
+        Full disclosure &rarr;
+      </a>
+    </p>
+  </div>
+) : compact ? (
+  <p class="text-[11px] text-muted/80 leading-relaxed">
+    As an Amazon Associate, Ember &amp; Ink earns from qualifying purchases.
+  </p>
+) : (
+  <p class="text-xs text-muted leading-relaxed border-l-2 border-gold pl-3">
+    <strong class="text-ink">Affiliate notice:</strong>{' '}
+    As an Amazon Associate, Ember &amp; Ink earns from qualifying purchases.
+    Your price is unchanged.{' '}
+    <a href="/affiliate-disclosure/" class="underline hover:text-burgundy">Learn more</a>.
+  </p>
+)}

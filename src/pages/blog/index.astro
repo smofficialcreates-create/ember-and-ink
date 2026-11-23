@@ -2,8 +2,8 @@
 /**
  * blog/index.astro
  * The Complete Literary Journal & Book Discovery Archive.
- * Powered by Ember & Ink's discovery engine with 3D physical book cards,
- * 7 curated genre shelves, instant search, and sorting.
+ * Powered by Ember & Ink's discovery engine with 3D physical book cards (2:3 aspect ratio),
+ * prominent "Browse by Genre" shelves, instant search, and "Newest" / "Highest Rated" sorting toggle.
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BookCard from '@components/BookCard.astro';
@@ -37,7 +37,7 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
           All Reviews &amp; Essays
         </h1>
         <p class="mt-4 text-base sm:text-lg text-muted font-light leading-relaxed max-w-2xl">
-          Browse our complete catalog of reviews. Filter by shelf, search by author or title, and discover your next great read.
+          Browse our complete catalog of reviews. Filter by genre shelf, toggle newest or highest-rated works, and discover your next great read.
         </p>
       </div>
 
@@ -52,14 +52,17 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
   {/* Discovery Section */}
   <section class="container-ember py-12 md:py-16">
     
-    {/* Seven Curated Shelves */}
+    {/* TASK 3: Prominent "Browse by Genre" Filter Bar */}
     <div class="mb-10">
       <div class="flex items-center justify-between gap-4 mb-4">
-        <h2 class="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
-          Browse By Shelf
-        </h2>
+        <div class="flex items-center gap-2">
+          <span class="text-gold">✦</span>
+          <h2 class="text-xs font-bold uppercase tracking-[0.24em] text-burgundy">
+            Browse By Genre
+          </h2>
+        </div>
         <span class="text-xs font-mono text-muted/70">
-          {allPosts.length} Reviews
+          {allPosts.length} Books Curated
         </span>
       </div>
 
@@ -67,7 +70,7 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
         <button
           type="button"
           data-filter-genre="all"
-          class="genre-filter-btn active col-span-2 sm:col-span-1 flex flex-col items-start p-3 rounded-xl border border-burgundy bg-burgundy text-[#fffaf0] shadow-sm transition-all text-left focus:outline-none focus:ring-2 focus:ring-gold"
+          class="genre-filter-btn active col-span-2 sm:col-span-1 flex flex-col items-start p-3 rounded-xl border border-burgundy bg-burgundy text-[#fffaf0] shadow-sm transition-all text-left focus:outline-none focus:ring-2 focus:ring-gold cursor-pointer"
           aria-selected="true"
         >
           <span class="text-xs text-gold-soft font-mono font-semibold">ALL</span>
@@ -79,7 +82,7 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
           <button
             type="button"
             data-filter-genre={g.id}
-            class="genre-filter-btn flex flex-col items-start p-3 rounded-xl border border-line bg-paper text-ink hover:border-gold hover:bg-cream/60 transition-all text-left focus:outline-none focus:ring-2 focus:ring-gold"
+            class="genre-filter-btn flex flex-col items-start p-3 rounded-xl border border-line bg-paper text-ink hover:border-gold hover:bg-cream/60 transition-all text-left focus:outline-none focus:ring-2 focus:ring-gold cursor-pointer"
             aria-selected="false"
           >
             <span class="text-xs font-mono opacity-80" aria-hidden="true">{g.motif}</span>
@@ -90,10 +93,11 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
       </div>
     </div>
 
-    {/* Search & Sort Toolbar */}
+    {/* Search & Sort Toolbar with "Newest" and "Highest Rated" Quick Toggle */}
     <div class="bg-paper border border-line rounded-2xl p-4 sm:p-5 shadow-sm mb-10">
       <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
         
+        {/* Instant Search Bar */}
         <div class="relative flex-1 max-w-md">
           <div class="pointer-events-none absolute inset-y-0 left-0 pl-3.5 flex items-center text-muted">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -109,27 +113,47 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
           <button
             type="button"
             id="clear-search-btn"
-            class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-muted hover:text-burgundy"
+            class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-muted hover:text-burgundy cursor-pointer"
             aria-label="Clear search"
           >
             ✕
           </button>
         </div>
 
+        {/* TASK 3: "Newest" & "Highest Rated" Sorting Quick-Toggle Group */}
         <div class="flex flex-wrap items-center gap-3">
+          <div class="inline-flex items-center rounded-xl border border-line bg-cream/50 p-1 shadow-2xs" role="tablist" aria-label="Quick Sort Options">
+            <button
+              type="button"
+              id="quick-sort-newest"
+              data-sort-mode="latest"
+              class="quick-sort-btn active inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all bg-burgundy text-[#fffaf0] shadow-xs cursor-pointer"
+            >
+              <span>✦</span>
+              <span>Newest</span>
+            </button>
+            <button
+              type="button"
+              id="quick-sort-rating"
+              data-sort-mode="rating"
+              class="quick-sort-btn inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-medium text-muted hover:text-burgundy transition-all cursor-pointer"
+            >
+              <span>★</span>
+              <span>Highest Rated</span>
+            </button>
+          </div>
+
           <div class="flex items-center gap-2">
-            <label for="sort-select" class="text-xs font-semibold uppercase tracking-wider text-muted shrink-0">
-              Sort:
-            </label>
             <select
               id="sort-select"
-              class="rounded-xl border border-line bg-cream/40 px-3 py-2 text-xs font-medium text-ink focus:border-gold focus:bg-paper focus:outline-none focus:ring-1 focus:ring-gold"
+              class="rounded-xl border border-line bg-cream/40 px-3 py-2 text-xs font-medium text-ink focus:border-gold focus:bg-paper focus:outline-none focus:ring-1 focus:ring-gold cursor-pointer"
+              aria-label="Additional Sort Options"
             >
-              <option value="latest">Latest Reviews</option>
+              <option value="latest">Latest First</option>
               <option value="rating">Highest Rated</option>
               <option value="title-asc">Title (A–Z)</option>
               <option value="author-asc">Author (A–Z)</option>
-              <option value="featured">Featured First</option>
+              <option value="featured">Staff Pick First</option>
             </select>
           </div>
         </div>
@@ -143,14 +167,14 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
         <button
           type="button"
           id="reset-all-filters"
-          class="hidden text-xs text-[#9b3c4a] hover:underline font-semibold"
+          class="hidden text-xs text-[#9b3c4a] hover:underline font-semibold cursor-pointer"
         >
           Reset Filters
         </button>
       </div>
     </div>
 
-    {/* Books Grid */}
+    {/* Books Grid with Physical 2:3 Vertical Book Cards */}
     <div
       id="books-grid-container"
       class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7"
@@ -167,12 +191,12 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
       <div class="text-4xl mb-3">📖</div>
       <h3 class="font-display text-2xl text-burgundy font-semibold">No books found</h3>
       <p class="mt-2 text-sm text-muted max-w-md mx-auto">
-        No reviews matched your search. Try resetting your filters.
+        No reviews matched your search. Try selecting another shelf or resetting your filters.
       </p>
       <button
         type="button"
         id="empty-reset-btn"
-        class="mt-6 inline-flex items-center gap-2 rounded-full bg-burgundy px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#fffaf0] hover:bg-burgundy-dark transition-colors"
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-burgundy px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#fffaf0] hover:bg-burgundy-dark transition-colors cursor-pointer"
       >
         <span>Reset Filters</span>
         <span>↺</span>
@@ -182,26 +206,43 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
   </section>
 </BaseLayout>
 
+{/* Discovery Engine Client Script */}
 <script>
   function setupBlogArchive() {
+    const genreButtons = document.querySelectorAll<HTMLButtonElement>('.genre-filter-btn');
     const searchInput = document.getElementById('book-search-input') as HTMLInputElement | null;
     const clearBtn = document.getElementById('clear-search-btn');
     const sortSelect = document.getElementById('sort-select') as HTMLSelectElement | null;
-    const genreButtons = document.querySelectorAll<HTMLButtonElement>('.genre-filter-btn');
-    const cardsContainer = document.getElementById('books-grid-container');
-    const emptyState = document.getElementById('no-books-found');
-    const emptyResetBtn = document.getElementById('empty-reset-btn');
+    const quickSortBtns = document.querySelectorAll<HTMLButtonElement>('.quick-sort-btn');
     const resetAllBtn = document.getElementById('reset-all-filters');
+    const emptyResetBtn = document.getElementById('empty-reset-btn');
     const currentCountEl = document.getElementById('current-count');
+    const emptyState = document.getElementById('no-books-found');
+    const gridContainer = document.getElementById('books-grid-container');
+    if (!gridContainer) return;
+    const container: HTMLElement = gridContainer;
 
-    if (!cardsContainer) return;
-    const container = cardsContainer;
-
-    const cardWrappers = Array.from(container.querySelectorAll<HTMLElement>('.book-card-item'));
+    const cardWrappers = Array.from(container.children) as HTMLElement[];
 
     let currentGenre = 'all';
     let searchQuery = '';
     let currentSort = 'latest';
+
+    function updateSortButtonsUI() {
+      quickSortBtns.forEach((btn) => {
+        const mode = btn.dataset.sortMode;
+        if (mode === currentSort) {
+          btn.classList.add('active', 'bg-burgundy', 'text-[#fffaf0]', 'font-bold');
+          btn.classList.remove('text-muted');
+        } else {
+          btn.classList.remove('active', 'bg-burgundy', 'text-[#fffaf0]', 'font-bold');
+          btn.classList.add('text-muted');
+        }
+      });
+      if (sortSelect && sortSelect.value !== currentSort) {
+        sortSelect.value = currentSort;
+      }
+    }
 
     function applyFilters() {
       let visibleCount = 0;
@@ -260,6 +301,8 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
         if (currentGenre !== 'all' || searchQuery !== '') resetAllBtn.classList.remove('hidden');
         else resetAllBtn.classList.add('hidden');
       }
+
+      updateSortButtonsUI();
     }
 
     genreButtons.forEach((btn) => {
@@ -277,6 +320,16 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
         btn.setAttribute('aria-selected', 'true');
 
         applyFilters();
+      });
+    });
+
+    quickSortBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.sortMode;
+        if (mode) {
+          currentSort = mode;
+          applyFilters();
+        }
       });
     });
 

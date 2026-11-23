@@ -1,18 +1,20 @@
 ---
 /**
  * ReadingProgressBar.astro
- * Delicate, unobtrusive reading progress indicator fixed at the top of the viewport.
+ * Reading progress bar fixed at the top of the viewport.
+ * Specification: h-1 bg-gold fixed top-0 z-50
  */
 ---
 
 <div
   id="reading-progress-track"
-  class="fixed top-0 inset-x-0 h-[3px] z-50 pointer-events-none bg-transparent"
+  class="fixed top-0 inset-x-0 h-1 z-50 pointer-events-none bg-gold/15"
   aria-hidden="true"
 >
   <div
     id="reading-progress-bar"
-    class="h-full w-0 bg-gradient-to-r from-burgundy via-gold to-burgundy transition-all duration-75 ease-out"
+    class="h-1 bg-gold fixed top-0 z-50 transition-all duration-75 ease-out"
+    style="width: 0%;"
   ></div>
 </div>
 

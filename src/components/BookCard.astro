@@ -2,11 +2,12 @@
 /**
  * BookCard.astro
  * Premium physical bookstore & luxury editorial book card.
- * Respects true vertical book-cover proportions without cropping.
- * Includes subtle 3D spine depth, tactile shadow, and refined typography.
+ * Respects true vertical book-cover proportions (2:3 aspect ratio).
+ * Includes 3D spine depth, tactile pedestal shadow, and Amazon quick buy action.
  */
 import type { BlogPost } from '@lib/posts';
 import { getBookEditorialMeta } from '@lib/book-meta';
+import { withAmazonTag } from '@lib/amazon';
 
 interface Props {
   post: BlogPost;
@@ -17,6 +18,7 @@ interface Props {
 const { post, eager = false, layout = 'vertical' } = Astro.props;
 const meta = getBookEditorialMeta(post);
 const reviewUrl = `/blog/${post.id}/`;
+const amazonUrl = withAmazonTag(post.data.amazonLink);
 ---
 
 {layout === 'vertical' ? (
@@ -31,8 +33,8 @@ const reviewUrl = `/blog/${post.id}/`;
     data-featured={meta.isFeatured ? 'true' : 'false'}
     data-pub-time={post.data.pubDate.valueOf()}
   >
-    {/* Book Cover Presentation Shelf */}
-    <div class="relative bg-gradient-to-b from-cream via-[#f5ede0] to-cream/80 p-6 pb-4 flex items-center justify-center overflow-hidden border-b border-line/60">
+    {/* Book Cover Presentation Shelf (Physical 2:3 Aspect Ratio) */}
+    <div class="relative bg-gradient-to-b from-cream via-[#f5ede0] to-cream/80 p-6 pb-5 flex items-center justify-center overflow-hidden border-b border-line/60">
       <div class="pointer-events-none absolute inset-0 opacity-40 bg-[radial-gradient(#c9a14a_0.75px,transparent_0.75px)] [background-size:12px_12px]"></div>
 
       {/* 3D Physical Book Silhouette */}
@@ -104,14 +106,24 @@ const reviewUrl = `/blog/${post.id}/`;
         </p>
       </div>
 
-      <div class="pt-4 border-t border-line/60 flex items-center justify-between text-xs">
-        <span class="text-muted/80 font-mono text-[11px]">
-          {meta.publishedFormatted}
-        </span>
+      <div class="pt-4 border-t border-line/60 flex items-center justify-between gap-2 text-xs">
         <span class="inline-flex items-center gap-1.5 font-semibold text-burgundy group-hover:text-gold transition-colors">
           <span>Read Review</span>
           <span class="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
         </span>
+
+        {amazonUrl && (
+          <a
+            href={amazonUrl}
+            target="_blank"
+            rel="sponsored nofollow noopener noreferrer"
+            class="relative z-10 inline-flex items-center gap-1 rounded-full bg-burgundy/10 hover:bg-burgundy hover:text-[#fffdf7] text-burgundy px-3 py-1 font-bold text-[11px] uppercase tracking-wider transition-all shadow-2xs hover:scale-105 active:scale-95"
+            title={`Check Price for ${meta.bookTitle} on Amazon`}
+          >
+            <span>Amazon</span>
+            <span aria-hidden="true">&nearr;</span>
+          </a>
+        )}
       </div>
     </div>
   </article>
@@ -168,12 +180,24 @@ const reviewUrl = `/blog/${post.id}/`;
         </p>
       </div>
 
-      <div class="mt-4 pt-3 border-t border-line/60 flex items-center justify-between text-xs">
-        <span class="text-muted/80 font-mono text-[11px]">{meta.publishedFormatted}</span>
+      <div class="mt-4 pt-3 border-t border-line/60 flex items-center justify-between gap-2 text-xs">
         <span class="inline-flex items-center gap-1 font-semibold text-burgundy group-hover:text-gold transition-colors">
           <span>Read Review</span>
           <span class="group-hover:translate-x-1 transition-transform" aria-hidden="true">&rarr;</span>
         </span>
+
+        {amazonUrl && (
+          <a
+            href={amazonUrl}
+            target="_blank"
+            rel="sponsored nofollow noopener noreferrer"
+            class="relative z-10 inline-flex items-center gap-1 rounded-full bg-burgundy/10 hover:bg-burgundy hover:text-[#fffdf7] text-burgundy px-3 py-1 font-bold text-[11px] uppercase tracking-wider transition-all shadow-2xs hover:scale-105 active:scale-95"
+            title={`Check Price for ${meta.bookTitle} on Amazon`}
+          >
+            <span>Amazon</span>
+            <span aria-hidden="true">&nearr;</span>
+          </a>
+        )}
       </div>
     </div>
   </article>

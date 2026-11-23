@@ -156,14 +156,34 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
 
         {/* Controls Row: Sort & View Toggle */}
         <div class="flex flex-wrap items-center gap-3">
+          {/* Quick Sorting Toggle: Newest vs Highest Rated */}
+          <div class="inline-flex items-center rounded-xl border border-line bg-cream/50 p-1 shadow-2xs" role="tablist" aria-label="Quick Sort Options">
+            <button
+              type="button"
+              id="reviews-sort-newest"
+              data-sort-mode="latest"
+              class="quick-sort-btn active inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all bg-burgundy text-[#fffaf0] shadow-xs cursor-pointer"
+            >
+              <span>✦</span>
+              <span>Newest</span>
+            </button>
+            <button
+              type="button"
+              id="reviews-sort-rating"
+              data-sort-mode="rating"
+              class="quick-sort-btn inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-medium text-muted hover:text-burgundy transition-all cursor-pointer"
+            >
+              <span>★</span>
+              <span>Highest Rated</span>
+            </button>
+          </div>
+
           {/* Sort Dropdown */}
           <div class="flex items-center gap-2">
-            <label for="sort-select" class="text-xs font-semibold uppercase tracking-wider text-muted shrink-0">
-              Sort:
-            </label>
             <select
               id="sort-select"
-              class="rounded-xl border border-line bg-cream/40 px-3 py-2 text-xs font-medium text-ink focus:border-gold focus:bg-paper focus:outline-none focus:ring-1 focus:ring-gold"
+              class="rounded-xl border border-line bg-cream/40 px-3 py-2 text-xs font-medium text-ink focus:border-gold focus:bg-paper focus:outline-none focus:ring-1 focus:ring-gold cursor-pointer"
+              aria-label="Additional Sort Options"
             >
               <option value="latest">Latest Reviews</option>
               <option value="rating">Highest Rated</option>
@@ -291,10 +311,27 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
     const container = cardsContainer;
 
     const cardWrappers = Array.from(container.querySelectorAll<HTMLElement>('.book-card-item'));
+    const quickSortBtns = document.querySelectorAll<HTMLButtonElement>('.quick-sort-btn');
 
     let currentGenre = 'all';
     let searchQuery = '';
     let currentSort = 'latest';
+
+    function updateSortButtonsUI() {
+      quickSortBtns.forEach((btn) => {
+        const mode = btn.dataset.sortMode;
+        if (mode === currentSort) {
+          btn.classList.add('active', 'bg-burgundy', 'text-[#fffaf0]', 'font-bold');
+          btn.classList.remove('text-muted');
+        } else {
+          btn.classList.remove('active', 'bg-burgundy', 'text-[#fffaf0]', 'font-bold');
+          btn.classList.add('text-muted');
+        }
+      });
+      if (sortSelect && sortSelect.value !== currentSort) {
+        sortSelect.value = currentSort;
+      }
+    }
 
     function applyFilters() {
       let visibleCount = 0;
@@ -372,7 +409,20 @@ const leadPost = allPosts.find((p) => p.data.featured) || allPosts[0];
         if (isFiltered) resetAllBtn.classList.remove('hidden');
         else resetAllBtn.classList.add('hidden');
       }
+
+      updateSortButtonsUI();
     }
+
+    // Quick Sort Buttons Click
+    quickSortBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.sortMode;
+        if (mode) {
+          currentSort = mode;
+          applyFilters();
+        }
+      });
+    });
 
     // Genre Buttons Click
     genreButtons.forEach((btn) => {
