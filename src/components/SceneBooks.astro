@@ -3,8 +3,9 @@
  * SceneBooks.astro
  * Scene 02 — Tranquility: Sakura Train Sanctuary
  *
- * Solid, rich, non-translucent editorial book cards.
- * Zero see-through effect so the review cards are crisp, legible, and high-converting.
+ * 100% Solid, Opaque Luxury Editorial Book Cards.
+ * Guaranteed zero translucency / zero see-through under all conditions.
+ * Physical gold/obsidian aesthetic with high-contrast typography and instant Amazon buy links.
  */
 import type { BlogPost } from '@lib/posts';
 import { formatDate } from '@lib/format';
@@ -21,7 +22,7 @@ const displayPosts = posts.slice(0, 3);
 
 <section
   id="tranquility-shelf"
-  class="scene-anime relative isolate min-h-[900px] py-28 md:py-44 bg-black text-[#fbf6ee] overflow-hidden"
+  class="scene-anime relative isolate min-h-[850px] py-16 md:py-24 lg:py-28 bg-black text-[#fbf6ee] overflow-hidden"
 >
   <!-- ░░ HIGH-RES ANIME SAKURA TRAIN BACKGROUND ░░ -->
   <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -36,9 +37,9 @@ const displayPosts = posts.slice(0, 3);
   </div>
 
   <!-- Left vignette: pure black, no colour cast, for text legibility -->
-  <div class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/88 via-black/50 to-black/10"></div>
+  <div class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/90 via-black/55 to-black/15"></div>
   <!-- Bottom fade to blend into next section -->
-  <div class="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-black/92 via-transparent to-black/40"></div>
+  <div class="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-black/95 via-transparent to-black/40"></div>
   <!-- Subtle warm sun glow top-right — amber only, no green -->
   <div class="pointer-events-none absolute -top-24 -right-24 w-[60%] h-[60%] rounded-full blur-3xl bg-gradient-to-bl from-amber-300/15 via-amber-100/6 to-transparent z-[2] mix-blend-screen"></div>
 
@@ -53,7 +54,7 @@ const displayPosts = posts.slice(0, 3);
        EDITORIAL CONTENT
   ════════════════════════════════════════════════════ -->
   <div class="container-ember relative z-10">
-    <div class="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
+    <div class="grid lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-14 items-center">
 
       <!-- Left: Typography & Narrative -->
       <div class="max-w-xl">
@@ -80,17 +81,23 @@ const displayPosts = posts.slice(0, 3);
         </div>
       </div>
 
-      <!-- Right: Three Latest Book Cards — Solid Opaque Luxury Cards (No Translucency) -->
-      <div class="space-y-5">
+      <!-- Right: Three Latest Book Cards — 100% Solid Opaque Luxury Obsidian Cards -->
+      <div class="space-y-4">
         {displayPosts.map((post, index) => {
           const meta = getBookEditorialMeta(post);
           const amazonUrl = withAmazonTag(post.data.amazonLink);
           return (
-            <article class="group relative rounded-3xl border border-white/20 bg-[#16121e] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-all duration-400 hover:-translate-y-1.5 hover:border-gold/60 hover:bg-[#1f192b]">
+            <article
+              class="tranquility-card group relative rounded-2xl md:rounded-3xl border border-[#c9a14a]/35 p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#c9a14a]/70"
+              style="background-color: #120e18 !important; background: #120e18 !important; opacity: 1 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;"
+            >
+              <!-- Fine luxury gold hairline on top edge -->
+              <div class="pointer-events-none absolute top-0 inset-x-8 h-[2px] bg-gradient-to-r from-transparent via-[#c9a14a]/60 to-transparent"></div>
+
               <div class="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
 
                 <!-- Book Cover (2:3 aspect ratio with 3D spine depth) -->
-                <div class="relative w-20 h-28 sm:w-24 sm:h-36 rounded-xl overflow-hidden shadow-lg flex-shrink-0 bg-[#0c0a10] border border-white/20">
+                <div class="relative w-20 h-28 sm:w-24 sm:h-36 rounded-xl overflow-hidden shadow-lg flex-shrink-0 bg-[#08060a] border border-[#c9a14a]/30">
                   {post.data.coverImage ? (
                     <img
                       src={post.data.coverImage}
@@ -100,18 +107,20 @@ const displayPosts = posts.slice(0, 3);
                       decoding="async"
                     />
                   ) : (
-                    <div class="w-full h-full bg-neutral-900 flex items-center justify-center p-2 text-center text-xs text-[#e8d5a3] font-display">
+                    <div class="w-full h-full bg-[#16121c] flex items-center justify-center p-2 text-center text-xs text-[#e8d5a3] font-display">
                       {meta.bookTitle}
                     </div>
                   )}
-                  <div class="pointer-events-none absolute inset-y-0 left-0 w-2.5 bg-gradient-to-r from-black/50 via-white/20 to-transparent"></div>
+                  <div class="pointer-events-none absolute inset-y-0 left-0 w-2.5 bg-gradient-to-r from-black/60 via-white/20 to-transparent"></div>
                 </div>
 
-                <!-- Content: Crisp, High-Contrast Typography -->
+                <!-- Content: Crisp, 100% High-Contrast Typography -->
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between text-xs text-[#e8d5a3] mb-1.5 font-mono">
-                    <span class="uppercase tracking-wider font-semibold">{meta.curatedShelf.shortName}</span>
-                    <span class="font-bold">0{index + 1} / 03</span>
+                  <div class="flex items-center justify-between text-xs mb-2 font-mono">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase tracking-wider text-[#e8d5a3] bg-[#c9a14a]/15 border border-[#c9a14a]/35">
+                      {meta.curatedShelf.shortName}
+                    </span>
+                    <span class="font-bold text-[#e8d5a3]">0{index + 1} / 03</span>
                   </div>
 
                   <h3 class="font-display text-xl sm:text-2xl font-bold text-white group-hover:text-[#e8d5a3] transition-colors line-clamp-1">
@@ -120,11 +129,11 @@ const displayPosts = posts.slice(0, 3);
                     </a>
                   </h3>
 
-                  <p class="text-xs uppercase tracking-wider text-[#d4c5b3] font-medium mt-1">
+                  <p class="text-xs uppercase tracking-wider text-[#e8d5a3] font-medium mt-1">
                     By {meta.author}
                   </p>
 
-                  <p class="mt-2 text-xs sm:text-sm text-[#ece4d8] line-clamp-2 font-normal leading-relaxed">
+                  <p class="mt-2 text-xs sm:text-sm text-[#f5efe6] line-clamp-2 font-normal leading-relaxed">
                     {post.data.description}
                   </p>
 
@@ -148,7 +157,7 @@ const displayPosts = posts.slice(0, 3);
                           href={amazonUrl}
                           target="_blank"
                           rel="sponsored nofollow noopener noreferrer"
-                          class="relative z-10 inline-flex items-center gap-1 rounded-full bg-burgundy hover:bg-[#8c2b3f] text-[#fffdf7] px-3 py-1 font-bold text-[10px] uppercase tracking-wider transition-all shadow-xs"
+                          class="relative z-10 inline-flex items-center gap-1.5 rounded-full bg-burgundy hover:bg-[#801b2f] text-[#fffdf7] px-3.5 py-1.5 font-bold text-[11px] uppercase tracking-wider border border-gold/40 shadow-md hover:scale-105 transition-all"
                           title={`Check Price for ${meta.bookTitle} on Amazon`}
                         >
                           <span>Amazon</span>
@@ -168,6 +177,22 @@ const displayPosts = posts.slice(0, 3);
     </div>
   </div>
 </section>
+
+<style>
+  .tranquility-card {
+    background-color: #120e18 !important;
+    background: #120e18 !important;
+    opacity: 1 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(201, 161, 74, 0.3) !important;
+  }
+  .tranquility-card:hover {
+    background-color: #1a1424 !important;
+    background: #1a1424 !important;
+    box-shadow: 0 30px 70px -12px rgba(0, 0, 0, 0.98), 0 0 0 1px rgba(232, 213, 163, 0.55) !important;
+  }
+</style>
 
 <script>
   import { mountTranquilityScene } from '../scripts/tranquility-scene.js';
@@ -202,17 +227,18 @@ const displayPosts = posts.slice(0, 3);
   }
 
   // GSAP entrance animation (scroll-triggered via IntersectionObserver)
+  // NEVER animate opacity on the physical cards to guarantee 100% solid, opaque cards at all times.
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const content = section?.querySelector('.container-ember');
     if (content) {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            gsap.from(content.querySelectorAll('p, h2, a'), {
-              opacity: 0, y: 28, duration: 1, stagger: 0.12, ease: 'power3.out',
+            gsap.from(content.querySelectorAll('p, h2, a:not(.tranquility-card a)'), {
+              opacity: 0, y: 24, duration: 0.8, stagger: 0.08, ease: 'power3.out',
             });
-            gsap.from(content.querySelectorAll('article'), {
-              opacity: 0, y: 32, duration: 0.9, stagger: 0.14, delay: 0.2, ease: 'power3.out',
+            gsap.from(content.querySelectorAll('.tranquility-card'), {
+              y: 28, duration: 0.8, stagger: 0.12, ease: 'power3.out', clearProps: 'transform',
             });
             observer.disconnect();
           }
