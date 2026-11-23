@@ -3,11 +3,13 @@
  * SceneBooks.astro
  * Scene 02 — Tranquility: Sakura Train Sanctuary
  *
- * All overlays use neutral black/charcoal — zero green tint — so the
- * real illustrated image shows through with its natural warm sakura colours.
+ * Solid, rich, non-translucent editorial book cards.
+ * Zero see-through effect so the review cards are crisp, legible, and high-converting.
  */
 import type { BlogPost } from '@lib/posts';
 import { formatDate } from '@lib/format';
+import { getBookEditorialMeta } from '@lib/book-meta';
+import { withAmazonTag } from '@lib/amazon';
 
 interface Props {
   posts: BlogPost[];
@@ -55,7 +57,6 @@ const displayPosts = posts.slice(0, 3);
 
       <!-- Left: Typography & Narrative -->
       <div class="max-w-xl">
-        <!-- Section label: soft warm gold, no green -->
         <p class="text-xs uppercase tracking-[0.32em] text-[#e8d5a3] font-semibold mb-4 drop-shadow">
           02 / Experience
         </p>
@@ -64,7 +65,7 @@ const displayPosts = posts.slice(0, 3);
           Tranquility
         </h2>
 
-        <p class="mt-6 text-base md:text-lg text-white/80 font-light leading-relaxed drop-shadow">
+        <p class="mt-6 text-base md:text-lg text-white/90 font-light leading-relaxed drop-shadow">
           A cherry-blossom morning on the hillside above the valley. A steam train glides across the stone bridge, petals drift on the gentle breeze, and the river catches the first golden light. Away from algorithmic noise, reading becomes an act of quiet restoration.
         </p>
 
@@ -79,58 +80,89 @@ const displayPosts = posts.slice(0, 3);
         </div>
       </div>
 
-      <!-- Right: Three Latest Book Cards — neutral dark glass, no green -->
+      <!-- Right: Three Latest Book Cards — Solid Opaque Luxury Cards (No Translucency) -->
       <div class="space-y-5">
-        {displayPosts.map((post, index) => (
-          <article class="group relative rounded-3xl border border-white/12 bg-black/55 backdrop-blur-xl p-6 shadow-[0_16px_48px_rgba(0,0,0,0.5)] transition-all duration-400 hover:-translate-y-1.5 hover:border-white/30 hover:bg-black/70">
-            <div class="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
+        {displayPosts.map((post, index) => {
+          const meta = getBookEditorialMeta(post);
+          const amazonUrl = withAmazonTag(post.data.amazonLink);
+          return (
+            <article class="group relative rounded-3xl border border-white/20 bg-[#16121e] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-all duration-400 hover:-translate-y-1.5 hover:border-gold/60 hover:bg-[#1f192b]">
+              <div class="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
 
-              <!-- Book Cover -->
-              <div class="relative w-20 h-28 sm:w-24 sm:h-32 rounded-xl overflow-hidden shadow-md flex-shrink-0 bg-neutral-900 border border-white/10">
-                {post.data.coverImage ? (
-                  <img
-                    src={post.data.coverImage}
-                    alt={`Cover for ${post.data.title}`}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <div class="w-full h-full bg-neutral-800 flex items-center justify-center p-2 text-center text-xs text-[#e8d5a3] font-display">
-                    {post.data.title}
+                <!-- Book Cover (2:3 aspect ratio with 3D spine depth) -->
+                <div class="relative w-20 h-28 sm:w-24 sm:h-36 rounded-xl overflow-hidden shadow-lg flex-shrink-0 bg-[#0c0a10] border border-white/20">
+                  {post.data.coverImage ? (
+                    <img
+                      src={post.data.coverImage}
+                      alt={`Cover for ${meta.bookTitle}`}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="w-full h-full bg-neutral-900 flex items-center justify-center p-2 text-center text-xs text-[#e8d5a3] font-display">
+                      {meta.bookTitle}
+                    </div>
+                  )}
+                  <div class="pointer-events-none absolute inset-y-0 left-0 w-2.5 bg-gradient-to-r from-black/50 via-white/20 to-transparent"></div>
+                </div>
+
+                <!-- Content: Crisp, High-Contrast Typography -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between text-xs text-[#e8d5a3] mb-1.5 font-mono">
+                    <span class="uppercase tracking-wider font-semibold">{meta.curatedShelf.shortName}</span>
+                    <span class="font-bold">0{index + 1} / 03</span>
                   </div>
-                )}
-              </div>
 
-              <!-- Content -->
-              <div class="flex-1 min-w-0">
-                <!-- Category + index: warm gold, no green -->
-                <div class="flex items-center justify-between text-xs text-[#e8d5a3]/75 mb-1.5 font-mono">
-                  <span class="uppercase tracking-wider">{post.data.category}</span>
-                  <span>0{index + 1} / 03</span>
+                  <h3 class="font-display text-xl sm:text-2xl font-bold text-white group-hover:text-[#e8d5a3] transition-colors line-clamp-1">
+                    <a href={`/blog/${post.id}/`} class="focus:outline-none after:absolute after:inset-0">
+                      {meta.bookTitle}
+                    </a>
+                  </h3>
+
+                  <p class="text-xs uppercase tracking-wider text-[#d4c5b3] font-medium mt-1">
+                    By {meta.author}
+                  </p>
+
+                  <p class="mt-2 text-xs sm:text-sm text-[#ece4d8] line-clamp-2 font-normal leading-relaxed">
+                    {post.data.description}
+                  </p>
+
+                  <div class="mt-3.5 flex items-center justify-between text-xs pt-3 border-t border-white/15">
+                    <div class="flex items-center gap-2">
+                      {meta.ratingStars && (
+                        <span class="font-mono text-gold tracking-wider text-xs font-bold">{meta.ratingStars}</span>
+                      )}
+                      <time datetime={post.data.pubDate.toISOString()} class="text-[#d4c5b3] font-mono text-[11px]">
+                        {formatDate(post.data.pubDate)}
+                      </time>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                      <span class="text-[#e8d5a3] font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        Read review <span>→</span>
+                      </span>
+
+                      {amazonUrl && (
+                        <a
+                          href={amazonUrl}
+                          target="_blank"
+                          rel="sponsored nofollow noopener noreferrer"
+                          class="relative z-10 inline-flex items-center gap-1 rounded-full bg-burgundy hover:bg-[#8c2b3f] text-[#fffdf7] px-3 py-1 font-bold text-[10px] uppercase tracking-wider transition-all shadow-xs"
+                          title={`Check Price for ${meta.bookTitle} on Amazon`}
+                        >
+                          <span>Amazon</span>
+                          <span aria-hidden="true">&nearr;</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                <h3 class="font-display text-xl sm:text-2xl font-semibold text-white group-hover:text-[#e8d5a3] transition-colors line-clamp-1">
-                  <a href={`/blog/${post.id}/`} class="focus:outline-none after:absolute after:inset-0">
-                    {post.data.title}
-                  </a>
-                </h3>
-
-                <p class="mt-2 text-xs sm:text-sm text-white/70 line-clamp-2 font-light leading-relaxed">
-                  {post.data.description}
-                </p>
-
-                <div class="mt-3 flex items-center justify-between text-xs text-white/50 pt-2 border-t border-white/10">
-                  <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-                  <span class="text-[#e8d5a3] font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                    Read review <span>→</span>
-                  </span>
-                </div>
               </div>
-
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
     </div>
